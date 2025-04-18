@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { FileJson, FileCode, FileText, ChevronDown, ChevronRight, AlertTriangle, MoreHorizontal } from 'lucide-react';
@@ -33,6 +34,14 @@ const truncateValue = (value: string | boolean | undefined): { displayValue: str
   
   const lines = value.split('\n');
   if (lines.length <= 3) {
+    // If the single line is too long, truncate it
+    const maxLength = 150;
+    if (value.length > maxLength) {
+      return { 
+        displayValue: value.slice(0, maxLength) + '...', 
+        isTruncated: true 
+      };
+    }
     return { displayValue: value, isTruncated: false };
   }
   
