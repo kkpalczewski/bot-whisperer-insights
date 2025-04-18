@@ -30,10 +30,6 @@ import networkInfoYaml from './detection_rules/network_info.yaml?raw';
 import fingerprintjsDataYaml from './detection_rules/fingerprintjs_data.yaml?raw';
 import canvasFingerprintYaml from './detection_rules/canvas_fingerprint.yaml?raw';
 import clientjsDataYaml from './detection_rules/clientjs_data.yaml?raw';
-import hasTouchSupportYaml from './detection_rules/has_touch_support.yaml?raw';
-import hasPermissionsApiYaml from './detection_rules/has_permissions_api.yaml?raw';
-import hasBatteryApiYaml from './detection_rules/has_battery_api.yaml?raw';
-import webglRendererYaml from './detection_rules/webgl_renderer.yaml?raw';
 
 // Parse each YAML file and combine
 const yamlFiles = [
@@ -42,11 +38,7 @@ const yamlFiles = [
   networkInfoYaml,
   fingerprintjsDataYaml,
   canvasFingerprintYaml,
-  clientjsDataYaml,
-  hasTouchSupportYaml,
-  hasPermissionsApiYaml,
-  hasBatteryApiYaml,
-  webglRendererYaml
+  clientjsDataYaml
 ];
 
 export const features: DetectionFeature[] = yamlFiles.flatMap(file => {
