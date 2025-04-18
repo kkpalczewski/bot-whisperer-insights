@@ -1,10 +1,11 @@
+
 - id: browser_features
   name: Browser Features
   codeName: browser_features
   type: object
   code: |
     {
-      user_agent: navigator.userAgent,
+      user_agent: navigator.userAgent.toString(),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       audio_context: (() => {
         try {
