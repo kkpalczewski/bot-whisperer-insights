@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
 import { Code, AlertTriangle, Package, Info } from 'lucide-react';
@@ -32,9 +31,9 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const [hasError, setHasError] = useState(false);
   const [codeVisible, setCodeVisible] = useState(false);
 
-  const formatValue = (val: any): string => {
+  const formatValue = (val: any): string | boolean => {
     if (val === null || val === undefined) return 'Not available';
-    if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+    if (typeof val === 'boolean') return val; // Return native boolean
     if (Array.isArray(val)) return val.join(', ');
     if (typeof val === 'object') return JSON.stringify(val);
     return String(val);

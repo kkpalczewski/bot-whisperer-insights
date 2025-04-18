@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 
 interface FeatureTableRowProps {
   feature: string;
-  value: string;
+  value: string | boolean;
   parent: string;
   isExpanded?: boolean;
   hasChildren?: boolean;
@@ -14,8 +14,8 @@ interface FeatureTableRowProps {
   level?: number;
 }
 
-const getTypeIcon = (value: string) => {
-  if (value === 'true' || value === 'false' || value === 'Yes' || value === 'No') 
+const getTypeIcon = (value: string | boolean) => {
+  if (typeof value === 'boolean') 
     return <FileCode className="h-4 w-4 text-blue-400" />;
   if (!isNaN(Number(value))) 
     return <FileText className="h-4 w-4 text-green-400" />;
@@ -60,7 +60,7 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
         {getTypeIcon(value)}
       </TableCell>
       <TableCell className="p-2 w-1/3 font-mono text-xs font-medium text-white">
-        {value}
+        {typeof value === 'boolean' ? value.toString() : value}
       </TableCell>
       <TableCell className="p-2 w-1/6 text-xs text-gray-400">
         {parent}
