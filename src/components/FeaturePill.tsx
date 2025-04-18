@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
-import { ChevronDown, Code, AlertTriangle, Package, Info } from 'lucide-react';
+import { ChevronDown, Code, AlertTriangle, Package, Info, Hash, Type, List, FileJson } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +18,19 @@ interface FormattedValue {
   raw: any;
   error?: string;
 }
+
+const getTypeIcon = (type: string) => {
+  switch (type) {
+    case 'number':
+      return <Hash className="h-3 w-3 text-blue-400" />;
+    case 'array':
+      return <List className="h-3 w-3 text-green-400" />;
+    case 'object':
+      return <FileJson className="h-3 w-3 text-purple-400" />;
+    default:
+      return <Type className="h-3 w-3 text-gray-400" />;
+  }
+};
 
 export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const [value, setValue] = useState<FormattedValue>({ display: 'Evaluating...', raw: null });
@@ -45,9 +58,16 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
             raw: val
           };
         case 'object':
+          if (typeof val !== 'object') {
+            return {
+              display: 'Invalid object',
+              raw: null,
+              error: 'Expected object but got ' + typeof val
+            };
+          }
           return {
-            display: typeof val === 'object' ? `{${Object.keys(val).length} properties}` : String(val),
-            raw: typeof val === 'object' ? val : { value: val }
+            display: formatNestedObject(val),
+            raw: val
           };
         case 'number':
           const num = Number(val);
@@ -78,6 +98,21 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
         error: (err as Error).message
       };
     }
+  };
+
+  const formatNestedObject = (obj: any, prefix = ''): string => {
+    if (!obj || typeof obj !== 'object') return String(obj);
+    
+    const entries = Object.entries(obj);
+    if (entries.length === 0) return '{}';
+    
+    return entries.map(([key, value]) => {
+      const fullKey = prefix ? `${prefix}.${key}` : key;
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        return formatNestedObject(value, fullKey);
+      }
+      return `${fullKey}: ${JSON.stringify(value)}`;
+    }).join(' | ');
   };
 
   useEffect(() => {
@@ -167,22 +202,30 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const renderNestedValues = () => {
     if (!feature.outputs || !value.raw) return null;
     
-    return (
-      <div className="grid gap-0 mt-1">
-        {Object.entries(feature.outputs).map(([key, output]) => {
-          const outputValue = value.raw[key];
-          const isUndefined = outputValue === undefined || outputValue === null;
-          
+    const renderNestedObject = (obj: any, prefix = '') => {
+      return Object.entries(obj).map(([key, val]) => {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        const isObject = val && typeof val === 'object' && !Array.isArray(val);
+        
+        if (isObject) {
           return (
-            <div key={key} className="flex justify-between items-center p-1 hover:bg-gray-800/50 rounded">
-              <span className="font-mono text-xs text-gray-400">{feature.codeName}.{key}</span>
-              <div className="flex items-center gap-2">
-                <span className={`font-mono text-xs ${isUndefined ? 'text-gray-500' : 'text-gray-200'}`}>
-                  {isUndefined ? 'undefined' : 
-                   typeof outputValue === 'object' ? 
-                     JSON.stringify(outputValue).substring(0, 20) + "..." : 
-                     String(outputValue)}
-                </span>
+            <div key={fullKey} className="ml-4">
+              <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
+                {fullKey}:
+              </div>
+              {renderNestedObject(val, fullKey)}
+            </div>
+          );
+        }
+
+        return (
+          <div key={fullKey} className="flex justify-between items-center p-1 hover:bg-gray-800/50 rounded ml-4">
+            <span className="font-mono text-xs text-gray-400">{fullKey}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs text-gray-200">
+                {JSON.stringify(val)}
+              </span>
+              {feature.outputs?.[key] && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -191,15 +234,31 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="right">
-                      <p className="text-xs">{output.description}</p>
-                      <p className="text-xs text-gray-400 mt-1">Type: {output.type}</p>
+                      <p className="text-xs">{feature.outputs[key].description}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              </div>
+              )}
             </div>
-          );
-        })}
+          </div>
+        );
+      });
+    };
+
+    return (
+      <div className="grid gap-0 mt-1">
+        {renderNestedObject(value.raw)}
+      </div>
+    );
+  };
+
+  const renderSimpleValue = () => {
+    if (!value.raw) return null;
+    
+    return (
+      <div className="font-mono text-xs">
+        <span className="text-gray-400">{feature.codeName}:</span>
+        <span className="ml-2 text-gray-200">{value.display}</span>
       </div>
     );
   };
@@ -209,7 +268,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="p-2 cursor-pointer space-y-0" onClick={() => setIsOpen(!isOpen)}>
           <div className="flex items-center justify-between">
-            <div className="grid grid-cols-[200px_120px_1fr] gap-4 items-center w-full">
+            <div className="grid grid-cols-[200px_auto_1fr] gap-4 items-center w-full">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-medium truncate">
                   {hasError && <AlertTriangle size={14} className="inline text-yellow-500 mr-1" />}
@@ -219,9 +278,9 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
                   )}
                 </h3>
               </div>
-              <Badge className={`${categoryColor[feature.category]} text-xs w-fit`}>
-                {feature.category}
-              </Badge>
+              <div className="flex items-center gap-1">
+                {getTypeIcon(feature.type)}
+              </div>
               <div className="flex items-center justify-between w-full">
                 {isLoading ? (
                   <span className="text-gray-400 text-xs">Loading...</span>
@@ -240,13 +299,10 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
                   </TooltipProvider>
                 ) : feature.outputs ? (
                   <div className="font-mono text-xs bg-gray-800 px-2 py-1 rounded max-w-full overflow-hidden">
-                    {/* Inline display of nested features */}
-                    {renderNestedValues()}
+                    {value.display}
                   </div>
                 ) : (
-                  <div className="font-mono text-xs bg-gray-800 px-2 py-1 rounded max-h-24 overflow-y-auto break-all">
-                    <pre className="whitespace-pre-wrap">{value.display}</pre>
-                  </div>
+                  renderSimpleValue()
                 )}
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-2 flex-shrink-0">
