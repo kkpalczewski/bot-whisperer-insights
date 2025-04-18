@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => ({
     },
   },
   assetsInclude: ['**/*.yaml'],
+  optimizeDeps: {
+    exclude: ['glob'], // Exclude glob from optimization to prevent browser compatibility issues
+  },
   server: {
     host: "::",
     port: 8080,
