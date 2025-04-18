@@ -57,8 +57,20 @@ export const FormattedValue: React.FC<{
     if (value === 'false') {
       return <span className="text-red-400">false</span>;
     }
+    
+    // Handle specific string types like user_agent and webglRenderer
+    if (value.includes('Mozilla') || 
+        value.includes('Chrome') || 
+        value.includes('Firefox') || 
+        value.includes('Safari') || 
+        value.includes('ANGLE') || 
+        value.includes('WebGL') || 
+        value.includes('Intel') || 
+        value.includes('NVIDIA')) {
+      return <span className="text-green-400">"{value}"</span>;
+    }
   }
 
-  // Default case: treat as string (for user_agent and other string values)
-  return <span className="text-orange-400">{value}</span>;
+  // Default case: treat as string (for other string values)
+  return <span className="text-orange-400">"{value}"</span>;
 };
