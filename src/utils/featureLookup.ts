@@ -58,82 +58,44 @@ export const findFeatureInfo = (
       if (foundMatch) break;
     }
     
-    // Specifically handle ClientJS and similar libraries with dependencies
-    if (feature.dependency && id.includes(feature.dependency)) {
-      // Extract dependency name and the path that follows
-      const dependencyName = feature.dependency;
+    // Handle ClientJS and other library with dependency field
+    if (feature.dependency && id.includes(feature.codeName)) {
+      // First check for exact property path in feature outputs
+      let pathSegments = id.split('.');
       
-      // Handle format like "clientjs_fingerprint.device.os"
-      if (id.includes(dependencyName)) {
-        const parts = id.split('.');
-        // Find where in the path our dependency is located
-        const depIndex = parts.findIndex(part => part.includes(dependencyName));
+      // For clientjs_fingerprint.device.os we need to correctly handle these nested properties
+      if (pathSegments.length >= 3 && feature.outputs) {
+        let rootPropertyName = pathSegments[1]; // e.g. 'device'
+        let nestedPropertyName = pathSegments[2]; // e.g. 'os'
         
-        if (depIndex !== -1) {
-          // Get segments after the dependency part
-          const pathSegments = parts.slice(depIndex + 1);
-          
-          // If there are no segments after dependency, use the feature itself
-          if (pathSegments.length === 0) {
+        // Check if root property exists in outputs
+        if (feature.outputs[rootPropertyName]) {
+          // Check if this root property has its own outputs
+          if (feature.outputs[rootPropertyName].outputs) {
+            // Find the nested property
+            let nestedOutput = feature.outputs[rootPropertyName].outputs?.[nestedPropertyName];
+            
+            if (nestedOutput) {
+              description = nestedOutput.description;
+              abuseIndication = nestedOutput.abuse_indication?.bot;
+              featureDefinition = feature;
+              break;
+            }
+          } else {
+            // Just use the root property's description if nested is not found
+            description = feature.outputs[rootPropertyName].description;
+            abuseIndication = feature.outputs[rootPropertyName].abuse_indication?.bot;
             featureDefinition = feature;
-            description = feature.description;
-            abuseIndication = feature.abuse_indication?.bot;
             break;
           }
-          
-          // Navigate through the feature outputs structure
-          if (feature.outputs) {
-            let currentOutput = feature.outputs;
-            let foundNestedProperty = false;
-            
-            // Handle first level (like "device")
-            const firstSegment = pathSegments[0];
-            if (currentOutput[firstSegment]) {
-              if (pathSegments.length === 1) {
-                // If we only have one path segment like ".device"
-                description = currentOutput[firstSegment].description;
-                abuseIndication = currentOutput[firstSegment].abuse_indication?.bot;
-                featureDefinition = feature;
-                foundNestedProperty = true;
-              } else if (currentOutput[firstSegment].outputs) {
-                // Move to second level and beyond
-                currentOutput = currentOutput[firstSegment].outputs;
-                
-                // Continue with remaining segments
-                let currentLevel = currentOutput;
-                let foundMatch = true;
-                
-                for (let i = 1; i < pathSegments.length; i++) {
-                  const segment = pathSegments[i];
-                  
-                  if (currentLevel[segment]) {
-                    if (i === pathSegments.length - 1) {
-                      // Found the match at the end of the path
-                      description = currentLevel[segment].description;
-                      abuseIndication = currentLevel[segment].abuse_indication?.bot;
-                      featureDefinition = feature;
-                      foundNestedProperty = true;
-                      break;
-                    }
-                    
-                    // Continue to next level if it exists
-                    if (currentLevel[segment].outputs) {
-                      currentLevel = currentLevel[segment].outputs;
-                    } else {
-                      foundMatch = false;
-                      break;
-                    }
-                  } else {
-                    foundMatch = false;
-                    break;
-                  }
-                }
-              }
-            }
-            
-            if (foundNestedProperty) break;
-          }
         }
+      }
+      
+      // If we didn't find the specific property, use the parent feature info
+      if (!description) {
+        description = feature.description;
+        abuseIndication = feature.abuse_indication?.bot;
+        featureDefinition = feature;
       }
     }
   }

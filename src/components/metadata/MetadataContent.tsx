@@ -20,11 +20,13 @@ interface MetadataContentProps {
 
 export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   const value = props.value === undefined ? 'undefined' : String(props.value);
+  
+  // Find feature info using the full path ID
   const { description, abuseIndication } = findFeatureInfo(features, props.id);
   
   return (
     <div className="space-y-3">
-      <MetadataSection title={props.feature}>
+      <MetadataSection title="Feature">
         <h3 className="text-lg font-mono mb-2">{props.feature}</h3>
       </MetadataSection>
 
