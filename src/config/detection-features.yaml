@@ -15,17 +15,17 @@ detectionFeatures:
     description: Human users typically have consistent language preferences set in their browsers. Bots may have missing or inconsistent language settings.
     category: browser
     
-  - id: time_zone
+  - id: timezone
     name: Time Zone
-    codeName: time_zone
+    codeName: timezone
     type: string
     code: Intl.DateTimeFormat().resolvedOptions().timeZone
     description: The browser time zone can be compared with the IP geolocation. Mismatches can indicate bot activity or VPN usage.
     category: browser
     
-  - id: screen_size
+  - id: screen_resolution
     name: Screen Resolution
-    codeName: screen_size
+    codeName: screen_resolution
     type: object
     code: "{ width: screen.width, height: screen.height, colorDepth: screen.colorDepth }"
     description: Bots often report common or unrealistic screen dimensions. Headless browsers may have unusual resolutions.
@@ -39,9 +39,9 @@ detectionFeatures:
     description: The presence and variety of plugins can help identify real browsers. Bots typically have few or no plugins.
     category: browser
     
-  - id: webgl_info
-    name: WebGL Fingerprint
-    codeName: webgl_info
+  - id: webgl_renderer
+    name: WebGL Renderer
+    codeName: webgl_renderer
     type: string
     code: "const canvas = document.createElement('canvas'); const gl = canvas.getContext('webgl'); gl?.getExtension('WEBGL_debug_renderer_info') ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : null"
     description: WebGL renderer information can identify the graphics hardware. This is difficult for bots to spoof accurately.
@@ -71,11 +71,11 @@ detectionFeatures:
     description: The amount of RAM available can help identify device capabilities. This is often spoofed or unavailable in bot environments.
     category: hardware
     
-  - id: touch_support
+  - id: has_touch_support
     name: Touch Support
-    codeName: touch_support
-    type: object
-    code: "{ maxTouchPoints: navigator.maxTouchPoints, touchEvent: 'ontouchstart' in window, touchPoints: navigator.maxTouchPoints > 0 }"
+    codeName: has_touch_support
+    type: boolean
+    code: "('ontouchstart' in window)"
     description: Touch capabilities can indicate device type. Inconsistencies between touch support and device type may indicate spoofing.
     category: hardware
     
@@ -95,28 +95,20 @@ detectionFeatures:
     description: Support for modern browser features can help identify outdated browsers or simplified bot environments that lack full feature sets.
     category: browser
     
-  - id: audio_context
-    name: Audio Context Fingerprint
-    codeName: audio_context
-    type: string
-    code: "(() => { try { const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)(); return { sampleRate: audioCtx.sampleRate, state: audioCtx.state, baseLatency: audioCtx.baseLatency || 'N/A' }; } catch (e) { return 'Not available'; } })()"
-    description: The audio processing capabilities of a device can create a unique fingerprint. Bots typically have limited or non-standard audio capabilities.
+  - id: has_audio_context
+    name: Audio Context Available
+    codeName: has_audio_context
+    type: boolean
+    code: "(() => { try { return !!(window.AudioContext || (window as any).webkitAudioContext); } catch (e) { return false; } })()"
+    description: The audio processing capabilities indicate if a device has proper audio support. Bots typically have limited or non-standard audio capabilities.
     category: fingerprinting
     
-  - id: fonts_detection
-    name: System Fonts Detection
-    codeName: fonts_detection
-    type: object
-    code: "(() => { const baseFonts = ['monospace', 'sans-serif', 'serif']; const testString = 'mmMMwWLliI0O&1'; const testSize = '72px'; const h = document.getElementsByTagName('body')[0]; if (!h) return 'No body element'; const s = document.createElement('span'); s.style.fontSize = testSize; s.innerHTML = testString; const defaultWidth = {}; const defaultHeight = {}; for (const font of baseFonts) { s.style.fontFamily = font; h.appendChild(s); defaultWidth[font] = s.offsetWidth; defaultHeight[font] = s.offsetHeight; h.removeChild(s); } return { baseFonts, defaultWidth, defaultHeight }; })()"
-    description: The fonts available on a system can be detected and used for fingerprinting. Bots often have limited or standard sets of fonts compared to real user devices.
-    category: fingerprinting
-    
-  - id: navigator_permissions
-    name: Permissions API
-    codeName: navigator_permissions
-    type: string
-    code: "(() => { if (navigator.permissions) { return 'Permissions API available'; } return 'Permissions API not available'; })()"
-    description: The Permissions API can reveal what permissions the browser has and whether it supports the modern Permissions API at all. Bots may lack this capability.
+  - id: has_permissions_api
+    name: Permissions API Available
+    codeName: has_permissions_api
+    type: boolean
+    code: "!!navigator.permissions"
+    description: The Permissions API availability indicates if the browser supports modern permission features. Bots may lack this capability.
     category: browser
     
   - id: do_not_track
@@ -127,12 +119,12 @@ detectionFeatures:
     description: The Do Not Track setting in the browser can be used as a signal. Most users don't change this from default, so unusual patterns may indicate bot behavior.
     category: browser
     
-  - id: battery_status
-    name: Battery Status
-    codeName: battery_status
-    type: string
-    code: "(() => { if ((navigator as any).getBattery) { return 'Battery API available'; } return 'Battery API not available'; })()"
-    description: Real devices have battery information. The presence of the Battery API and changing battery states can help identify real devices vs. emulated environments.
+  - id: has_battery_api
+    name: Battery API Available
+    codeName: has_battery_api
+    type: boolean
+    code: "!!(navigator as any).getBattery"
+    description: Real devices have battery information. The presence of the Battery API helps identify real devices vs. emulated environments.
     category: hardware
 
 fingerprintingLibraries:

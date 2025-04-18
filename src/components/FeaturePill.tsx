@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DetectionFeature } from '@/config/detectionFeatures';
 import { ChevronDown, Code, AlertTriangle } from 'lucide-react';
@@ -103,7 +102,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="p-4 cursor-pointer space-y-0" onClick={() => setIsOpen(!isOpen)}>
           <div className="flex items-center justify-between">
-            <div className="grid grid-cols-[200px_120px_100px_1fr] gap-4 items-center w-full">
+            <div className="grid grid-cols-[200px_120px_1fr] gap-4 items-center w-full">
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-medium truncate">
                   {hasError && <AlertTriangle size={14} className="inline text-yellow-500 mr-1" />}
@@ -113,9 +112,6 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
               <Badge className={`${categoryColor[feature.category]} text-xs w-fit`}>
                 {feature.category}
               </Badge>
-              <code className="text-xs bg-gray-900 px-2 py-1 rounded">
-                {feature.type}
-              </code>
               <div className="flex items-center justify-between w-full">
                 <div className="font-mono text-xs bg-gray-800 px-2 py-1 rounded max-h-24 overflow-y-auto break-all">
                   <pre className="whitespace-pre-wrap">{value?.display || String(value)}</pre>
@@ -132,6 +128,10 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
         
         <CollapsibleContent>
           <CardContent className="p-4 pt-0 space-y-2">
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <code className="text-xs bg-gray-900 px-2 py-1 rounded">{feature.codeName}</code>
+              <code className="text-xs bg-gray-900 px-2 py-1 rounded">{feature.type}</code>
+            </div>
             <p className="text-sm text-gray-400">{feature.description}</p>
             <div className="bg-gray-800 p-3 rounded flex items-start gap-2">
               <Code size={16} className="mt-1 text-gray-400" />
