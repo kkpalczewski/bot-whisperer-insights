@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronDown } from 'lucide-react';
@@ -13,76 +14,33 @@ interface ValueCellProps {
 export const ValueCell: React.FC<ValueCellProps> = ({ value, error, expectedType }) => {
   const [isValueExpanded, setIsValueExpanded] = useState(false);
   
-  const rawValue = value === undefined ? 'undefined' : String(value);
-  let parsedValue = rawValue;
-
-  try {
-    // Attempt to parse the value based on expectedType
-    if (expectedType === 'boolean') {
-      parsedValue = String(value === 'true' || value === true);
-    } else if (expectedType === 'number' && !isNaN(Number(value))) {
-      parsedValue = String(Number(value));
-    } else if (expectedType === 'object' && typeof value === 'string') {
-      try {
-        const parsed = JSON.parse(value);
-        parsedValue = JSON.stringify(parsed, null, 2);
-      } catch {
-        // If parsing fails, keep the raw value
-        parsedValue = rawValue;
-      }
-    }
-  } catch {
-    // If any parsing fails, keep the raw value
-    parsedValue = rawValue;
-  }
+  // Simple conversion to string to ensure we're working with a string
+  const stringValue = value === undefined ? 'undefined' : String(value);
   
-  const lines = parsedValue.split('\n');
-  const isLongValue = lines.length > 3 || parsedValue.length > 150;
+  const lines = stringValue.split('\n');
+  const isLongValue = lines.length > 3 || stringValue.length > 150;
   
-  let displayValue = parsedValue;
+  let displayValue = stringValue;
   if (isLongValue && !isValueExpanded) {
     if (lines.length > 3) {
       displayValue = lines.slice(0, 3).join('\n') + '\n...';
-    } else if (parsedValue.length > 150) {
-      displayValue = parsedValue.slice(0, 150) + '...';
+    } else if (stringValue.length > 150) {
+      displayValue = stringValue.slice(0, 150) + '...';
     }
   }
 
   return (
     <div className="relative">
-      <div className="flex items-start gap-2">
-        <div className="flex-1">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <pre className="text-xs font-mono whitespace-pre-wrap break-all font-semibold max-h-24 overflow-y-auto">
-                  <FormattedValue value={displayValue} expectedType={expectedType} />
-                </pre>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" align="start" className="max-w-md">
-                <div className="space-y-1">
-                  <div className="text-xs text-gray-400">Raw value:</div>
-                  <pre className="text-xs font-mono whitespace-pre-wrap break-all">
-                    {rawValue}
-                  </pre>
-                  {rawValue !== parsedValue && (
-                    <>
-                      <div className="text-xs text-gray-400">Parsed value:</div>
-                      <pre className="text-xs font-mono whitespace-pre-wrap break-all">
-                        {parsedValue}
-                      </pre>
-                    </>
-                  )}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+      <div className="flex items-start">
+        <pre className="text-xs font-mono whitespace-pre-wrap break-all font-semibold">
+          <FormattedValue value={displayValue} expectedType={expectedType} />
+        </pre>
+        
         {isLongValue && (
           <Button
             variant="ghost"
             size="icon"
-            className="h-5 w-5 p-0 flex-shrink-0"
+            className="h-5 w-5 p-0 ml-1 flex-shrink-0"
             onClick={() => setIsValueExpanded(!isValueExpanded)}
           >
             {isValueExpanded ? (
@@ -93,6 +51,7 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, error, expectedType
           </Button>
         )}
       </div>
+      
       {error && (
         <div className="mt-1">
           <span className="text-xs text-red-400">{error}</span>
