@@ -20,7 +20,7 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({ node, onToggle
     <tr className="border-t border-gray-800 hover:bg-gray-900/50">
       <td className="py-2 pl-4 pr-2 align-top">
         <FeatureCell
-          name={feature}
+          feature={feature}
           level={level}
           hasChildren={node.children.length > 0}
           isExpanded={node.isExpanded}

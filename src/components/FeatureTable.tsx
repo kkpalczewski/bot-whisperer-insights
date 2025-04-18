@@ -20,25 +20,17 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
       <TableHeader>
         <TableRow className="border-b border-gray-800">
           <TableHead className="w-[45%] font-medium text-xs py-2">Feature</TableHead>
-          <TableHead className="w-[5%] py-2"></TableHead>
-          <TableHead className="w-[35%] font-medium text-xs py-2">Value</TableHead>
           <TableHead className="w-[15%] font-medium text-xs py-2">Parent</TableHead>
+          <TableHead className="w-[35%] font-medium text-xs py-2">Value</TableHead>
+          <TableHead className="w-[5%] py-2"></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {nodes.map((node) => (
           <FeatureTableRow
             key={node.id}
-            feature={node.feature}
-            value={node.value}
-            parent={node.parent}
-            isExpanded={node.isExpanded}
-            hasChildren={node.children.length > 0}
-            onToggle={() => onToggleNode(node.id)}
-            level={node.level}
-            error={node.error}
-            description={node.description}
-            isTruncated={node.isTruncated}
+            node={node}
+            onToggle={onToggleNode}
           />
         ))}
         {nodes.length === 0 && (
