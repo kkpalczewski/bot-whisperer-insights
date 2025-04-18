@@ -45,9 +45,11 @@ const formatValue = (val: any, error?: string): string | boolean | undefined => 
   return String(val);
 };
 
-const getParentName = (path: string, dependency?: string): string => {
-  if (dependency) return dependency;
-  return path.split('.')[0];
+// Calculate the parent path correctly for nested structures
+const getParentPath = (path: string): string => {
+  const parts = path.split('.');
+  if (parts.length <= 1) return ""; // No parent if it's a top-level feature
+  return parts.slice(0, -1).join('.'); // Return everything except the last part
 };
 
 export const useFeatureTree = (feature: DetectionFeature) => {
@@ -66,10 +68,10 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     if (!value || typeof value !== 'object' || Array.isArray(value)) {
       return [{
         id: path,
-        feature: path,
+        feature: path.split('.').pop() || path,
         value: formatValue(value, error),
         type: feature.type,
-        parent: getParentName(path, feature.dependency),
+        parent: getParentPath(path),
         level,
         children: [],
         isExpanded: false,
@@ -91,7 +93,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
           feature: key,
           value: formatValue(val, error),
           type: dataType,
-          parent: getParentName(path, feature.dependency),
+          parent: path, // Parent is the current path without the feature name
           level,
           children,
           isExpanded: false,
@@ -105,7 +107,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         feature: key,
         value: formatValue(val, error),
         type: dataType,
-        parent: getParentName(path, feature.dependency),
+        parent: path, // Parent is the current path without the feature name
         level,
         children: [],
         isExpanded: false,

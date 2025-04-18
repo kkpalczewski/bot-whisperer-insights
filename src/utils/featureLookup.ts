@@ -1,4 +1,3 @@
-
 import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
 
 interface FeatureInfo {
@@ -17,83 +16,52 @@ export const findFeatureInfo = (
 
   // Look through all features to find the specific one
   for (const feature of features) {
-    // Special handling for clientjs_fingerprint features
-    if (feature.codeName === 'clientjs_fingerprint' && id.startsWith('clientjs')) {
-      // Extract the path after "clientjs."
-      const pathAfterPrefix = id.replace('clientjs.', '');
+    // Check if this ID starts with the feature codeName (like "clientjs.device.os" starts with "clientjs")
+    if (id.startsWith(feature.codeName)) {
+      // Get the path after the feature codeName (e.g., "device.os" from "clientjs.device.os")
+      const pathAfterPrefix = id.substring(feature.codeName.length + 1);
       
-      // Handle nested paths like "device.os"
-      if (pathAfterPrefix.includes('.')) {
-        const parts = pathAfterPrefix.split('.');
-        if (parts.length === 2 && feature.outputs) {
-          const [parent, child] = parts;
-          
-          // Check if parent exists and has outputs
-          if (feature.outputs[parent] && feature.outputs[parent].outputs && 
-              feature.outputs[parent].outputs[child]) {
-            description = feature.outputs[parent].outputs[child].description;
-            abuseIndication = feature.outputs[parent].outputs[child].abuse_indication?.bot;
-            featureDefinition = feature;
-            break;
-          }
-        }
-      }
-      // Handle direct properties like "os", "device", etc.
-      else if (feature.outputs && feature.outputs[pathAfterPrefix]) {
-        description = feature.outputs[pathAfterPrefix].description;
-        abuseIndication = feature.outputs[pathAfterPrefix].abuse_indication?.bot;
+      // If there's no path after the prefix, it's the top-level feature itself
+      if (!pathAfterPrefix) {
         featureDefinition = feature;
-        break;
-      }
-      
-      // If we didn't find specific info, use the parent feature info
-      if (!description) {
         description = feature.description;
         abuseIndication = feature.abuse_indication?.bot;
-        featureDefinition = feature;
         break;
       }
-    }
-    
-    // Check if this is a top-level feature
-    if (id === feature.codeName) {
-      featureDefinition = feature;
-      description = feature.description;
-      abuseIndication = feature.abuse_indication?.bot;
-      break;
-    }
-    
-    // Check if this is a sub-property of a feature with outputs
-    if (feature.outputs && id.startsWith(feature.codeName + '.')) {
-      const path = id.substring(feature.codeName.length + 1).split('.');
-      let currentOutput = feature.outputs;
-      let currentPath = feature.codeName;
-      let foundMatch = true;
       
-      // Traverse the outputs object based on the ID path
-      for (const segment of path) {
-        currentPath += '.' + segment;
-        if (currentOutput[segment]) {
-          if (currentPath === id) {
-            description = currentOutput[segment].description;
-            abuseIndication = currentOutput[segment].abuse_indication?.bot;
-            featureDefinition = feature;
-            foundMatch = true;
-            break;
-          }
-          if (currentOutput[segment].outputs) {
-            currentOutput = currentOutput[segment].outputs;
+      // Handle nested paths (could be multiple levels deep like "device.os")
+      if (feature.outputs) {
+        const pathParts = pathAfterPrefix.split('.');
+        let currentOutput = feature.outputs;
+        let found = true;
+        
+        // Navigate through each level of the path
+        for (let i = 0; i < pathParts.length; i++) {
+          const part = pathParts[i];
+          if (currentOutput[part]) {
+            // If this is the last part of the path, we've found our target
+            if (i === pathParts.length - 1) {
+              description = currentOutput[part].description;
+              abuseIndication = currentOutput[part].abuse_indication?.bot;
+              featureDefinition = feature;
+              break;
+            }
+            // Otherwise, go deeper if there are more outputs
+            if (currentOutput[part].outputs) {
+              currentOutput = currentOutput[part].outputs;
+            } else {
+              // Can't go deeper, so we didn't find a match
+              found = false;
+              break;
+            }
           } else {
-            foundMatch = false;
+            found = false;
             break;
           }
-        } else {
-          foundMatch = false;
-          break;
         }
+        
+        if (found) break;
       }
-      
-      if (foundMatch) break;
     }
   }
 
