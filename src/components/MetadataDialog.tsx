@@ -139,10 +139,8 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
       <HoverCard>
         <Drawer 
           open={isOpen} 
-          onChange={setIsOpen}
-          shouldScaleBackground={false} 
-          direction="right" 
-          modal={false}
+          onOpenChange={setIsOpen}
+          shouldScaleBackground={false}
         >
           <DrawerTrigger asChild>
             <HoverCardTrigger asChild>
