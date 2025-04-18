@@ -112,6 +112,76 @@ detectionFeatures:
         abuse_indication:
           bot: Round number ratios or values inconsistent with the claimed device type can reveal emulated displays.
 
+  - id: clientjs_fingerprint
+    name: ClientJS Fingerprint
+    codeName: clientjs_fingerprint
+    type: object
+    code: "async () => { const fp = await new ClientJS(); return { browser: { name: fp.getBrowser(), version: fp.getBrowserVersion(), engine: fp.getEngine(), engineVersion: fp.getEngineVersion() }, device: { os: fp.getOS(), osVersion: fp.getOSVersion(), device: fp.getDevice(), deviceType: fp.getDeviceType(), deviceVendor: fp.getDeviceVendor() }, fingerprint: fp.getFingerprint(), isIncognito: fp.isIncognito(), browserSpoofed: fp.getBrowserMajorVersion() !== parseInt(fp.getBrowser().split(' ')[1]) }; }"
+    description: Comprehensive browser and device fingerprinting using ClientJS
+    abuse_indication:
+      bot: Combined fingerprinting data can reveal patterns of automated behavior, spoofed browsers, and virtual environments.
+    category: fingerprinting
+    dependency: clientjs
+    outputs:
+      browser:
+        name: Browser Information
+        type: object
+        description: Detailed browser information
+        outputs:
+          name:
+            name: Browser Name
+            type: string
+            description: The name of the browser being used
+          version:
+            name: Browser Version
+            type: string
+            description: The version of the browser
+          engine:
+            name: Browser Engine
+            type: string
+            description: The browser's rendering engine
+          engineVersion:
+            name: Engine Version
+            type: string
+            description: The version of the browser engine
+      device:
+        name: Device Information
+        type: object
+        description: Information about the device and operating system
+        outputs:
+          os:
+            name: Operating System
+            type: string
+            description: The operating system name
+          osVersion:
+            name: OS Version
+            type: string
+            description: The operating system version
+          device:
+            name: Device
+            type: string
+            description: The device name
+          deviceType:
+            name: Device Type
+            type: string
+            description: The type of device (desktop, mobile, tablet)
+          deviceVendor:
+            name: Device Vendor
+            type: string
+            description: The manufacturer of the device
+      fingerprint:
+        name: Fingerprint Hash
+        type: string
+        description: Unique hash generated from browser characteristics
+      isIncognito:
+        name: Incognito Mode
+        type: boolean
+        description: Whether the browser is in incognito/private mode
+      browserSpoofed:
+        name: Browser Spoofed
+        type: boolean
+        description: Whether the browser information shows signs of spoofing
+
   - id: fingerprint_data
     name: Fingerprint Data
     codeName: fingerprint_data
