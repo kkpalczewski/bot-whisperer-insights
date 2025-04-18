@@ -1,14 +1,10 @@
 
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
-import { FileJson, FileCode, FileText, ChevronDown, ChevronRight } from 'lucide-react';
+import { FileJson, FileCode, FileText, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { MetadataDialog } from './MetadataDialog';
 
 interface FeatureTableRowProps {
   feature: string;
@@ -47,31 +43,43 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
     >
       <TableCell className="p-1 pl-4 w-1/2">
         <div className="flex items-center">
-          <div style={{ marginLeft: `${level * 16}px` }} className="flex items-center">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-5 w-5 p-0 mr-1"
-              onClick={onToggle}
-            >
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronRight className="h-4 w-4" />
-              )}
-            </Button>
-            <HoverCard>
-              <HoverCardTrigger>
-                <span className="font-mono text-xs text-gray-300 cursor-help">
-                  {feature}
-                </span>
-              </HoverCardTrigger>
-              {description && (
-                <HoverCardContent className="w-80">
-                  <p className="text-sm">{description}</p>
-                </HoverCardContent>
-              )}
-            </HoverCard>
+          <div style={{ marginLeft: `${level * 16}px` }} className="flex items-center gap-2">
+            {hasChildren && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-5 w-5 p-0"
+                onClick={onToggle}
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+            {!hasChildren && <div className="w-5" />}
+            <span className="font-mono text-xs text-gray-300">
+              {feature}
+            </span>
+            <MetadataDialog
+              feature={feature}
+              value={value}
+              parent={parent}
+              description={description}
+            />
+            {error && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <AlertTriangle size={16} className="text-yellow-500" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-xs max-w-xs text-red-400">{error}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
         </div>
       </TableCell>
@@ -79,22 +87,9 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
         {getTypeIcon(value)}
       </TableCell>
       <TableCell className="p-1 w-1/3 font-mono text-xs font-medium">
-        {error ? (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="text-gray-400">undefined</span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs text-red-400">{error}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        ) : (
-          <span className="text-white">
-            {value === undefined ? 'undefined' : (typeof value === 'boolean' ? value.toString() : value)}
-          </span>
-        )}
+        <span className={error ? 'text-gray-400' : 'text-white'}>
+          {value === undefined ? 'undefined' : (typeof value === 'boolean' ? value.toString() : value)}
+        </span>
       </TableCell>
       <TableCell className="p-1 w-1/6 text-xs text-gray-400">
         {parent}
