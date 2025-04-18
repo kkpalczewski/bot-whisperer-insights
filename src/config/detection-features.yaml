@@ -422,24 +422,3 @@ detectionFeatures:
       bot: Identical fingerprints across different sessions or rapid fingerprint changes can indicate bot farms or automated browsing.
     category: fingerprinting
     dependency: clientjs
-
-fingerprintingLibraries:
-  - id: fingerprintjs
-    name: FingerprintJS
-    description: Open-source visitor identification library that uses browser fingerprinting techniques
-    website: https://fingerprintjs.com/
-    features:
-      - Browser identification
-      - Hardware detection
-      - Visitor tracking
-      - Bot detection
-  
-  - id: clientjs
-    name: ClientJS
-    description: Device fingerprinting library that generates unique IDs based on browser attributes
-    website: https://clientjs.org/
-    features:
-      - Browser fingerprinting
-      - Device information
-      - Operating system detection
-      - Hardware profiling
