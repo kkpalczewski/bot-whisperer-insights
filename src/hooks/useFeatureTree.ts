@@ -26,7 +26,7 @@ const formatValue = (val: any, error?: string): string | boolean | undefined => 
 };
 
 const getParentName = (path: string, dependency?: string): string => {
-  if (dependency) return 'fingerprint_js';
+  if (dependency) return dependency;
   return path.split('.')[0];
 };
 
@@ -52,7 +52,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         level,
         children: [],
         isExpanded: false,
-        description: outputs?.description,
+        description: outputs?.description || feature.description,
         error
       }];
     }
@@ -65,26 +65,26 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         const children = buildFeatureTree(val, currentPath, level + 1, output?.outputs, error);
         return [{
           id: currentPath,
-          feature: currentPath,
+          feature: key,
           value: formatValue(val, error),
           parent: getParentName(path, feature.dependency),
           level,
           children,
           isExpanded: false,
-          description: output?.description,
+          description: output?.description || (level === 0 ? feature.description : undefined),
           error
         }];
       }
       
       return [{
         id: currentPath,
-        feature: currentPath,
+        feature: key,
         value: formatValue(val, error),
         parent: getParentName(path, feature.dependency),
         level,
         children: [],
         isExpanded: false,
-        description: output?.description,
+        description: output?.description || (level === 0 ? feature.description : undefined),
         error
       }];
     });
