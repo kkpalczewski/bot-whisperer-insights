@@ -1,4 +1,3 @@
-
 detectionFeatures:
   - id: browser_info
     name: Browser Information
@@ -99,9 +98,43 @@ detectionFeatures:
         type: number
         description: Confidence score of the fingerprint
       components:
-        name: Components
+        name: Components Data
         type: object
         description: Raw component values used for fingerprinting
+        outputs:
+          userAgent:
+            name: User Agent
+            type: string
+            description: Browser user agent string
+          webDriver:
+            name: Web Driver
+            type: boolean
+            description: Whether web driver is available
+          language:
+            name: Language
+            type: string
+            description: Browser language
+          platform:
+            name: Platform
+            type: string
+            description: Operating system platform
+          touchSupport:
+            name: Touch Support Details
+            type: object
+            description: Touch support capabilities
+            outputs:
+              maxTouchPoints:
+                name: Max Touch Points
+                type: number
+                description: Maximum number of touch points supported
+              touchEvent:
+                name: Touch Event Support
+                type: boolean
+                description: Whether touch events are supported
+              touchStart:
+                name: Touch Start Support
+                type: boolean
+                description: Whether touchstart event is supported
 
   - id: user_agent
     name: User Agent

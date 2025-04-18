@@ -45,6 +45,11 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       }
 
       switch (type) {
+        case 'boolean':
+          return {
+            display: val ? 'Yes' : 'No',
+            raw: val
+          };
         case 'array':
           if (!Array.isArray(val)) {
             return {
@@ -71,19 +76,21 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
           };
         case 'number':
           const num = Number(val);
+          if (isNaN(num)) {
+            return {
+              display: 'Invalid number',
+              raw: null,
+              error: 'Invalid number value'
+            };
+          }
           return {
-            display: isNaN(num) ? 'Invalid number' : num.toString(),
-            raw: isNaN(num) ? null : num
+            display: num.toString(),
+            raw: num
           };
         case 'string':
           return {
             display: String(val),
             raw: String(val)
-          };
-        case 'boolean':
-          return {
-            display: String(val),
-            raw: val
           };
         default:
           return {
@@ -103,16 +110,15 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const formatNestedObject = (obj: any, prefix = ''): string => {
     if (!obj || typeof obj !== 'object') return String(obj);
     
-    const entries = Object.entries(obj);
-    if (entries.length === 0) return '{}';
-    
-    return entries.map(([key, value]) => {
-      const fullKey = prefix ? `${prefix}.${key}` : key;
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        return formatNestedObject(value, fullKey);
-      }
-      return `${fullKey}: ${JSON.stringify(value)}`;
-    }).join(' | ');
+    return Object.entries(obj)
+      .map(([key, value]) => {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        if (value && typeof value === 'object' && !Array.isArray(value)) {
+          return formatNestedObject(value, fullKey);
+        }
+        return `${fullKey}: ${JSON.stringify(value)}`;
+      })
+      .join('\n');
   };
 
   useEffect(() => {
@@ -202,30 +208,35 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const renderNestedValues = () => {
     if (!feature.outputs || !value.raw) return null;
     
-    const renderNestedObject = (obj: any, prefix = '') => {
+    const renderNestedObject = (obj: any, outputs: Record<string, FeatureValue>, prefix = '') => {
       return Object.entries(obj).map(([key, val]) => {
-        const fullKey = prefix ? `${prefix}.${key}` : key;
-        const isObject = val && typeof val === 'object' && !Array.isArray(val);
+        const output = outputs[key];
+        if (!output) return null;
         
-        if (isObject) {
+        const fullKey = prefix ? `${prefix}.${key}` : key;
+        const isNested = val && typeof val === 'object' && !Array.isArray(val) && output.outputs;
+        
+        if (isNested && output.outputs) {
           return (
-            <div key={fullKey} className="ml-4">
-              <div className="flex items-center gap-2 text-gray-400 text-xs mb-1">
-                {fullKey}:
+            <div key={fullKey} className="space-y-1">
+              <div className="text-xs font-medium text-gray-400 mb-1">{output.name}:</div>
+              <div className="ml-4">
+                {renderNestedObject(val, output.outputs, fullKey)}
               </div>
-              {renderNestedObject(val, fullKey)}
             </div>
           );
         }
 
+        const formattedValue = formatValue(val, output.type);
+        
         return (
-          <div key={fullKey} className="flex justify-between items-center p-1 hover:bg-gray-800/50 rounded ml-4">
-            <span className="font-mono text-xs text-gray-400">{fullKey}</span>
+          <div key={fullKey} className="flex justify-between items-center py-1 hover:bg-gray-800/50 rounded">
+            <span className="font-mono text-xs text-gray-400">{output.name}</span>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs text-gray-200">
-                {JSON.stringify(val)}
+                {formattedValue.display}
               </span>
-              {feature.outputs?.[key] && (
+              {output.description && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -234,7 +245,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="right">
-                      <p className="text-xs">{feature.outputs[key].description}</p>
+                      <p className="text-xs">{output.description}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -246,8 +257,8 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
     };
 
     return (
-      <div className="grid gap-0 mt-1">
-        {renderNestedObject(value.raw)}
+      <div className="grid gap-1 mt-2">
+        {renderNestedObject(value.raw, feature.outputs)}
       </div>
     );
   };
@@ -256,9 +267,11 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
     if (!value.raw) return null;
     
     return (
-      <div className="font-mono text-xs">
-        <span className="text-gray-400">{feature.codeName}:</span>
-        <span className="ml-2 text-gray-200">{value.display}</span>
+      <div className="font-mono text-xs flex items-center gap-2">
+        <span className="text-gray-400">{feature.name}:</span>
+        <span className="text-gray-200">
+          {value.type === 'boolean' ? (value.raw ? 'Yes' : 'No') : value.display}
+        </span>
       </div>
     );
   };
