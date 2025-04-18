@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { MetadataDialog } from './MetadataDialog';
 import { Button } from './ui/button';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
 interface FeatureTableRowProps {
   feature: string;
@@ -74,13 +74,13 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
                 onClick={onToggle}
               >
                 {isExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-4 w-4 text-gray-400" />
                 ) : (
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
                 )}
               </Button>
             )}
-            <span className="text-sm font-mono truncate">{feature}</span>
+            <span className="text-sm font-mono text-gray-500 truncate">{feature}</span>
           </div>
         </div>
       </TableCell>
@@ -106,12 +106,12 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <pre className="text-xs font-mono whitespace-pre-wrap break-all text-gray-400 max-h-24 overflow-y-auto">
+                    <pre className="text-xs font-mono whitespace-pre-wrap break-all text-sky-300 font-semibold max-h-24 overflow-y-auto">
                       {displayValue}
                     </pre>
                   </TooltipTrigger>
                   <TooltipContent side="bottom" align="start" className="max-w-md">
-                    <pre className="text-xs font-mono whitespace-pre-wrap break-all max-h-60 overflow-y-auto">
+                    <pre className="text-xs font-mono whitespace-pre-wrap break-all max-h-60 overflow-y-auto text-sky-200">
                       {stringValue}
                     </pre>
                   </TooltipContent>
@@ -124,9 +124,9 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
                 onClick={() => setIsValueExpanded(!isValueExpanded)}
               >
                 {isValueExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
+                  <ChevronDown className="h-4 w-4 text-gray-400" />
                 ) : (
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
                 )}
               </Button>
             </div>
@@ -134,12 +134,12 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <pre className="text-xs font-mono whitespace-pre-wrap break-all text-gray-400">
+                  <pre className="text-xs font-mono whitespace-pre-wrap break-all text-sky-300 font-semibold">
                     {displayValue}
                   </pre>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" align="start">
-                  <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+                  <pre className="text-xs font-mono whitespace-pre-wrap break-all text-sky-200">
                     {stringValue}
                   </pre>
                 </TooltipContent>
