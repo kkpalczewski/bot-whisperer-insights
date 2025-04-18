@@ -4,7 +4,7 @@ import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
 import { Code, AlertTriangle, Package, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Table, TableBody, TableHeader, TableHead, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableHeader, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { safeEvaluate } from '@/utils/library-manager';
@@ -55,7 +55,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
         level,
         children: [],
         isExpanded: false,
-        description: outputs?.description
+        description: outputs?.description || undefined
       }];
     }
 
@@ -73,7 +73,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
           level,
           children,
           isExpanded: false,
-          description: output?.description
+          description: output?.description || undefined
         };
         return [node];
       }
@@ -86,7 +86,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
         level,
         children: [],
         isExpanded: false,
-        description: output?.description
+        description: output?.description || undefined
       }];
     });
   };
