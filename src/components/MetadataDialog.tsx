@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useEffect } from 'react';
 import {
   HoverCard,
   HoverCardContent,
@@ -12,15 +13,11 @@ import {
   DrawerTrigger,
   DrawerClose,
 } from "@/components/ui/drawer";
-import { Info, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { Info, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-// Global state to ensure only one drawer is open at a time
-const globalState = {
-  activeDrawerId: null as string | null,
-  setActiveDrawer: (id: string | null) => {},
-};
+import { MetadataContent } from './metadata/MetadataContent';
+import { useGlobalDrawer } from '@/hooks/useGlobalDrawer';
 
 interface MetadataDialogProps {
   feature: string;
@@ -34,116 +31,9 @@ interface MetadataDialogProps {
   isExpanded: boolean;
 }
 
-const MetadataContent: React.FC<MetadataDialogProps> = (props) => {
-  const [isValueExpanded, setIsValueExpanded] = useState(false);
-  const value = props.value === undefined ? 'undefined' : String(props.value);
-  const lines = value.split('\n');
-  const isLongValue = lines.length > 3 || value.length > 150;
-  const displayValue = isValueExpanded ? value : 
-    (lines.length > 3 ? lines.slice(0, 3).join('\n') + '\n...' : 
-      value.length > 150 ? value.slice(0, 150) + '...' : value);
-
-  return (
-    <div className="space-y-3">
-      <div>
-        <h3 className="text-lg font-mono mb-2">{props.feature}</h3>
-      </div>
-      
-      <div>
-        <h4 className="text-sm font-medium mb-1">ID</h4>
-        <p className="text-sm font-mono text-gray-400">{props.id}</p>
-      </div>
-
-      <div>
-        <h4 className="text-sm font-medium mb-1">Value</h4>
-        <div className="relative">
-          <p className="text-sm font-mono text-gray-400 whitespace-pre-wrap break-all">
-            {displayValue}
-          </p>
-          {isLongValue && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute -right-2 -top-2 h-6 w-6 p-0"
-              onClick={() => setIsValueExpanded(!isValueExpanded)}
-            >
-              {isValueExpanded ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
-            </Button>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <h4 className="text-sm font-medium mb-1">Parent</h4>
-        <p className="text-sm font-mono text-gray-400">{props.parent}</p>
-      </div>
-
-      {props.description && (
-        <div>
-          <h4 className="text-sm font-medium mb-1">Description</h4>
-          <p className="text-sm text-gray-400">{props.description}</p>
-        </div>
-      )}
-
-      {props.error && (
-        <div>
-          <h4 className="text-sm font-medium mb-1">Error</h4>
-          <p className="text-sm text-red-400">{props.error}</p>
-        </div>
-      )}
-
-      <div>
-        <h4 className="text-sm font-medium mb-1">Level</h4>
-        <p className="text-sm font-mono text-gray-400">{props.level}</p>
-      </div>
-
-      <div>
-        <h4 className="text-sm font-medium mb-1">Has Children</h4>
-        <p className="text-sm font-mono text-gray-400">{String(props.hasChildren)}</p>
-      </div>
-
-      <div>
-        <h4 className="text-sm font-medium mb-1">Is Expanded</h4>
-        <p className="text-sm font-mono text-gray-400">{String(props.isExpanded)}</p>
-      </div>
-    </div>
-  );
-};
-
 export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
-  const [isOpen, setIsOpen] = useState(false);
   const drawerId = `drawer-${props.id}`;
-  
-  // Handle global state to ensure only one drawer is open at a time
-  useEffect(() => {
-    const prevSetActiveDrawer = globalState.setActiveDrawer;
-    
-    globalState.setActiveDrawer = (id) => {
-      // Close this drawer if another one is opened
-      if (id && id !== drawerId && isOpen) {
-        setIsOpen(false);
-      }
-      // Update the global active drawer ID
-      globalState.activeDrawerId = id;
-      // Call the previous handler if it exists
-      if (prevSetActiveDrawer) prevSetActiveDrawer(id);
-    };
-    
-    return () => {
-      // Restore the previous handler when unmounting
-      globalState.setActiveDrawer = prevSetActiveDrawer;
-    };
-  }, [drawerId, isOpen]);
-  
-  // Handle opening the drawer
-  const handleOpen = () => {
-    setIsOpen(true);
-    globalState.setActiveDrawer(drawerId);
-  };
+  const { isOpen, setIsOpen, handleOpen } = useGlobalDrawer(drawerId);
   
   // Handle ESC key press to close drawer
   useEffect(() => {
@@ -155,7 +45,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   return (
     <div className="inline-block" style={{ position: 'relative', zIndex: 30 }}>
