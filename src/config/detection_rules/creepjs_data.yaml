@@ -1,0 +1,99 @@
+
+- id: creepjs_data
+  name: CreepJS Data
+  codeName: creepjs_data
+  type: object
+  code: |
+    async () => {
+      if (!window.CreepJS) {
+        throw new Error('CreepJS not available');
+      }
+      
+      const result = await window.CreepJS.get();
+      return {
+        fingerprint: result.fingerprint,
+        lies: {
+          detected: result.lies.detected,
+          score: result.lies.score
+        },
+        bot: result.bot,
+        stealth: result.stealth,
+        components: {
+          canvas: result.components.canvas,
+          audio: result.components.audio,
+          fonts: result.components.fonts,
+          webGL: result.components.webGL
+        }
+      };
+    }
+  description: Advanced fingerprinting and lie detection using CreepJS library
+  abuse_indication:
+    bot: Multiple indicators including browser lies, stealth techniques, and inconsistent component behavior reveal sophisticated automation attempts
+  category: fingerprinting
+  dependency: creepjs
+  outputs:
+    fingerprint:
+      name: Fingerprint Hash
+      type: string
+      description: Unique identifier based on browser characteristics
+      abuse_indication:
+        bot: Patterns in fingerprint generation or rapid changes can indicate bot rotation
+    lies:
+      name: Browser Lies
+      type: object
+      description: Detected browser lie patterns and trustworthiness score
+      outputs:
+        detected:
+          name: Lies Detected
+          type: boolean
+          description: Whether any browser lies were detected
+          abuse_indication:
+            bot: Direct indicator of browser spoofing or manipulation attempts
+        score:
+          name: Lie Score
+          type: number
+          description: Trustworthiness score based on detected lies
+          abuse_indication:
+            bot: Lower scores indicate higher likelihood of browser spoofing
+    bot:
+      name: Bot Detection
+      type: boolean
+      description: Whether the client is likely an automated bot
+      abuse_indication:
+        bot: Direct bot detection based on multiple fingerprinting factors
+    stealth:
+      name: Stealth Techniques
+      type: boolean
+      description: Detection of privacy tools or stealth techniques
+      abuse_indication:
+        bot: Use of stealth techniques often indicates attempts to hide automation
+    components:
+      name: Browser Components
+      type: object
+      description: Detailed component analysis
+      outputs:
+        canvas:
+          name: Canvas Analysis
+          type: object
+          description: Canvas rendering and modification detection
+          abuse_indication:
+            bot: Inconsistent or modified canvas behavior indicates tampering
+        audio:
+          name: Audio Context
+          type: object
+          description: Audio processing capabilities analysis
+          abuse_indication:
+            bot: Unusual audio context behavior can reveal headless browsers
+        fonts:
+          name: Font Detection
+          type: object
+          description: System and browser font analysis
+          abuse_indication:
+            bot: Limited or inconsistent font sets often indicate virtual environments
+        webGL:
+          name: WebGL Analysis
+          type: object
+          description: Advanced graphics capabilities detection
+          abuse_indication:
+            bot: Software rendering or missing capabilities suggest virtualized environment
+

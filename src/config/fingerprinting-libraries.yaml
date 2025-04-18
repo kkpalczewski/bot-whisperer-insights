@@ -1,4 +1,3 @@
-
 libraries:
   - id: fingerprintjs
     name: FingerprintJS
@@ -19,3 +18,13 @@ libraries:
       - Device information
       - Operating system detection
       - Hardware profiling
+  
+  - id: creepjs
+    name: CreepJS
+    description: Advanced browser fingerprinting with lie detection and stealth analysis
+    website: https://creepjs.web.app/
+    features:
+      - Browser lie detection
+      - Stealth technique analysis
+      - Component tampering detection
+      - Bot behavior analysis
