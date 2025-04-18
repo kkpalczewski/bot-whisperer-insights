@@ -20,36 +20,51 @@ export const getClientJS = async (): Promise<any> => {
   }
 
   try {
-    // Check if ClientJS exists in window
-    if (typeof (window as any).ClientJS === 'undefined') {
-      // Try to dynamically load ClientJS
-      try {
-        // ClientJS doesn't have a proper default export, so we need to handle it differently
-        await import('clientjs');
-        
-        // After import, check if it's available in the window object
-        if (typeof (window as any).ClientJS === 'function') {
-          const clientjs = new (window as any).ClientJS();
-          libraryInstances.clientjs = clientjs;
-          return clientjs;
-        } else {
-          console.error('ClientJS was imported but is not available in the window object');
-          toast.error('Failed to initialize ClientJS library');
-          return null;
-        }
-      } catch (e) {
-        console.error('Failed to load ClientJS from npm:', e);
-        toast.error('Failed to load ClientJS library');
-        return null;
+    // First try to load ClientJS from npm
+    try {
+      const ClientJS = await import('clientjs').then(m => m.default || m);
+      if (typeof ClientJS === 'function') {
+        const clientjs = new ClientJS();
+        libraryInstances.clientjs = clientjs;
+        return clientjs;
       }
+    } catch (e) {
+      console.warn('Failed to load ClientJS from import:', e);
+      // Continue to try alternative methods
     }
 
-    // Initialize ClientJS from window object
-    const clientjs = new (window as any).ClientJS();
-    libraryInstances.clientjs = clientjs;
-    return clientjs;
+    // Try to access the global ClientJS
+    if (typeof window.ClientJS === 'function') {
+      const clientjs = new window.ClientJS();
+      libraryInstances.clientjs = clientjs;
+      return clientjs;
+    }
+
+    // If we couldn't load ClientJS, create a script tag to load it
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/clientjs/dist/client.min.js';
+      script.async = true;
+      script.onload = () => {
+        if (typeof window.ClientJS === 'function') {
+          const clientjs = new window.ClientJS();
+          libraryInstances.clientjs = clientjs;
+          resolve(clientjs);
+        } else {
+          const error = new Error('ClientJS loaded but ClientJS constructor not found');
+          console.error(error);
+          reject(error);
+        }
+      };
+      script.onerror = (e) => {
+        console.error('Failed to load ClientJS from CDN:', e);
+        reject(new Error('Failed to load ClientJS library from CDN'));
+      };
+      document.head.appendChild(script);
+    });
   } catch (error) {
     console.error('Error initializing ClientJS:', error);
+    toast.error('Failed to initialize ClientJS library');
     return null;
   }
 };

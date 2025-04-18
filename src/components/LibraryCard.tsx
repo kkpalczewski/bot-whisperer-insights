@@ -4,7 +4,6 @@ import { ExternalLink, Fingerprint } from 'lucide-react';
 import { LibraryInfo } from '@/config/fingerprintingLibraries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FeaturePill } from './FeaturePill';
 import { getBrowserFingerprint, getCanvasFingerprint } from '@/utils/fingerprint-helpers';
 import { toast } from 'sonner';
 import { getClientJS, getFingerprintJS } from '@/utils/library-manager';
@@ -73,8 +72,9 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
               canvasPrint: getCanvasFingerprint().slice(0, 20) + '...',
             };
           } else {
+            toast.error("ClientJS library failed to load");
             result = {
-              fingerprint: Math.random().toString(36).substring(2, 15),
+              fingerprint: "Error: ClientJS not available",
               browser: navigator.userAgent,
               language: navigator.language,
               os: navigator.platform,
@@ -92,6 +92,7 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
       setFingerprintValue(result);
       toast.success(`Generated ${library.name} fingerprint`);
     } catch (error) {
+      console.error("Error generating fingerprint:", error);
       setFingerprintValue(`Error: ${(error as Error).message}`);
       toast.error(`Error generating fingerprint: ${(error as Error).message}`);
     } finally {
