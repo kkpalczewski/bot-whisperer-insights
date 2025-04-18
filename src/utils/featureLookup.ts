@@ -58,72 +58,81 @@ export const findFeatureInfo = (
       if (foundMatch) break;
     }
     
-    // Handle features with dependencies - specifically handle clientjs better
+    // Specifically handle ClientJS and similar libraries with dependencies
     if (feature.dependency && id.includes(feature.dependency)) {
-      // Extract the path after the dependency
-      // For clientjs, the ID format could be clientjs_fingerprint.device.os
-      // We need to handle this format correctly
-      let pathParts = id.split('.');
-      let dependencyIndex = pathParts.findIndex(part => part === feature.dependency || part.includes(feature.dependency));
+      // Extract dependency name and the path that follows
+      const dependencyName = feature.dependency;
       
-      if (dependencyIndex !== -1) {
-        // Get the remaining path after the dependency
-        let remainingPath = pathParts.slice(dependencyIndex + 1).join('.');
+      // Handle format like "clientjs_fingerprint.device.os"
+      if (id.includes(dependencyName)) {
+        const parts = id.split('.');
+        // Find where in the path our dependency is located
+        const depIndex = parts.findIndex(part => part.includes(dependencyName));
         
-        if (!remainingPath) {
-          featureDefinition = feature;
-          description = feature.description;
-          abuseIndication = feature.abuse_indication?.bot;
-          break;
-        }
-        
-        if (feature.outputs) {
-          // For nested objects like device.os, we need to navigate through the outputs
-          const path = remainingPath.split('.');
-          let currentOutput = feature.outputs;
-          let foundMatch = true;
+        if (depIndex !== -1) {
+          // Get segments after the dependency part
+          const pathSegments = parts.slice(depIndex + 1);
           
-          // First level might be a parent object (like 'device')
-          const firstSegment = path[0];
-          if (currentOutput[firstSegment]) {
-            if (path.length === 1) {
-              description = currentOutput[firstSegment].description;
-              abuseIndication = currentOutput[firstSegment].abuse_indication?.bot;
-              featureDefinition = feature;
-              break;
-            }
+          // If there are no segments after dependency, use the feature itself
+          if (pathSegments.length === 0) {
+            featureDefinition = feature;
+            description = feature.description;
+            abuseIndication = feature.abuse_indication?.bot;
+            break;
+          }
+          
+          // Navigate through the feature outputs structure
+          if (feature.outputs) {
+            let currentOutput = feature.outputs;
+            let foundNestedProperty = false;
             
-            // Move to the next level
-            if (currentOutput[firstSegment].outputs) {
-              currentOutput = currentOutput[firstSegment].outputs;
-              
-              // For the second level and beyond
-              for (let i = 1; i < path.length; i++) {
-                const segment = path[i];
-                if (currentOutput[segment]) {
-                  if (i === path.length - 1) {
-                    description = currentOutput[segment].description;
-                    abuseIndication = currentOutput[segment].abuse_indication?.bot;
-                    featureDefinition = feature;
-                    foundMatch = true;
-                    break;
-                  }
+            // Handle first level (like "device")
+            const firstSegment = pathSegments[0];
+            if (currentOutput[firstSegment]) {
+              if (pathSegments.length === 1) {
+                // If we only have one path segment like ".device"
+                description = currentOutput[firstSegment].description;
+                abuseIndication = currentOutput[firstSegment].abuse_indication?.bot;
+                featureDefinition = feature;
+                foundNestedProperty = true;
+              } else if (currentOutput[firstSegment].outputs) {
+                // Move to second level and beyond
+                currentOutput = currentOutput[firstSegment].outputs;
+                
+                // Continue with remaining segments
+                let currentLevel = currentOutput;
+                let foundMatch = true;
+                
+                for (let i = 1; i < pathSegments.length; i++) {
+                  const segment = pathSegments[i];
                   
-                  if (currentOutput[segment].outputs) {
-                    currentOutput = currentOutput[segment].outputs;
+                  if (currentLevel[segment]) {
+                    if (i === pathSegments.length - 1) {
+                      // Found the match at the end of the path
+                      description = currentLevel[segment].description;
+                      abuseIndication = currentLevel[segment].abuse_indication?.bot;
+                      featureDefinition = feature;
+                      foundNestedProperty = true;
+                      break;
+                    }
+                    
+                    // Continue to next level if it exists
+                    if (currentLevel[segment].outputs) {
+                      currentLevel = currentLevel[segment].outputs;
+                    } else {
+                      foundMatch = false;
+                      break;
+                    }
                   } else {
                     foundMatch = false;
                     break;
                   }
-                } else {
-                  foundMatch = false;
-                  break;
                 }
               }
             }
+            
+            if (foundNestedProperty) break;
           }
-          
-          if (foundMatch) break;
         }
       }
     }
