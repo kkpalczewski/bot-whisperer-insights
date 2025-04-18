@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { DetectionFeature } from '@/config/detectionFeatures';
 import { safeEvaluate } from '@/utils/library-manager';
@@ -21,8 +22,26 @@ const formatValue = (val: any, error?: string): string | boolean | undefined => 
   if (error) return undefined;
   if (val === null || val === undefined) return undefined;
   if (typeof val === 'boolean') return val;
-  if (Array.isArray(val)) return val.join(', ');
-  if (typeof val === 'object') return JSON.stringify(val);
+  
+  // Handle arrays specifically
+  if (Array.isArray(val)) {
+    try {
+      return JSON.stringify(val);
+    } catch {
+      return val.join(', ');
+    }
+  }
+  
+  // Handle objects
+  if (typeof val === 'object') {
+    try {
+      return JSON.stringify(val);
+    } catch {
+      return String(val);
+    }
+  }
+  
+  // Handle everything else
   return String(val);
 };
 
@@ -62,6 +81,8 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     return Object.entries(value).flatMap(([key, val]) => {
       const output = outputs?.[key];
       const currentPath = `${path}.${key}`;
+      // Determine the type from output configuration
+      const dataType = output?.type || (Array.isArray(val) ? 'array' : typeof val);
       
       if (val && typeof val === 'object' && !Array.isArray(val)) {
         const children = buildFeatureTree(val, currentPath, level + 1, output?.outputs, error);
@@ -69,7 +90,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
           id: currentPath,
           feature: key,
           value: formatValue(val, error),
-          type: output?.type || feature.type,
+          type: dataType,
           parent: getParentName(path, feature.dependency),
           level,
           children,
@@ -83,7 +104,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         id: currentPath,
         feature: key,
         value: formatValue(val, error),
-        type: output?.type || feature.type,
+        type: dataType,
         parent: getParentName(path, feature.dependency),
         level,
         children: [],

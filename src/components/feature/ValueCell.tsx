@@ -26,9 +26,24 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, type, error, parseV
         case 'boolean':
           return val === 'true';
         case 'array':
+          // If it's already in array format
+          if (val.startsWith('[') && val.endsWith(']')) {
+            return val;
+          }
+          // Handle comma-separated string
           return Array.isArray(val) ? val : String(val).split(',');
         case 'object':
-          return typeof val === 'string' ? JSON.parse(val) : val;
+          if (typeof val === 'string') {
+            // If it already looks like an object
+            if (val.startsWith('{') && val.endsWith('}')) {
+              return val;
+            }
+            return JSON.parse(val);
+          }
+          return val;
+        case 'string':
+          // Ensure strings are properly displayed
+          return String(val);
         default:
           return String(val);
       }
@@ -37,12 +52,24 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, type, error, parseV
     }
   };
   
-  const displayValue = parseValue ? parseTypedValue(value, type) : value;
-  const stringValue = displayValue === undefined 
-    ? 'undefined' 
-    : typeof displayValue === 'boolean' 
-      ? String(displayValue) 
-      : String(displayValue);
+  // Handle display value
+  let displayValue = parseValue ? parseTypedValue(value, type) : value;
+  
+  // Convert to string for display
+  let stringValue = '';
+  if (displayValue === undefined) {
+    stringValue = 'undefined';
+  } else if (typeof displayValue === 'boolean') {
+    stringValue = String(displayValue);
+  } else if (typeof displayValue === 'object' && displayValue !== null) {
+    try {
+      stringValue = JSON.stringify(displayValue, null, 2);
+    } catch {
+      stringValue = String(displayValue);
+    }
+  } else {
+    stringValue = String(displayValue);
+  }
   
   const lines = stringValue.split('\n');
   const isLongValue = lines.length > 3 || stringValue.length > 150;

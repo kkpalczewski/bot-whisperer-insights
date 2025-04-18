@@ -19,12 +19,6 @@ export const FormattedValue: React.FC<{
 
   // Check if the value is an array (it will be a string but formatted as [item1, item2])
   if (typeof value === 'string') {
-    // Handle arrays - check if it's a comma-separated list without brackets (like returned from Array.join)
-    if (value.includes(',') && !value.startsWith('[') && !value.includes('{')) {
-      // Add brackets to make it clear it's an array
-      return <span className="text-[#8B5CF6]">[{value}]</span>;
-    }
-    
     // Handle arrays that already have brackets
     if (value.startsWith('[') && value.endsWith(']')) {
       return <span className="text-[#8B5CF6]">{value}</span>;
@@ -32,7 +26,13 @@ export const FormattedValue: React.FC<{
     
     // Handle objects
     if (value.startsWith('{') && value.endsWith('}')) {
-      return <span className="text-yellow-300">{value}</span>;
+      try {
+        // Try to pretty print the JSON
+        const parsed = JSON.parse(value);
+        return <span className="text-yellow-300">{JSON.stringify(parsed, null, 2)}</span>;
+      } catch {
+        return <span className="text-yellow-300">{value}</span>;
+      }
     }
     
     // Handle numbers
