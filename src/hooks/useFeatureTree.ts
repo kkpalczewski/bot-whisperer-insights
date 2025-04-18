@@ -14,6 +14,7 @@ export interface FeatureNode {
   isExpanded: boolean;
   description?: string;
   error?: string;
+  isTruncated?: boolean;
 }
 
 const formatValue = (val: any, error?: string): string | boolean | undefined => {

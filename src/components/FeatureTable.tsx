@@ -15,6 +15,41 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
   isLoading,
   onToggleNode
 }) => {
+  const processNodes = (nodes: FeatureNode[]) => {
+    const result: FeatureNode[] = [];
+    let currentParent = '';
+    let count = 0;
+    
+    nodes.forEach((node) => {
+      if (node.parent !== currentParent) {
+        currentParent = node.parent;
+        count = 0;
+      }
+      
+      if (count < 3) {
+        result.push(node);
+        count++;
+      } else if (count === 3) {
+        result.push({
+          ...node,
+          feature: '...',
+          value: `${nodes.filter(n => n.parent === currentParent).length - 3} more items`,
+          id: `${currentParent}-more`,
+          children: [],
+          isExpanded: false,
+          level: node.level,
+          parent: node.parent,
+          isTruncated: true
+        });
+        count++;
+      }
+    });
+    
+    return result;
+  };
+
+  const processedNodes = processNodes(nodes);
+
   return (
     <Table>
       <TableHeader>
@@ -26,7 +61,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {nodes.map((node) => (
+        {processedNodes.map((node) => (
           <FeatureTableRow
             key={node.id}
             feature={node.feature}
@@ -38,6 +73,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
             level={node.level}
             error={node.error}
             description={node.description}
+            isTruncated={node.isTruncated}
           />
         ))}
         {nodes.length === 0 && (

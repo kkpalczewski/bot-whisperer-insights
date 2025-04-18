@@ -16,6 +16,7 @@ interface FeatureTableRowProps {
   level?: number;
   error?: string;
   description?: string;
+  isTruncated?: boolean;
 }
 
 const getTypeIcon = (value: string | boolean | undefined) => {
@@ -35,11 +36,12 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   onToggle,
   level = 0,
   error,
-  description
+  description,
+  isTruncated = false
 }) => {
   return (
     <TableRow 
-      className={`${isExpanded ? 'bg-gray-800/20' : 'hover:bg-gray-800/50'}`}
+      className={`${isExpanded ? 'bg-gray-800/20' : 'hover:bg-gray-800/50'} ${isTruncated ? 'text-gray-500 italic' : ''}`}
     >
       <TableCell className="p-1 w-[45%]">
         <div className="flex items-center">
@@ -104,4 +106,3 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
     </TableRow>
   );
 };
-
