@@ -1,4 +1,3 @@
-
 import { toast } from 'sonner';
 
 // Global store for library instances
@@ -189,10 +188,44 @@ export const safeEvaluate = async <T>(
   }
 };
 
+/**
+ * Gets or initializes a CreepJS instance
+ */
+export const getCreepJS = async (): Promise<any> => {
+  if (typeof window.CreepJS !== 'undefined') {
+    return window.CreepJS;
+  }
+
+  try {
+    // Try to load CreepJS from a CDN
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/creepjs@latest/dist/creep.min.js';
+      script.async = true;
+      script.onload = () => {
+        if (typeof window.CreepJS !== 'undefined') {
+          resolve(window.CreepJS);
+        } else {
+          reject(new Error('CreepJS loaded but global object not found'));
+        }
+      };
+      script.onerror = (e) => {
+        console.error('Failed to load CreepJS from CDN:', e);
+        reject(new Error('Failed to load CreepJS library'));
+      };
+      document.head.appendChild(script);
+    });
+  } catch (error) {
+    console.error('Error initializing CreepJS:', error);
+    return null;
+  }
+};
+
 // Make library manager available globally for feature code execution
 if (typeof window !== 'undefined') {
   (window as any).libraryManager = {
     getClientJS,
-    getFingerprintJS
+    getFingerprintJS,
+    getCreepJS
   };
 }

@@ -49,6 +49,7 @@
     "clientjs": "^0.2.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "creepjs": "^1.0.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
     "glob": "^10.3.10",
