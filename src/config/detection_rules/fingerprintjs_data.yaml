@@ -1,4 +1,3 @@
-
 - id: fingerprintjs_data
   name: FingerprintJS Data
   codeName: fingerprintjs_data
@@ -16,7 +15,6 @@
         language: result.components.language,
         platform: result.components.platform,
         touchSupport: result.components.touchSupport,
-        audioContext: !!(window.AudioContext || window.webkitAudioContext),
         consistentId: result.visitorId
       };
     }
@@ -68,12 +66,7 @@
       description: Touch support capabilities
       abuse_indication:
         bot: Mismatched touch capabilities compared to claimed device type can indicate emulated environments.
-    audioContext:
-      name: Audio Context
-      type: boolean
-      description: Audio processing capability
     consistentId:
       name: Consistent ID
       type: string
       description: Stable visitor identifier across sessions
-

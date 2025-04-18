@@ -30,6 +30,8 @@ import hardwareInfoYaml from './detection_rules/hardware_info.yaml?raw';
 import networkInfoYaml from './detection_rules/network_info.yaml?raw';
 import fingerprintjsDataYaml from './detection_rules/fingerprintjs_data.yaml?raw';
 import canvasFingerprintYaml from './detection_rules/canvas_fingerprint.yaml?raw';
+import hasAudioContextYaml from './detection_rules/has_audio_context.yaml?raw';
+import clientjsDataYaml from './detection_rules/clientjs_data.yaml?raw';
 
 // Parse each YAML file and combine
 const yamlFiles = [
@@ -39,7 +41,9 @@ const yamlFiles = [
   hardwareInfoYaml,
   networkInfoYaml,
   fingerprintjsDataYaml,
-  canvasFingerprintYaml
+  canvasFingerprintYaml,
+  hasAudioContextYaml,
+  clientjsDataYaml
 ];
 
 export const features: DetectionFeature[] = yamlFiles.flatMap(file => {
@@ -51,4 +55,3 @@ export const features: DetectionFeature[] = yamlFiles.flatMap(file => {
     return [];
   }
 });
-
