@@ -59,6 +59,6 @@ export const FormattedValue: React.FC<{
     }
   }
 
-  // Default case: treat as string
+  // Default case: treat as string (for user_agent and other string values)
   return <span className="text-orange-400">{value}</span>;
 };
