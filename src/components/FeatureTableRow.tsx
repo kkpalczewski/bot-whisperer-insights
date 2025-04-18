@@ -92,9 +92,11 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
         {getTypeIcon(value)}
       </TableCell>
       <TableCell className="p-1 w-[35%] font-mono text-xs font-medium">
-        <span className={error ? 'text-gray-400' : 'text-white'}>
-          {value === undefined ? 'undefined' : (typeof value === 'boolean' ? value.toString() : value)}
-        </span>
+        <div className="max-w-full overflow-hidden">
+          <span className={`${error ? 'text-gray-400' : 'text-white'} break-all`}>
+            {value === undefined ? 'undefined' : (typeof value === 'boolean' ? value.toString() : value)}
+          </span>
+        </div>
       </TableCell>
       <TableCell className="p-1 w-[15%] text-xs text-gray-400">
         {parent}
@@ -102,3 +104,4 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
     </TableRow>
   );
 };
+
