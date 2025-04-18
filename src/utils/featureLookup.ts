@@ -22,18 +22,8 @@ export const findFeatureInfo = (
       // Extract the path after "clientjs."
       const pathAfterPrefix = id.replace('clientjs.', '');
       
-      // Handle direct properties like "os", "device", etc.
-      if (!pathAfterPrefix.includes('.')) {
-        // Check if it's a direct output
-        if (feature.outputs && feature.outputs[pathAfterPrefix]) {
-          description = feature.outputs[pathAfterPrefix].description;
-          abuseIndication = feature.outputs[pathAfterPrefix].abuse_indication?.bot;
-          featureDefinition = feature;
-          break;
-        }
-      } 
       // Handle nested paths like "device.os"
-      else {
+      if (pathAfterPrefix.includes('.')) {
         const parts = pathAfterPrefix.split('.');
         if (parts.length === 2 && feature.outputs) {
           const [parent, child] = parts;
@@ -47,6 +37,13 @@ export const findFeatureInfo = (
             break;
           }
         }
+      }
+      // Handle direct properties like "os", "device", etc.
+      else if (feature.outputs && feature.outputs[pathAfterPrefix]) {
+        description = feature.outputs[pathAfterPrefix].description;
+        abuseIndication = feature.outputs[pathAfterPrefix].abuse_indication?.bot;
+        featureDefinition = feature;
+        break;
       }
       
       // If we didn't find specific info, use the parent feature info
