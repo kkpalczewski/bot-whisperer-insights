@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { FormattedValue } from '../feature/FormattedValue';
 
 interface MetadataContentProps {
   feature: string;
@@ -38,8 +39,8 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
       <div>
         <h4 className="text-sm font-medium mb-1">Value</h4>
         <div className="relative">
-          <p className="text-sm font-mono text-gray-400 whitespace-pre-wrap break-all">
-            {displayValue}
+          <p className="text-sm font-mono whitespace-pre-wrap break-all">
+            <FormattedValue value={displayValue} />
           </p>
           {isLongValue && (
             <Button
@@ -84,12 +85,16 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
 
       <div>
         <h4 className="text-sm font-medium mb-1">Has Children</h4>
-        <p className="text-sm font-mono text-gray-400">{String(props.hasChildren)}</p>
+        <p className="text-sm font-mono">
+          <FormattedValue value={String(props.hasChildren)} />
+        </p>
       </div>
 
       <div>
         <h4 className="text-sm font-medium mb-1">Is Expanded</h4>
-        <p className="text-sm font-mono text-gray-400">{String(props.isExpanded)}</p>
+        <p className="text-sm font-mono">
+          <FormattedValue value={String(props.isExpanded)} />
+        </p>
       </div>
     </div>
   );
