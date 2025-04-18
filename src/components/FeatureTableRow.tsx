@@ -33,7 +33,8 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   error,
   isTruncated
 }) => {
-  const id = `${parent}.${feature}`.replace(/\s/g, '_');
+  // Create the full ID path based on parent and feature
+  const id = parent && parent !== feature ? `${parent}.${feature}` : feature;
   
   return (
     <TableRow className={error ? 'bg-red-950/20' : ''}>

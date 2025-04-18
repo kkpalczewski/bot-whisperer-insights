@@ -17,6 +17,47 @@ export const findFeatureInfo = (
 
   // Look through all features to find the specific one
   for (const feature of features) {
+    // Special handling for clientjs_fingerprint features
+    if (feature.codeName === 'clientjs_fingerprint' && id.startsWith('clientjs')) {
+      // Extract the path after "clientjs."
+      const pathAfterPrefix = id.replace('clientjs.', '');
+      
+      // Handle direct properties like "os", "device", etc.
+      if (!pathAfterPrefix.includes('.')) {
+        // Check if it's a direct output
+        if (feature.outputs && feature.outputs[pathAfterPrefix]) {
+          description = feature.outputs[pathAfterPrefix].description;
+          abuseIndication = feature.outputs[pathAfterPrefix].abuse_indication?.bot;
+          featureDefinition = feature;
+          break;
+        }
+      } 
+      // Handle nested paths like "device.os"
+      else {
+        const parts = pathAfterPrefix.split('.');
+        if (parts.length === 2 && feature.outputs) {
+          const [parent, child] = parts;
+          
+          // Check if parent exists and has outputs
+          if (feature.outputs[parent] && feature.outputs[parent].outputs && 
+              feature.outputs[parent].outputs[child]) {
+            description = feature.outputs[parent].outputs[child].description;
+            abuseIndication = feature.outputs[parent].outputs[child].abuse_indication?.bot;
+            featureDefinition = feature;
+            break;
+          }
+        }
+      }
+      
+      // If we didn't find specific info, use the parent feature info
+      if (!description) {
+        description = feature.description;
+        abuseIndication = feature.abuse_indication?.bot;
+        featureDefinition = feature;
+        break;
+      }
+    }
+    
     // Check if this is a top-level feature
     if (id === feature.codeName) {
       featureDefinition = feature;
@@ -56,47 +97,6 @@ export const findFeatureInfo = (
       }
       
       if (foundMatch) break;
-    }
-    
-    // Handle ClientJS and other library with dependency field
-    if (feature.dependency && id.includes(feature.codeName)) {
-      // First check for exact property path in feature outputs
-      let pathSegments = id.split('.');
-      
-      // For clientjs_fingerprint.device.os we need to correctly handle these nested properties
-      if (pathSegments.length >= 3 && feature.outputs) {
-        let rootPropertyName = pathSegments[1]; // e.g. 'device'
-        let nestedPropertyName = pathSegments[2]; // e.g. 'os'
-        
-        // Check if root property exists in outputs
-        if (feature.outputs[rootPropertyName]) {
-          // Check if this root property has its own outputs
-          if (feature.outputs[rootPropertyName].outputs) {
-            // Find the nested property
-            let nestedOutput = feature.outputs[rootPropertyName].outputs?.[nestedPropertyName];
-            
-            if (nestedOutput) {
-              description = nestedOutput.description;
-              abuseIndication = nestedOutput.abuse_indication?.bot;
-              featureDefinition = feature;
-              break;
-            }
-          } else {
-            // Just use the root property's description if nested is not found
-            description = feature.outputs[rootPropertyName].description;
-            abuseIndication = feature.outputs[rootPropertyName].abuse_indication?.bot;
-            featureDefinition = feature;
-            break;
-          }
-        }
-      }
-      
-      // If we didn't find the specific property, use the parent feature info
-      if (!description) {
-        description = feature.description;
-        abuseIndication = feature.abuse_indication?.bot;
-        featureDefinition = feature;
-      }
     }
   }
 
