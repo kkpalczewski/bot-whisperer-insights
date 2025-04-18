@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { FeaturePill } from './FeaturePill';
 import { getBrowserFingerprint, getCanvasFingerprint } from '@/utils/fingerprint-helpers';
 import { toast } from 'sonner';
+import { getClientJS, getFingerprintJS } from '@/utils/library-manager';
 
 interface LibraryCardProps {
   library: LibraryInfo;
@@ -14,23 +15,36 @@ interface LibraryCardProps {
 
 export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
   const [fingerprintValue, setFingerprintValue] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     generateFingerprint();
   }, []);
 
-  const generateFingerprint = () => {
+  const generateFingerprint = async () => {
+    setIsLoading(true);
     try {
       let result: any;
       
       switch (library.id) {
-        case 'fingerprint-js':
-          result = {
-            visitorId: Math.random().toString(36).substring(2, 15),
-            confidence: { score: 0.95 },
-            components: getBrowserFingerprint()
-          };
+        case 'fingerprint-js': {
+          const fpJs = await getFingerprintJS();
+          if (fpJs) {
+            const fpResult = await fpJs.get();
+            result = {
+              visitorId: fpResult.visitorId,
+              confidence: fpResult.confidence,
+              components: fpResult.components
+            };
+          } else {
+            result = {
+              visitorId: Math.random().toString(36).substring(2, 15),
+              confidence: { score: 0.95 },
+              components: getBrowserFingerprint()
+            };
+          }
           break;
+        }
         
         case 'creep-js':
           result = {
@@ -47,16 +61,29 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
           };
           break;
         
-        case 'clientjs':
-          result = {
-            fingerprint: Math.random().toString(36).substring(2, 15),
-            browser: navigator.userAgent,
-            language: navigator.language,
-            os: navigator.platform,
-            device: navigator.platform,
-            canvasPrint: getCanvasFingerprint().slice(0, 20) + '...',
-          };
+        case 'clientjs': {
+          const clientJs = await getClientJS();
+          if (clientJs) {
+            result = {
+              fingerprint: clientJs.getFingerprint(),
+              browser: clientJs.getBrowser(),
+              language: navigator.language,
+              os: clientJs.getOS(),
+              device: clientJs.getDevice(),
+              canvasPrint: getCanvasFingerprint().slice(0, 20) + '...',
+            };
+          } else {
+            result = {
+              fingerprint: Math.random().toString(36).substring(2, 15),
+              browser: navigator.userAgent,
+              language: navigator.language,
+              os: navigator.platform,
+              device: navigator.platform,
+              canvasPrint: getCanvasFingerprint().slice(0, 20) + '...',
+            };
+          }
           break;
+        }
         
         default:
           result = "Unknown library";
@@ -67,6 +94,8 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
     } catch (error) {
       setFingerprintValue(`Error: ${(error as Error).message}`);
       toast.error(`Error generating fingerprint: ${(error as Error).message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -99,7 +128,14 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
       </CardHeader>
       
       <CardContent className="p-4 pt-0">
-        {fingerprintValue && (
+        {isLoading ? (
+          <div className="mb-4 p-3 bg-gray-800 rounded-md">
+            <div className="flex items-center gap-2 mb-2">
+              <Fingerprint size={16} className="text-blue-400" />
+              <h4 className="font-semibold text-gray-200">Generating fingerprint...</h4>
+            </div>
+          </div>
+        ) : fingerprintValue && (
           <div className="mb-4 p-3 bg-gray-800 rounded-md">
             <div className="flex items-center gap-2 mb-2">
               <Fingerprint size={16} className="text-blue-400" />

@@ -1,11 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
-import { DetectionFeature } from '@/config/detectionFeatures';
+import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
 import { ChevronDown, Code, AlertTriangle, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
+import { safeEvaluate } from '@/utils/library-manager';
 
 interface FeaturePillProps {
   feature: DetectionFeature;
@@ -21,6 +23,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const [value, setValue] = useState<FormattedValue>({ display: 'Evaluating...', raw: null });
   const [isOpen, setIsOpen] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const formatValue = (val: any, type: string): FormattedValue => {
     try {
@@ -28,30 +31,15 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
         return { display: 'Not available', raw: null };
       }
 
-      // Handle nested features
-      if (feature.outputs && typeof val === 'object') {
-        const formattedOutputs = Object.entries(val).reduce((acc, [key, value]) => {
-          const outputConfig = feature.outputs?.[key];
-          if (outputConfig) {
-            acc[key] = formatValue(value, outputConfig.type).raw;
-          }
-          return acc;
-        }, {} as Record<string, any>);
-        return {
-          display: JSON.stringify(formattedOutputs, null, 2),
-          raw: formattedOutputs
-        };
-      }
-
       switch (type) {
         case 'array':
           return {
-            display: JSON.stringify(val, null, 2),
+            display: Array.isArray(val) ? `[${val.length} items]` : String(val),
             raw: Array.isArray(val) ? val : [val]
           };
         case 'object':
           return {
-            display: JSON.stringify(val, null, 2),
+            display: typeof val === 'object' ? `{${Object.keys(val).length} properties}` : String(val),
             raw: typeof val === 'object' ? val : { value: val }
           };
         case 'number':
@@ -86,18 +74,48 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   };
 
   useEffect(() => {
-    if (feature.dependency) {
-      toast.info(`This feature requires ${feature.dependency} library to work properly`);
-    }
     evaluateCode();
   }, []);
 
-  const evaluateCode = () => {
+  const evaluateCode = async () => {
+    setIsLoading(true);
     try {
-      const result = new Function(`return ${feature.code}`)();
-      const formattedResult = formatValue(result, feature.type);
-      setValue(formattedResult);
-      setHasError(false);
+      const result = await safeEvaluate(feature.code, feature.type, feature.dependency);
+      
+      if (result.error) {
+        setHasError(true);
+        const errorValue: FormattedValue = {
+          display: `Error: ${result.error}`,
+          raw: null,
+          error: result.error
+        };
+        setValue(errorValue);
+        console.error(`Error evaluating ${feature.name}:`, result.error);
+      } else {
+        // Handle nested features
+        if (feature.outputs && typeof result.value === 'object') {
+          const formattedOutputs = Object.entries(result.value || {}).reduce((acc, [key, outputValue]) => {
+            const outputConfig = feature.outputs?.[key];
+            if (outputConfig) {
+              acc[key] = formatValue(outputValue, outputConfig.type).raw;
+            } else {
+              acc[key] = outputValue;
+            }
+            return acc;
+          }, {} as Record<string, any>);
+          
+          setValue({
+            display: formatNestedFeatureDisplay(formattedOutputs),
+            raw: formattedOutputs
+          });
+          setHasError(false);
+        } else {
+          // Handle simple features
+          const formattedResult = formatValue(result.value, feature.type);
+          setValue(formattedResult);
+          setHasError(false);
+        }
+      }
     } catch (error) {
       setHasError(true);
       const errorValue: FormattedValue = {
@@ -107,7 +125,32 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       };
       setValue(errorValue);
       toast.error(`Error evaluating ${feature.name}: ${(error as Error).message}`);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const formatNestedFeatureDisplay = (nestedValues: Record<string, any>): string => {
+    if (!nestedValues || Object.keys(nestedValues).length === 0) {
+      return 'No data available';
+    }
+    
+    // Format for compact display of nested features
+    const keyValuePairs = Object.entries(nestedValues)
+      .map(([key, val]) => {
+        const displayVal = 
+          val === null || val === undefined ? 'N/A' :
+          typeof val === 'object' ? (Array.isArray(val) ? `[${val.length}]` : `{...}`) :
+          String(val).length > 15 ? `${String(val).substring(0, 15)}...` : 
+          String(val);
+        
+        return `${key}: ${displayVal}`;
+      })
+      .join(', ');
+    
+    return keyValuePairs.length > 60 
+      ? `${keyValuePairs.substring(0, 60)}...` 
+      : keyValuePairs;
   };
 
   const categoryColor: Record<string, string> = {
@@ -116,6 +159,35 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
     behavior: 'bg-purple-700/20 text-purple-400',
     hardware: 'bg-amber-700/20 text-amber-400',
     fingerprinting: 'bg-rose-700/20 text-rose-400'
+  };
+
+  const renderOutputValues = () => {
+    if (!feature.outputs || !value.raw) return null;
+    
+    return (
+      <div className="grid gap-2 mt-2">
+        {Object.entries(feature.outputs).map(([key, output]) => (
+          <div key={key} className="bg-gray-800/50 p-2 rounded flex justify-between items-start">
+            <div>
+              <div className="flex items-center gap-2">
+                <code className="text-xs font-bold">{key}</code>
+                <Badge variant="outline" className="text-xs">
+                  {output.type}
+                </Badge>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">{output.description}</p>
+            </div>
+            <div className="font-mono text-xs bg-gray-900 px-2 py-1 rounded max-w-[50%] overflow-hidden text-ellipsis whitespace-nowrap">
+              {value.raw[key] !== undefined ? 
+                (typeof value.raw[key] === 'object' ? 
+                  JSON.stringify(value.raw[key]).substring(0, 30) + "..." : 
+                  String(value.raw[key])) : 
+                'undefined'}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -138,11 +210,15 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
               </Badge>
               <div className="flex items-center justify-between w-full">
                 <div className="font-mono text-xs bg-gray-800 px-2 py-1 rounded max-h-24 overflow-y-auto break-all">
-                  <pre className="whitespace-pre-wrap">
-                    {feature.outputs 
-                      ? 'Nested feature with ' + Object.keys(feature.outputs).length + ' properties'
-                      : value?.display || String(value)}
-                  </pre>
+                  {isLoading ? (
+                    <span className="text-gray-400">Loading...</span>
+                  ) : hasError ? (
+                    <span className="text-rose-400">{value.display}</span>
+                  ) : feature.outputs ? (
+                    <span>{value.display}</span>
+                  ) : (
+                    <pre className="whitespace-pre-wrap">{value.display}</pre>
+                  )}
                 </div>
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-2 flex-shrink-0">
@@ -159,37 +235,28 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <code className="text-xs bg-gray-900 px-2 py-1 rounded">{feature.codeName}</code>
               <code className="text-xs bg-gray-900 px-2 py-1 rounded">{feature.type}</code>
+              {feature.dependency && (
+                <Badge variant="outline" className="text-xs">
+                  Requires: {feature.dependency}
+                </Badge>
+              )}
             </div>
             <p className="text-sm text-gray-400">{feature.description}</p>
-            {feature.outputs && (
-              <div className="mt-4 space-y-2">
-                <h4 className="text-sm font-medium text-gray-300">Output Properties:</h4>
-                <div className="grid gap-2">
-                  {Object.entries(feature.outputs).map(([key, output]) => (
-                    <div key={key} className="bg-gray-800/50 p-2 rounded">
-                      <div className="flex items-center justify-between">
-                        <code className="text-xs">{key}</code>
-                        <Badge variant="outline" className="text-xs">
-                          {output.type}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-gray-400 mt-1">{output.description}</p>
-                      {value.raw && value.raw[key] && (
-                        <div className="mt-1 font-mono text-xs text-gray-300">
-                          Value: {JSON.stringify(value.raw[key])}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            
+            {feature.outputs && renderOutputValues()}
+            
             <div className="bg-gray-800 p-3 rounded flex items-start gap-2">
               <Code size={16} className="mt-1 text-gray-400" />
               <pre className="text-xs overflow-x-auto whitespace-pre-wrap flex-1 text-gray-300">
                 {feature.code}
               </pre>
             </div>
+            
+            {hasError && (
+              <div className="bg-rose-900/20 border border-rose-800 p-3 rounded text-xs text-rose-300">
+                <strong>Error:</strong> {value.error}
+              </div>
+            )}
           </CardContent>
         </CollapsibleContent>
       </Collapsible>
