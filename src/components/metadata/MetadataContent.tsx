@@ -26,14 +26,106 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
     (lines.length > 3 ? lines.slice(0, 3).join('\n') + '\n...' : 
       value.length > 150 ? value.slice(0, 150) + '...' : value);
   
-  // Find feature definition from config to get abuse indication
-  const featureItem = features.find(f => 
-    props.id.startsWith(f.codeName) || 
-    (f.dependency && props.id.startsWith(f.dependency))
-  );
+  // Find feature definition from config for the specific feature
+  let featureDefinition = null;
+  let description = props.description;
+  let abuseIndication = null;
+
+  // Look through all features to find the specific one
+  for (const f of features) {
+    // First check if this is a top-level feature
+    if (props.id === f.codeName) {
+      featureDefinition = f;
+      break;
+    }
+    
+    // Check if this is a sub-property of a feature with outputs
+    if (f.outputs && props.id.startsWith(f.codeName + '.')) {
+      const path = props.id.substring(f.codeName.length + 1).split('.');
+      let currentOutput = f.outputs;
+      let currentPath = f.codeName;
+      let foundMatch = true;
+      
+      // Traverse the outputs object based on the ID path
+      for (const segment of path) {
+        currentPath += '.' + segment;
+        if (currentOutput[segment]) {
+          if (currentPath === props.id) {
+            // We found the exact feature
+            description = currentOutput[segment].description || description;
+            abuseIndication = currentOutput[segment].abuse_indication?.bot;
+            foundMatch = true;
+            break;
+          }
+          // Continue traversing if this feature has nested outputs
+          if (currentOutput[segment].outputs) {
+            currentOutput = currentOutput[segment].outputs;
+          } else {
+            foundMatch = false;
+            break;
+          }
+        } else {
+          foundMatch = false;
+          break;
+        }
+      }
+      
+      if (foundMatch) {
+        featureDefinition = f;
+        break;
+      }
+    }
+    
+    // Handle features with dependencies (like client-side libraries)
+    if (f.dependency && props.id.startsWith(f.dependency)) {
+      const remainingPath = props.id.substring(f.dependency.length + 1);
+      if (!remainingPath) {
+        // This is the root dependency
+        featureDefinition = f;
+        break;
+      }
+      
+      // Check if there are outputs defined for this dependency path
+      if (f.outputs) {
+        const path = remainingPath.split('.');
+        let currentOutput = f.outputs;
+        let currentPath = f.dependency;
+        let foundMatch = true;
+        
+        for (const segment of path) {
+          currentPath += '.' + segment;
+          if (currentOutput[segment]) {
+            if (currentPath === props.id) {
+              description = currentOutput[segment].description || description;
+              abuseIndication = currentOutput[segment].abuse_indication?.bot;
+              foundMatch = true;
+              break;
+            }
+            
+            if (currentOutput[segment].outputs) {
+              currentOutput = currentOutput[segment].outputs;
+            } else {
+              foundMatch = false;
+              break;
+            }
+          } else {
+            foundMatch = false;
+            break;
+          }
+        }
+        
+        if (foundMatch) {
+          featureDefinition = f;
+          break;
+        }
+      }
+    }
+  }
   
-  // Get the abuse indication for bots if available
-  const abuseIndication = featureItem?.abuse_indication?.bot;
+  // If we haven't explicitly found an abuse indication, but found the feature, use the parent one
+  if (!abuseIndication && featureDefinition?.abuse_indication?.bot) {
+    abuseIndication = featureDefinition.abuse_indication.bot;
+  }
 
   return (
     <div className="space-y-3">
@@ -74,10 +166,10 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
         <p className="text-sm font-mono text-gray-400">{props.parent}</p>
       </div>
 
-      {props.description && (
+      {description && (
         <div>
           <h4 className="text-sm font-medium mb-1">Description</h4>
-          <p className="text-sm text-gray-400">{props.description}</p>
+          <p className="text-sm text-gray-400">{description}</p>
         </div>
       )}
 
