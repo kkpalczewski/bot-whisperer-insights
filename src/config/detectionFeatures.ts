@@ -1,8 +1,8 @@
 
 import { parse } from 'yaml';
-
-// @ts-ignore
-import featuresYaml from './detection-features.yaml?raw';
+import { glob } from 'glob';
+import path from 'path';
+import fs from 'fs';
 
 export interface FeatureValue {
   name: string;
@@ -26,4 +26,10 @@ export interface DetectionFeature {
   outputs?: Record<string, FeatureValue>;
 }
 
-export const features = parse(featuresYaml) || [];
+// Load all feature files from the detection_rules directory
+const featureFiles = glob.sync(path.resolve(__dirname, 'detection_rules/**/*.yaml'));
+export const features: DetectionFeature[] = featureFiles.flatMap(file => {
+  const content = fs.readFileSync(file, 'utf8');
+  const parsed = parse(content);
+  return parsed || [];
+});

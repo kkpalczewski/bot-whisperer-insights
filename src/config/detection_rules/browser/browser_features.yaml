@@ -1,0 +1,48 @@
+
+- id: browser_features
+  name: Browser Features
+  codeName: browser_features
+  type: object
+  code: |
+    {
+      localStorage: !!window.localStorage,
+      sessionStorage: !!window.sessionStorage,
+      indexedDB: !!window.indexedDB,
+      webWorker: !!window.Worker,
+      webGL: !!window.WebGLRenderingContext,
+    }
+  description: Support status for various browser APIs and features
+  abuse_indication:
+    bot: Headless browsers and automation tools often lack support for modern features. Unusual combinations of supported and unsupported features can reveal bot environments.
+  category: browser
+  outputs:
+    localStorage:
+      name: Local Storage
+      type: boolean
+      description: Whether the browser supports localStorage
+      abuse_indication:
+        bot: Disabled localStorage, especially when other features are enabled, can indicate privacy-focused or automated browsers.
+    sessionStorage:
+      name: Session Storage
+      type: boolean
+      description: Whether the browser supports sessionStorage
+      abuse_indication:
+        bot: Lack of sessionStorage support can indicate automated environments or privacy-focused browsers.
+    indexedDB:
+      name: IndexedDB
+      type: boolean
+      description: Whether the browser supports indexedDB
+      abuse_indication:
+        bot: Absence of IndexedDB support can reveal headless browsers or automation tools.
+    webWorker:
+      name: Web Worker
+      type: boolean
+      description: Whether the browser supports Web Workers
+      abuse_indication:
+        bot: Disabled Web Workers can indicate automated environments or browsers configured for minimal resource usage.
+    webGL:
+      name: WebGL
+      type: boolean
+      description: Whether the browser supports WebGL
+      abuse_indication:
+        bot: Lack of WebGL support or basic software rendering can indicate virtualized or headless environments.

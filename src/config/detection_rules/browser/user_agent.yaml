@@ -1,0 +1,11 @@
+
+- id: user_agent
+  name: User Agent
+  codeName: user_agent
+  type: string
+  code: |
+    navigator.userAgent
+  description: The browser's user agent string that identifies the browser and system
+  abuse_indication:
+    bot: Bots frequently use fake or inconsistent user agents. Common indicators include outdated versions, unusual combinations of browser and OS, or known bot signatures.
+  category: browser
