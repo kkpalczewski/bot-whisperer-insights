@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export const FormattedValue: React.FC<{
@@ -18,7 +19,13 @@ export const FormattedValue: React.FC<{
 
   // Check if the value is an array (it will be a string but formatted as [item1, item2])
   if (typeof value === 'string') {
-    // Handle arrays - using a vivid purple color
+    // Handle arrays - check if it's a comma-separated list without brackets (like returned from Array.join)
+    if (value.includes(',') && !value.startsWith('[') && !value.includes('{')) {
+      // Add brackets to make it clear it's an array
+      return <span className="text-[#8B5CF6]">[{value}]</span>;
+    }
+    
+    // Handle arrays that already have brackets
     if (value.startsWith('[') && value.endsWith(']')) {
       return <span className="text-[#8B5CF6]">{value}</span>;
     }
