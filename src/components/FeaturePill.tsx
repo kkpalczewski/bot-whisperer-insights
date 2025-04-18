@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
 import { ChevronDown, Code, AlertTriangle, Package, Info, Hash, Type, List, FileJson } from 'lucide-react';
@@ -27,6 +28,8 @@ const getTypeIcon = (type: string) => {
       return <List className="h-3 w-3 text-green-400" />;
     case 'object':
       return <FileJson className="h-3 w-3 text-purple-400" />;
+    case 'boolean':
+      return <Type className="h-3 w-3 text-amber-400" />;
     default:
       return <Type className="h-3 w-3 text-gray-400" />;
   }
@@ -183,18 +186,16 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       return 'No data available';
     }
     
-    // Return compact display of key properties for collapsed view
-    return Object.entries(nestedValues)
-      .map(([key, val]) => {
-        const displayVal = 
-          val === null || val === undefined ? 'N/A' :
-          typeof val === 'object' ? (Array.isArray(val) ? `[${val.length}]` : `{...}`) :
-          String(val).substring(0, 15);
-        
-        return `${key}: ${displayVal}`;
-      })
-      .slice(0, 3)  // Only show first 3 properties
-      .join(' | ');
+    // Display first item for collapsed view
+    const firstKey = Object.keys(nestedValues)[0];
+    const firstVal = nestedValues[firstKey];
+    
+    const displayVal = 
+      firstVal === null || firstVal === undefined ? 'N/A' :
+      typeof firstVal === 'object' ? (Array.isArray(firstVal) ? `[Array]` : `{Object}`) :
+      String(firstVal).substring(0, 15);
+    
+    return `${feature.name}.${firstKey}: ${displayVal}...`;
   };
 
   const categoryColor: Record<string, string> = {
@@ -216,10 +217,12 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
         const fullKey = prefix ? `${prefix}.${key}` : key;
         const isNested = val && typeof val === 'object' && !Array.isArray(val) && output.outputs;
         
+        const formattedValue = formatValue(val, output.type);
+        
         if (isNested && output.outputs) {
           return (
             <div key={fullKey} className="space-y-1">
-              <div className="text-xs font-medium text-gray-400 mb-1">{output.name}:</div>
+              <div className="text-xs font-medium text-gray-400 mb-1">{feature.name}.{output.name}:</div>
               <div className="ml-4">
                 {renderNestedObject(val, output.outputs, fullKey)}
               </div>
@@ -227,11 +230,9 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
           );
         }
 
-        const formattedValue = formatValue(val, output.type);
-        
         return (
           <div key={fullKey} className="flex justify-between items-center py-1 hover:bg-gray-800/50 rounded">
-            <span className="font-mono text-xs text-gray-400">{output.name}</span>
+            <span className="font-mono text-xs text-gray-400">{feature.name}.{output.name}</span>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs text-gray-200">
                 {formattedValue.display}
@@ -257,20 +258,20 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
     };
 
     return (
-      <div className="grid gap-1 mt-2">
+      <div className="grid gap-1 mt-2 bg-gray-800/50 p-2 rounded">
         {renderNestedObject(value.raw, feature.outputs)}
       </div>
     );
   };
 
   const renderSimpleValue = () => {
-    if (!value.raw) return null;
+    if (value.raw === null || value.raw === undefined) return null;
     
     return (
       <div className="font-mono text-xs flex items-center gap-2">
         <span className="text-gray-400">{feature.name}:</span>
         <span className="text-gray-200">
-          {value.type === 'boolean' ? (value.raw ? 'Yes' : 'No') : value.display}
+          {feature.type === 'boolean' ? (value.raw ? 'Yes' : 'No') : value.display}
         </span>
       </div>
     );
@@ -340,31 +341,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
             </div>
             <p className="text-sm text-gray-400">{feature.description}</p>
             
-            {feature.outputs && value.raw && (
-              <div className="bg-gray-800/50 p-2 rounded space-y-1">
-                <h4 className="text-xs font-semibold text-gray-300 mb-1">Output Properties</h4>
-                {Object.entries(feature.outputs).map(([key, output]) => (
-                  <div key={key} className="bg-gray-800 p-1.5 rounded flex justify-between items-start">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <code className="text-xs font-bold">{key}</code>
-                        <Badge variant="outline" className="text-xs">
-                          {output.type}
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-gray-400 mt-0.5">{output.description}</p>
-                    </div>
-                    <div className="font-mono text-xs bg-gray-900 px-2 py-1 rounded max-w-[50%] overflow-hidden text-ellipsis">
-                      {value.raw[key] !== undefined ? 
-                        (typeof value.raw[key] === 'object' ? 
-                          JSON.stringify(value.raw[key]).substring(0, 30) + "..." : 
-                          String(value.raw[key])) : 
-                        'undefined'}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            {feature.outputs && value.raw && renderNestedValues()}
             
             <div className="bg-gray-800 p-2 rounded flex items-start gap-2">
               <Code size={16} className="mt-1 text-gray-400" />

@@ -1,3 +1,4 @@
+
 detectionFeatures:
   - id: browser_info
     name: Browser Information
@@ -84,7 +85,7 @@ detectionFeatures:
     name: Fingerprint Data
     codeName: fingerprint_data
     type: object
-    code: "(async () => { const fp = await FingerprintJS.load(); const result = await fp.get(); return { visitorId: result.visitorId, confidence: result.confidence.score, components: result.components }; })()"
+    code: "(async () => { const fp = await FingerprintJS.load(); const result = await fp.get(); return { visitorId: result.visitorId, confidence: result.confidence.score, userAgent: result.components.userAgent, webDriver: result.components.webDriver, language: result.components.language, platform: result.components.platform, touchSupport: result.components.touchSupport }; })()"
     description: Comprehensive fingerprint data from FingerprintJS
     category: fingerprinting
     dependency: fingerprintjs
@@ -97,50 +98,45 @@ detectionFeatures:
         name: Confidence Score
         type: number
         description: Confidence score of the fingerprint
-      components:
-        name: Components Data
+      userAgent:
+        name: User Agent
+        type: string
+        description: Browser user agent string
+      webDriver:
+        name: Web Driver
+        type: boolean
+        description: Whether web driver is available
+      language:
+        name: Language
+        type: string
+        description: Browser language
+      platform:
+        name: Platform
+        type: string
+        description: Operating system platform
+      touchSupport:
+        name: Touch Support Details
         type: object
-        description: Raw component values used for fingerprinting
+        description: Touch support capabilities
         outputs:
-          userAgent:
-            name: User Agent
-            type: string
-            description: Browser user agent string
-          webDriver:
-            name: Web Driver
+          maxTouchPoints:
+            name: Max Touch Points
+            type: number
+            description: Maximum number of touch points supported
+          touchEvent:
+            name: Touch Event Support
             type: boolean
-            description: Whether web driver is available
-          language:
-            name: Language
-            type: string
-            description: Browser language
-          platform:
-            name: Platform
-            type: string
-            description: Operating system platform
-          touchSupport:
-            name: Touch Support Details
-            type: object
-            description: Touch support capabilities
-            outputs:
-              maxTouchPoints:
-                name: Max Touch Points
-                type: number
-                description: Maximum number of touch points supported
-              touchEvent:
-                name: Touch Event Support
-                type: boolean
-                description: Whether touch events are supported
-              touchStart:
-                name: Touch Start Support
-                type: boolean
-                description: Whether touchstart event is supported
+            description: Whether touch events are supported
+          touchStart:
+            name: Touch Start Support
+            type: boolean
+            description: Whether touchstart event is supported
 
   - id: user_agent
     name: User Agent
     codeName: user_agent
     type: string
-    code: navigator.userAgent
+    code: "navigator.userAgent"
     description: The user agent string provides information about the browser and operating system. Bots often use fake or inconsistent user agents that can be detected.
     category: browser
     
@@ -148,7 +144,7 @@ detectionFeatures:
     name: Browser Languages
     codeName: browser_languages
     type: array
-    code: navigator.languages || []
+    code: "navigator.languages || []"
     description: Human users typically have consistent language preferences set in their browsers. Bots may have missing or inconsistent language settings.
     category: browser
     
@@ -156,7 +152,7 @@ detectionFeatures:
     name: Time Zone
     codeName: timezone
     type: string
-    code: Intl.DateTimeFormat().resolvedOptions().timeZone
+    code: "Intl.DateTimeFormat().resolvedOptions().timeZone"
     description: The browser time zone can be compared with the IP geolocation. Mismatches can indicate bot activity or VPN usage.
     category: browser
     
@@ -164,7 +160,7 @@ detectionFeatures:
     name: Browser Plugins
     codeName: browser_plugins
     type: array
-    code: Array.from(navigator.plugins).map(p => p.name)
+    code: "Array.from(navigator.plugins).map(p => p.name)"
     description: The presence and variety of plugins can help identify real browsers. Bots typically have few or no plugins.
     category: browser
     
@@ -172,7 +168,7 @@ detectionFeatures:
     name: WebGL Renderer
     codeName: webgl_renderer
     type: string
-    code: "const canvas = document.createElement('canvas'); const gl = canvas.getContext('webgl'); gl?.getExtension('WEBGL_debug_renderer_info') ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : null"
+    code: "(() => { const canvas = document.createElement('canvas'); const gl = canvas.getContext('webgl'); return gl && gl.getExtension('WEBGL_debug_renderer_info') ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : null; })()"
     description: WebGL renderer information can identify the graphics hardware. This is difficult for bots to spoof accurately.
     category: hardware
     
@@ -188,7 +184,7 @@ detectionFeatures:
     name: CPU Cores
     codeName: cpu_cores
     type: number
-    code: navigator.hardwareConcurrency || 0
+    code: "navigator.hardwareConcurrency || 0"
     description: The number of logical processors can help identify the device type. Bots often have unrealistic or inconsistent values.
     category: hardware
     

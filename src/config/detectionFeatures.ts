@@ -8,6 +8,7 @@ export interface FeatureValue {
   name: string;
   type: 'string' | 'number' | 'array' | 'object' | 'boolean';
   description: string;
+  outputs?: Record<string, FeatureValue>;
 }
 
 export interface DetectionFeature {

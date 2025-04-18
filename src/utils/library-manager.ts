@@ -21,13 +21,22 @@ export const getClientJS = async (): Promise<any> => {
 
   try {
     // Check if ClientJS exists in window
-    if (typeof window.ClientJS === 'undefined') {
+    if (typeof (window as any).ClientJS === 'undefined') {
       // Try to dynamically load ClientJS
       try {
-        const ClientJS = await import('clientjs');
-        const clientjs = new ClientJS.default();
-        libraryInstances.clientjs = clientjs;
-        return clientjs;
+        // ClientJS doesn't have a proper default export, so we need to handle it differently
+        await import('clientjs');
+        
+        // After import, check if it's available in the window object
+        if (typeof (window as any).ClientJS === 'function') {
+          const clientjs = new (window as any).ClientJS();
+          libraryInstances.clientjs = clientjs;
+          return clientjs;
+        } else {
+          console.error('ClientJS was imported but is not available in the window object');
+          toast.error('Failed to initialize ClientJS library');
+          return null;
+        }
       } catch (e) {
         console.error('Failed to load ClientJS from npm:', e);
         toast.error('Failed to load ClientJS library');
@@ -35,8 +44,8 @@ export const getClientJS = async (): Promise<any> => {
       }
     }
 
-    // Initialize ClientJS
-    const clientjs = new window.ClientJS();
+    // Initialize ClientJS from window object
+    const clientjs = new (window as any).ClientJS();
     libraryInstances.clientjs = clientjs;
     return clientjs;
   } catch (error) {
@@ -55,7 +64,7 @@ export const getFingerprintJS = async (): Promise<any> => {
 
   try {
     // Check if FingerprintJS exists in window
-    if (typeof window.FingerprintJS === 'undefined') {
+    if (typeof (window as any).FingerprintJS === 'undefined') {
       // Try to load from npm package
       try {
         const fpjs = await import('@fingerprintjs/fingerprintjs');
@@ -70,7 +79,7 @@ export const getFingerprintJS = async (): Promise<any> => {
       }
     } else {
       // Use window.FingerprintJS
-      const fp = await window.FingerprintJS.load();
+      const fp = await (window as any).FingerprintJS.load();
       libraryInstances.fingerprintjs = fp;
       return fp;
     }
