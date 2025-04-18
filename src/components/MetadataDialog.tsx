@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   HoverCard,
   HoverCardContent,
@@ -85,13 +85,26 @@ const MetadataContent: React.FC<MetadataDialogProps> = (props) => {
 };
 
 export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className="inline-block" style={{ position: 'relative', zIndex: 30 }}>
       <HoverCard>
-        <Drawer shouldScaleBackground={false} direction="right" modal={false}>
+        <Drawer 
+          open={isOpen} 
+          onOpenChange={setIsOpen}
+          shouldScaleBackground={false} 
+          direction="right" 
+          modal={false}
+        >
           <DrawerTrigger asChild>
             <HoverCardTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-5 w-5 p-0"
+                onClick={() => setIsOpen(true)}
+              >
                 <Info className="h-4 w-4 text-gray-400" />
               </Button>
             </HoverCardTrigger>
