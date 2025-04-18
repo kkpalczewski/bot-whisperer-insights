@@ -15,7 +15,7 @@ export interface DetectionFeature {
   type: 'string' | 'number' | 'array' | 'object' | 'boolean';
   code: string;
   description: string;
-  abuse_indication?: {
+  abuse_indication: {
     bot: string;
   };
   category: 'browser' | 'network' | 'behavior' | 'hardware' | 'fingerprinting';
@@ -23,13 +23,23 @@ export interface DetectionFeature {
   outputs?: Record<string, FeatureValue>;
 }
 
-// Dynamic import of all YAML files
-const importAll = (r: Record<string, any>) => {
-  return Object.values(r).map(module => module.default);
-};
+// Import all YAML files statically
+import browserInfoYaml from './detection_rules/browser_features.yaml?raw';
+import hardwareInfoYaml from './detection_rules/hardware_info.yaml?raw';
+import networkInfoYaml from './detection_rules/network_info.yaml?raw';
+import fingerprintjsDataYaml from './detection_rules/fingerprintjs_data.yaml?raw';
+import canvasFingerprintYaml from './detection_rules/canvas_fingerprint.yaml?raw';
+import clientjsDataYaml from './detection_rules/clientjs_data.yaml?raw';
 
-// Import all files that match the pattern
-const yamlFiles = importAll(import.meta.glob('./detection_rules/*.yaml', { eager: true }));
+// Parse each YAML file and combine
+const yamlFiles = [
+  browserInfoYaml,
+  hardwareInfoYaml,
+  networkInfoYaml,
+  fingerprintjsDataYaml,
+  canvasFingerprintYaml,
+  clientjsDataYaml
+];
 
 export const features: DetectionFeature[] = yamlFiles.flatMap(file => {
   try {

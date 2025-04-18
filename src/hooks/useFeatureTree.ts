@@ -15,7 +15,6 @@ export interface FeatureNode {
   description?: string;
   error?: string;
   isTruncated?: boolean;
-  expectedType?: string;
 }
 
 const formatValue = (val: any, error?: string): string | boolean | undefined => {
@@ -38,28 +37,6 @@ export const useFeatureTree = (feature: DetectionFeature) => {
   const [flattenedNodes, setFlattenedNodes] = useState<FeatureNode[]>([]);
   const [hasError, setHasError] = useState(false);
 
-  const getExpectedType = (path: string = feature.codeName, outputs?: Record<string, any>): string | undefined => {
-    if (path === feature.codeName) {
-      return feature.type;
-    }
-    
-    const parts = path.split('.');
-    if (parts.length < 2) return undefined;
-    
-    // Get the last part of the path, which is the key
-    const key = parts[parts.length - 1];
-    
-    // Get the parent path
-    const parentPath = parts.slice(0, parts.length - 1).join('.');
-    
-    // If we have outputs for the parent, try to find the key in there
-    if (outputs && key in outputs) {
-      return outputs[key].type;
-    }
-    
-    return undefined;
-  };
-
   const buildFeatureTree = (
     value: any,
     path: string = feature.codeName,
@@ -68,7 +45,6 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     error?: string
   ): FeatureNode[] => {
     if (!value || typeof value !== 'object' || Array.isArray(value)) {
-      const expectedType = getExpectedType(path, outputs);
       return [{
         id: path,
         feature: path,
@@ -78,15 +54,13 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         children: [],
         isExpanded: false,
         description: outputs?.description || feature.description,
-        error,
-        expectedType
+        error
       }];
     }
 
     return Object.entries(value).flatMap(([key, val]) => {
       const output = outputs?.[key];
       const currentPath = `${path}.${key}`;
-      const expectedType = getExpectedType(currentPath, outputs);
       
       if (val && typeof val === 'object' && !Array.isArray(val)) {
         const children = buildFeatureTree(val, currentPath, level + 1, output?.outputs, error);
@@ -99,8 +73,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
           children,
           isExpanded: false,
           description: output?.description || (level === 0 ? feature.description : undefined),
-          error,
-          expectedType
+          error
         }];
       }
       
@@ -113,8 +86,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         children: [],
         isExpanded: false,
         description: output?.description || (level === 0 ? feature.description : undefined),
-        error,
-        expectedType
+        error
       }];
     });
   };
@@ -154,11 +126,11 @@ export const useFeatureTree = (feature: DetectionFeature) => {
       if (result.error) {
         setHasError(true);
         toast.error(`Error evaluating ${feature.name}: ${result.error}`);
-        const tree = buildFeatureTree(result.value, feature.codeName, 0, feature.outputs, result.error);
+        const tree = buildFeatureTree(result.value, feature.codeName, 0, undefined, result.error);
         setFeatureTree(tree);
         setFlattenedNodes(flattenTree(tree));
       } else {
-        const tree = buildFeatureTree(result.value, feature.codeName, 0, feature.outputs);
+        const tree = buildFeatureTree(result.value);
         setFeatureTree(tree);
         setFlattenedNodes(flattenTree(tree));
         setHasError(false);
@@ -167,7 +139,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
       setHasError(true);
       const errorMessage = (error as Error).message;
       toast.error(`Error evaluating ${feature.name}: ${errorMessage}`);
-      const tree = buildFeatureTree({}, feature.codeName, 0, feature.outputs, errorMessage);
+      const tree = buildFeatureTree({}, feature.codeName, 0, undefined, errorMessage);
       setFeatureTree(tree);
       setFlattenedNodes(flattenTree(tree));
     } finally {
