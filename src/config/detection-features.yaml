@@ -1,4 +1,107 @@
 detectionFeatures:
+  - id: browser_info
+    name: Browser Information
+    codeName: browser_info
+    type: object
+    code: "(() => { const fp = new ClientJS(); return { browser: fp.getBrowser(), browserVersion: fp.getBrowserVersion(), engine: fp.getEngine(), engineVersion: fp.getEngineVersion() }; })()"
+    description: Comprehensive browser information collected using ClientJS
+    category: browser
+    dependency: clientjs
+    outputs:
+      browser:
+        name: Browser Name
+        type: string
+        description: The name of the browser being used
+      browserVersion:
+        name: Browser Version
+        type: string
+        description: The version of the browser
+      engine:
+        name: Browser Engine
+        type: string
+        description: The browser's rendering engine
+      engineVersion:
+        name: Engine Version
+        type: string
+        description: The version of the browser engine
+
+  - id: device_info
+    name: Device Information
+    codeName: device_info
+    type: object
+    code: "(() => { const fp = new ClientJS(); return { os: fp.getOS(), osVersion: fp.getOSVersion(), device: fp.getDevice(), deviceType: fp.getDeviceType(), deviceVendor: fp.getDeviceVendor() }; })()"
+    description: Comprehensive device information collected using ClientJS
+    category: hardware
+    dependency: clientjs
+    outputs:
+      os:
+        name: Operating System
+        type: string
+        description: The operating system name
+      osVersion:
+        name: OS Version
+        type: string
+        description: The operating system version
+      device:
+        name: Device
+        type: string
+        description: The device name
+      deviceType:
+        name: Device Type
+        type: string
+        description: The type of device (desktop, mobile, tablet)
+      deviceVendor:
+        name: Device Vendor
+        type: string
+        description: The manufacturer of the device
+
+  - id: screen_info
+    name: Screen Information
+    codeName: screen_info
+    type: object
+    code: "{ width: screen.width, height: screen.height, colorDepth: screen.colorDepth, pixelRatio: window.devicePixelRatio }"
+    description: Detailed information about the device's screen capabilities
+    category: hardware
+    outputs:
+      width:
+        name: Screen Width
+        type: number
+        description: The width of the screen in pixels
+      height:
+        name: Screen Height
+        type: number
+        description: The height of the screen in pixels
+      colorDepth:
+        name: Color Depth
+        type: number
+        description: The color depth of the screen
+      pixelRatio:
+        name: Device Pixel Ratio
+        type: number
+        description: The ratio between physical pixels and logical pixels
+
+  - id: fingerprint_data
+    name: Fingerprint Data
+    codeName: fingerprint_data
+    type: object
+    code: "(async () => { const fp = await FingerprintJS.load(); const result = await fp.get(); return { visitorId: result.visitorId, confidence: result.confidence.score, components: result.components }; })()"
+    description: Comprehensive fingerprint data from FingerprintJS
+    category: fingerprinting
+    dependency: fingerprintjs
+    outputs:
+      visitorId:
+        name: Visitor ID
+        type: string
+        description: Unique visitor identifier
+      confidence:
+        name: Confidence Score
+        type: number
+        description: Confidence score of the fingerprint
+      components:
+        name: Components
+        type: object
+        description: Raw component values used for fingerprinting
+
   - id: user_agent
     name: User Agent
     codeName: user_agent
@@ -22,14 +125,6 @@ detectionFeatures:
     code: Intl.DateTimeFormat().resolvedOptions().timeZone
     description: The browser time zone can be compared with the IP geolocation. Mismatches can indicate bot activity or VPN usage.
     category: browser
-    
-  - id: screen_resolution
-    name: Screen Resolution
-    codeName: screen_resolution
-    type: object
-    code: "{ width: screen.width, height: screen.height, colorDepth: screen.colorDepth }"
-    description: Bots often report common or unrealistic screen dimensions. Headless browsers may have unusual resolutions.
-    category: hardware
     
   - id: browser_plugins
     name: Browser Plugins

@@ -1,9 +1,14 @@
+
 import { parse } from 'yaml';
 
 // @ts-ignore
 import featuresYaml from '../config/detection-features.yaml?raw';
 
-const parsed = parse(featuresYaml);
+export interface FeatureValue {
+  name: string;
+  type: 'string' | 'number' | 'array' | 'object' | 'boolean';
+  description: string;
+}
 
 export interface DetectionFeature {
   id: string;
@@ -14,6 +19,7 @@ export interface DetectionFeature {
   description: string;
   category: 'browser' | 'network' | 'behavior' | 'hardware' | 'fingerprinting';
   dependency?: string;
+  outputs?: Record<string, FeatureValue>;
 }
 
 // Third-party fingerprinting libraries info

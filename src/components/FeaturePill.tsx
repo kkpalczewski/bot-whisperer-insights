@@ -11,11 +11,10 @@ interface FeaturePillProps {
   feature: DetectionFeature;
 }
 
-// Define a proper type for the return value of formatValue
 interface FormattedValue {
   display: string;
   raw: any;
-  error?: string; // Make error optional
+  error?: string;
 }
 
 export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
@@ -23,11 +22,25 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  // Format value based on type and for display
   const formatValue = (val: any, type: string): FormattedValue => {
     try {
       if (val === null || val === undefined) {
         return { display: 'Not available', raw: null };
+      }
+
+      // Handle nested features
+      if (feature.outputs && typeof val === 'object') {
+        const formattedOutputs = Object.entries(val).reduce((acc, [key, value]) => {
+          const outputConfig = feature.outputs?.[key];
+          if (outputConfig) {
+            acc[key] = formatValue(value, outputConfig.type).raw;
+          }
+          return acc;
+        }, {} as Record<string, any>);
+        return {
+          display: JSON.stringify(formattedOutputs, null, 2),
+          raw: formattedOutputs
+        };
       }
 
       switch (type) {
@@ -125,7 +138,11 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
               </Badge>
               <div className="flex items-center justify-between w-full">
                 <div className="font-mono text-xs bg-gray-800 px-2 py-1 rounded max-h-24 overflow-y-auto break-all">
-                  <pre className="whitespace-pre-wrap">{value?.display || String(value)}</pre>
+                  <pre className="whitespace-pre-wrap">
+                    {feature.outputs 
+                      ? 'Nested feature with ' + Object.keys(feature.outputs).length + ' properties'
+                      : value?.display || String(value)}
+                  </pre>
                 </div>
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-2 flex-shrink-0">
@@ -144,6 +161,29 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
               <code className="text-xs bg-gray-900 px-2 py-1 rounded">{feature.type}</code>
             </div>
             <p className="text-sm text-gray-400">{feature.description}</p>
+            {feature.outputs && (
+              <div className="mt-4 space-y-2">
+                <h4 className="text-sm font-medium text-gray-300">Output Properties:</h4>
+                <div className="grid gap-2">
+                  {Object.entries(feature.outputs).map(([key, output]) => (
+                    <div key={key} className="bg-gray-800/50 p-2 rounded">
+                      <div className="flex items-center justify-between">
+                        <code className="text-xs">{key}</code>
+                        <Badge variant="outline" className="text-xs">
+                          {output.type}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1">{output.description}</p>
+                      {value.raw && value.raw[key] && (
+                        <div className="mt-1 font-mono text-xs text-gray-300">
+                          Value: {JSON.stringify(value.raw[key])}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="bg-gray-800 p-3 rounded flex items-start gap-2">
               <Code size={16} className="mt-1 text-gray-400" />
               <pre className="text-xs overflow-x-auto whitespace-pre-wrap flex-1 text-gray-300">
