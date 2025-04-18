@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { FormattedValue } from '../feature/FormattedValue';
+import { features } from '@/config/detectionFeatures';
 
 interface MetadataContentProps {
   feature: string;
@@ -24,6 +25,15 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   const displayValue = isValueExpanded ? value : 
     (lines.length > 3 ? lines.slice(0, 3).join('\n') + '\n...' : 
       value.length > 150 ? value.slice(0, 150) + '...' : value);
+  
+  // Find feature definition from config to get abuse indication
+  const featureItem = features.find(f => 
+    props.id.startsWith(f.codeName) || 
+    (f.dependency && props.id.startsWith(f.dependency))
+  );
+  
+  // Get the abuse indication for bots if available
+  const abuseIndication = featureItem?.abuse_indication?.bot;
 
   return (
     <div className="space-y-3">
@@ -68,6 +78,13 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
         <div>
           <h4 className="text-sm font-medium mb-1">Description</h4>
           <p className="text-sm text-gray-400">{props.description}</p>
+        </div>
+      )}
+
+      {abuseIndication && (
+        <div>
+          <h4 className="text-sm font-medium mb-1">Bot Abuse Indication</h4>
+          <p className="text-sm text-yellow-400">{abuseIndication}</p>
         </div>
       )}
 

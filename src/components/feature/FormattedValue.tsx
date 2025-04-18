@@ -19,9 +19,18 @@ export const FormattedValue: React.FC<{
 
   // Check if the value is an array (it will be a string but formatted as [item1, item2])
   if (typeof value === 'string') {
-    // Handle arrays that already have brackets
+    // Handle arrays
     if (value.startsWith('[') && value.endsWith(']')) {
-      return <span className="text-[#8B5CF6]">{value}</span>;
+      try {
+        // Try to parse and pretty format arrays
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+          return <span className="text-[#8B5CF6]">{value}</span>;
+        }
+      } catch {
+        // If parsing fails, still format it as an array
+        return <span className="text-[#8B5CF6]">{value}</span>;
+      }
     }
     
     // Handle objects
