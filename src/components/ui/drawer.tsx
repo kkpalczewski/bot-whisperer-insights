@@ -36,27 +36,26 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => {
-  // Create a separate props object to pass to DrawerOverlay
-  const overlayProps = {
-    onClick: (e: React.MouseEvent) => {
-      e.stopPropagation();
-      // Only trigger onOpenChange on the content props, not the overlay props
-      if (props.onOpenChange) {
-        props.onOpenChange(false);
-      }
+>(({ className, children, onOpenChange, ...props }, ref) => {
+  // Extract onOpenChange from the content props
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Call onOpenChange if it exists to close the drawer
+    if (onOpenChange) {
+      onOpenChange(false);
     }
   };
 
   return (
     <DrawerPortal>
-      <DrawerOverlay {...overlayProps} />
+      <DrawerOverlay onClick={handleOverlayClick} />
       <DrawerPrimitive.Content
         ref={ref}
         className={cn(
           "fixed inset-y-0 right-0 z-50 h-screen w-[400px] border-l bg-background p-6 focus:outline-none",
           className
         )}
+        onOpenChange={onOpenChange}
         {...props}
       >
         {children}
