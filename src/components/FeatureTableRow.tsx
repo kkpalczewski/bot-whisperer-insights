@@ -67,6 +67,11 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
               value={value}
               parent={parent}
               description={description}
+              error={error}
+              level={level}
+              id={feature}
+              hasChildren={hasChildren}
+              isExpanded={isExpanded}
             />
             {error && (
               <TooltipProvider>
