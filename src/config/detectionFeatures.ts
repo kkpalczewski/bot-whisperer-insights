@@ -1,17 +1,15 @@
-
 import { parse } from 'yaml';
 
-// Import the YAML content using Vite's raw loader
 // @ts-ignore
 import featuresYaml from '../config/detection-features.yaml?raw';
 
-// Parse the YAML content into JavaScript objects
 const parsed = parse(featuresYaml);
 
-// Configuration for bot detection features
 export interface DetectionFeature {
   id: string;
   name: string;
+  codeName: string;
+  type: 'string' | 'number' | 'array' | 'object';
   code: string;
   description: string;
   category: 'browser' | 'network' | 'behavior' | 'hardware' | 'fingerprinting';

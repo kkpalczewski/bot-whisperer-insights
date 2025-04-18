@@ -1,103 +1,136 @@
-
 detectionFeatures:
-  - id: user-agent
+  - id: user_agent
     name: User Agent
+    codeName: user_agent
+    type: string
     code: navigator.userAgent
     description: The user agent string provides information about the browser and operating system. Bots often use fake or inconsistent user agents that can be detected.
     category: browser
     
-  - id: languages
+  - id: browser_languages
     name: Browser Languages
+    codeName: browser_languages
+    type: array
     code: navigator.languages || []
     description: Human users typically have consistent language preferences set in their browsers. Bots may have missing or inconsistent language settings.
     category: browser
     
-  - id: time-zone
+  - id: time_zone
     name: Time Zone
+    codeName: time_zone
+    type: string
     code: Intl.DateTimeFormat().resolvedOptions().timeZone
     description: The browser time zone can be compared with the IP geolocation. Mismatches can indicate bot activity or VPN usage.
     category: browser
     
-  - id: screen-size
+  - id: screen_size
     name: Screen Resolution
+    codeName: screen_size
+    type: object
     code: "{ width: screen.width, height: screen.height, colorDepth: screen.colorDepth }"
     description: Bots often report common or unrealistic screen dimensions. Headless browsers may have unusual resolutions.
     category: hardware
     
-  - id: plugins
+  - id: browser_plugins
     name: Browser Plugins
+    codeName: browser_plugins
+    type: array
     code: Array.from(navigator.plugins).map(p => p.name)
     description: The presence and variety of plugins can help identify real browsers. Bots typically have few or no plugins.
     category: browser
     
-  - id: webgl
+  - id: webgl_info
     name: WebGL Fingerprint
+    codeName: webgl_info
+    type: string
     code: "const canvas = document.createElement('canvas'); const gl = canvas.getContext('webgl'); gl?.getExtension('WEBGL_debug_renderer_info') ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : null"
     description: WebGL renderer information can identify the graphics hardware. This is difficult for bots to spoof accurately.
     category: hardware
     
-  - id: canvas
+  - id: canvas_fingerprint
     name: Canvas Fingerprint
+    codeName: canvas_fingerprint
+    type: string
     code: "(() => { const canvas = document.createElement('canvas'); canvas.width = 240; canvas.height = 60; const ctx = canvas.getContext('2d'); if (ctx) { ctx.fillText('BotWhisperer', 10, 50); return canvas.toDataURL(); } return null; })()"
     description: Canvas rendering varies by device and browser. The subtle differences in how text and shapes are rendered create a unique fingerprint that is hard to fake.
     category: fingerprinting
     
-  - id: cpu-cores
+  - id: cpu_cores
     name: CPU Cores
+    codeName: cpu_cores
+    type: number
     code: navigator.hardwareConcurrency || 0
     description: The number of logical processors can help identify the device type. Bots often have unrealistic or inconsistent values.
     category: hardware
     
-  - id: memory
+  - id: device_memory
     name: Device Memory
+    codeName: device_memory
+    type: number
     code: "(navigator as any).deviceMemory || 'Not available'"
     description: The amount of RAM available can help identify device capabilities. This is often spoofed or unavailable in bot environments.
     category: hardware
     
-  - id: touch-support
+  - id: touch_support
     name: Touch Support
+    codeName: touch_support
+    type: object
     code: "{ maxTouchPoints: navigator.maxTouchPoints, touchEvent: 'ontouchstart' in window, touchPoints: navigator.maxTouchPoints > 0 }"
     description: Touch capabilities can indicate device type. Inconsistencies between touch support and device type may indicate spoofing.
     category: hardware
     
-  - id: connection-type
+  - id: network_info
     name: Network Information
+    codeName: network_info
+    type: object
     code: "(navigator as any).connection ? { effectiveType: (navigator as any).connection.effectiveType, rtt: (navigator as any).connection.rtt } : 'Not available'"
     description: Network characteristics can help identify unusual connection patterns typical of bot networks or data centers.
     category: network
     
-  - id: browser-features
+  - id: browser_features
     name: Browser Features
+    codeName: browser_features
+    type: object
     code: "{ localStorage: !!window.localStorage, sessionStorage: !!window.sessionStorage, indexedDB: !!window.indexedDB, webWorker: !!window.Worker, webGL: !!window.WebGLRenderingContext }"
     description: Support for modern browser features can help identify outdated browsers or simplified bot environments that lack full feature sets.
     category: browser
     
-  - id: audio-context
+  - id: audio_context
     name: Audio Context Fingerprint
+    codeName: audio_context
+    type: string
     code: "(() => { try { const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)(); return { sampleRate: audioCtx.sampleRate, state: audioCtx.state, baseLatency: audioCtx.baseLatency || 'N/A' }; } catch (e) { return 'Not available'; } })()"
     description: The audio processing capabilities of a device can create a unique fingerprint. Bots typically have limited or non-standard audio capabilities.
     category: fingerprinting
     
-  - id: fonts-detection
+  - id: fonts_detection
     name: System Fonts Detection
+    codeName: fonts_detection
+    type: object
     code: "(() => { const baseFonts = ['monospace', 'sans-serif', 'serif']; const testString = 'mmMMwWLliI0O&1'; const testSize = '72px'; const h = document.getElementsByTagName('body')[0]; if (!h) return 'No body element'; const s = document.createElement('span'); s.style.fontSize = testSize; s.innerHTML = testString; const defaultWidth = {}; const defaultHeight = {}; for (const font of baseFonts) { s.style.fontFamily = font; h.appendChild(s); defaultWidth[font] = s.offsetWidth; defaultHeight[font] = s.offsetHeight; h.removeChild(s); } return { baseFonts, defaultWidth, defaultHeight }; })()"
     description: The fonts available on a system can be detected and used for fingerprinting. Bots often have limited or standard sets of fonts compared to real user devices.
     category: fingerprinting
     
-  - id: navigator-permissions
+  - id: navigator_permissions
     name: Permissions API
+    codeName: navigator_permissions
+    type: string
     code: "(() => { if (navigator.permissions) { return 'Permissions API available'; } return 'Permissions API not available'; })()"
     description: The Permissions API can reveal what permissions the browser has and whether it supports the modern Permissions API at all. Bots may lack this capability.
     category: browser
     
-  - id: do-not-track
+  - id: do_not_track
     name: Do Not Track Setting
+    codeName: do_not_track
+    type: string
     code: navigator.doNotTrack || (window as any).doNotTrack || navigator.msDoNotTrack || 'Not available'
     description: The Do Not Track setting in the browser can be used as a signal. Most users don't change this from default, so unusual patterns may indicate bot behavior.
     category: browser
     
-  - id: battery-status
+  - id: battery_status
     name: Battery Status
+    codeName: battery_status
+    type: string
     code: "(() => { if ((navigator as any).getBattery) { return 'Battery API available'; } return 'Battery API not available'; })()"
     description: Real devices have battery information. The presence of the Battery API and changing battery states can help identify real devices vs. emulated environments.
     category: hardware
