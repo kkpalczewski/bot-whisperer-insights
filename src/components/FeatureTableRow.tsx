@@ -1,9 +1,14 @@
 
 import React from 'react';
-import { TableRow, TableCell } from '@/components/ui/table';
+import { TableRow, TableCell } from '@/components/ui/button';
 import { FileJson, FileCode, FileText, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 interface FeatureTableRowProps {
   feature: string;
@@ -14,6 +19,7 @@ interface FeatureTableRowProps {
   onToggle?: () => void;
   level?: number;
   error?: string;
+  description?: string;
 }
 
 const getTypeIcon = (value: string | boolean | undefined) => {
@@ -32,7 +38,8 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   hasChildren = false,
   onToggle,
   level = 0,
-  error
+  error,
+  description
 }) => {
   return (
     <TableRow 
@@ -41,21 +48,30 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
       <TableCell className="p-1 pl-4 w-1/2">
         <div className="flex items-center">
           <div style={{ marginLeft: `${level * 16}px` }} className="flex items-center">
-            {hasChildren && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-5 w-5 p-0 mr-1"
-                onClick={onToggle}
-              >
-                {isExpanded ? (
-                  <ChevronDown className="h-4 w-4" />
-                ) : (
-                  <ChevronRight className="h-4 w-4" />
-                )}
-              </Button>
-            )}
-            <span className="font-mono text-xs text-gray-300">{feature}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-5 w-5 p-0 mr-1"
+              onClick={onToggle}
+            >
+              {isExpanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
+            <HoverCard>
+              <HoverCardTrigger>
+                <span className="font-mono text-xs text-gray-300 cursor-help">
+                  {feature}
+                </span>
+              </HoverCardTrigger>
+              {description && (
+                <HoverCardContent className="w-80">
+                  <p className="text-sm">{description}</p>
+                </HoverCardContent>
+              )}
+            </HoverCard>
           </div>
         </div>
       </TableCell>

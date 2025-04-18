@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
+import { DetectionFeature } from '@/config/detectionFeatures';
 import { Code, AlertTriangle, Package, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -221,6 +221,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
                 onToggle={() => toggleNode(node.id)}
                 level={node.level}
                 error={node.error}
+                description={node.description}
               />
             ))}
             {flattenedNodes.length === 0 && (
