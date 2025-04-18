@@ -16,6 +16,20 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const [value, setValue] = useState<any>('Evaluating...');
   const [isOpen, setIsOpen] = useState(false);
 
+  // Format value for display and database storage
+  const formatValue = (val: any): { display: string; raw: any } => {
+    if (typeof val === 'object') {
+      return {
+        display: JSON.stringify(val),
+        raw: val
+      };
+    }
+    return {
+      display: String(val),
+      raw: val
+    };
+  };
+
   useEffect(() => {
     evaluateCode();
   }, []);
@@ -23,14 +37,18 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const evaluateCode = () => {
     try {
       const result = new Function(`return ${feature.code}`)();
-      setValue(typeof result === 'object' ? JSON.stringify(result) : result);
+      const formattedResult = formatValue(result);
+      setValue(formattedResult);
     } catch (error) {
-      setValue(`Error: ${(error as Error).message}`);
+      const errorValue = {
+        display: `Error: ${(error as Error).message}`,
+        raw: { error: (error as Error).message }
+      };
+      setValue(errorValue);
       toast.error(`Error evaluating ${feature.name}: ${(error as Error).message}`);
     }
   };
 
-  // Category color mapping
   const categoryColor: Record<string, string> = {
     browser: 'bg-blue-700/20 text-blue-400',
     network: 'bg-green-700/20 text-green-400',
@@ -44,19 +62,21 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CardHeader className="p-4 cursor-pointer space-y-0" onClick={() => setIsOpen(!isOpen)}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-medium">{feature.name}</h3>
-              <Badge className={`${categoryColor[feature.category]} text-xs`}>{feature.category}</Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <code className="text-xs bg-gray-800 px-2 py-1 rounded">
-                {typeof value === 'string' ? value : JSON.stringify(value)}
-              </code>
-              <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                  <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                </Button>
-              </CollapsibleTrigger>
+            <div className="grid grid-cols-[250px_120px_1fr] gap-4 items-center w-full">
+              <h3 className="text-sm font-medium truncate">{feature.name}</h3>
+              <Badge className={`${categoryColor[feature.category]} text-xs w-fit`}>
+                {feature.category}
+              </Badge>
+              <div className="flex items-center justify-between w-full">
+                <code className="text-xs bg-gray-800 px-2 py-1 rounded max-w-[300px] truncate">
+                  {value?.display || String(value)}
+                </code>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-2">
+                    <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                  </Button>
+                </CollapsibleTrigger>
+              </div>
             </div>
           </div>
         </CardHeader>

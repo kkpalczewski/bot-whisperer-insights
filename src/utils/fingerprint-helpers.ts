@@ -1,4 +1,3 @@
-
 // Helper functions for fingerprinting and data collection
 
 /**
@@ -66,4 +65,17 @@ export const getCanvasFingerprint = () => {
   ctx.fillText('Canvas Fingerprint', 4, 26);
   
   return canvas.toDataURL();
+};
+
+/**
+ * Prepares feature data for database storage
+ */
+export const prepareFeatureDataForStorage = (feature: any) => {
+  return {
+    name: feature.name,
+    category: feature.category,
+    value: feature.value?.raw || feature.value,
+    timestamp: new Date().toISOString(),
+    error: feature.value?.error || null
+  };
 };
