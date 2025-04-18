@@ -8,6 +8,7 @@ import { detectionFeatures, fingerprintingLibraries } from '@/config/detectionFe
 import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const categories = [
   'all',
@@ -22,16 +23,16 @@ const Index = () => {
     : detectionFeatures.filter(f => f.category === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-950 text-gray-200">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <section>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Bot Detection Features</h2>
+              <h2 className="text-2xl font-bold text-white">Bot Detection Features</h2>
               <div className="flex items-center">
-                <Filter size={16} className="mr-2 text-gray-500" />
+                <Filter size={16} className="mr-2 text-gray-400" />
                 <div className="flex gap-1 overflow-x-auto pb-1 hide-scrollbar">
                   {categories.map(category => (
                     <Badge 
@@ -47,15 +48,17 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 gap-4">
-              {filteredFeatures.map((feature) => (
-                <FeaturePill key={feature.id} feature={feature} />
-              ))}
-            </div>
+            <ScrollArea className="h-[60vh] pr-4 rounded-lg">
+              <div className="grid grid-cols-1 gap-4">
+                {filteredFeatures.map((feature) => (
+                  <FeaturePill key={feature.id} feature={feature} />
+                ))}
+              </div>
+            </ScrollArea>
           </section>
 
           <section className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Fingerprinting Libraries</h2>
+            <h2 className="text-2xl font-bold text-white mb-6">Fingerprinting Libraries</h2>
             <div className="grid grid-cols-1 gap-4">
               {fingerprintingLibraries.map((library) => (
                 <LibraryCard key={library.id} library={library} />

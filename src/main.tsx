@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { SessionContextProvider } from '@supabase/auth-helpers-react'
 import App from './App.tsx'
 import './index.css'
+import { ThemeProvider } from 'next-themes'
 
 // Initialize Supabase client - these will need to be replaced with actual values when connected
 // This is just a placeholder until the user connects with the Supabase integration
@@ -12,7 +13,9 @@ const supabaseKey = 'placeholder-key' // This will be replaced when connecting S
 const supabase = createClient(supabaseUrl, supabaseKey)
 
 createRoot(document.getElementById("root")!).render(
-  <SessionContextProvider supabaseClient={supabase}>
-    <App />
-  </SessionContextProvider>
+  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+    <SessionContextProvider supabaseClient={supabase}>
+      <App />
+    </SessionContextProvider>
+  </ThemeProvider>
 );
