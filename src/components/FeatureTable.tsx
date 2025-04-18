@@ -30,10 +30,12 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
         result.push(node);
         count++;
       } else if (count === 3) {
+        // Instead of using "..." as the feature name, we'll use a more descriptive name
+        const remainingCount = nodes.filter(n => n.parent === currentParent).length - 3;
         result.push({
           ...node,
-          feature: '...',
-          value: `${nodes.filter(n => n.parent === currentParent).length - 3} more items`,
+          feature: `${remainingCount} more items`,
+          value: '',
           id: `${currentParent}-more`,
           children: [],
           isExpanded: false,
