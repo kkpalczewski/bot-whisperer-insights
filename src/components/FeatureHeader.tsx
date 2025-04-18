@@ -1,0 +1,59 @@
+
+import React from 'react';
+import { AlertTriangle, Package, Info } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+interface FeatureHeaderProps {
+  name: string;
+  dependency?: string;
+  description?: string;
+  hasError: boolean;
+  onToggleCode: () => void;
+  codeVisible: boolean;
+}
+
+export const FeatureHeader: React.FC<FeatureHeaderProps> = ({
+  name,
+  dependency,
+  description,
+  hasError,
+  onToggleCode,
+  codeVisible
+}) => {
+  return (
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        {hasError && <AlertTriangle size={16} className="text-yellow-500" />}
+        <h3 className="text-sm font-medium">
+          {name}
+          {dependency && <Package size={14} className="inline text-blue-400 ml-1" />}
+        </h3>
+      </div>
+      <div className="flex items-center gap-2">
+        {description && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6 p-0">
+                  <Info className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-xs text-xs">{description}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-xs"
+          onClick={onToggleCode}
+        >
+          {codeVisible ? 'Hide code' : 'Show code'}
+        </Button>
+      </div>
+    </div>
+  );
+};
