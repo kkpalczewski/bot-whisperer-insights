@@ -5,10 +5,6 @@
   type: object
   code: |
     async () => {
-      if (!window.CreepJS) {
-        throw new Error('CreepJS not available');
-      }
-      
       const result = await window.CreepJS.get();
       return {
         fingerprint: result.fingerprint,
