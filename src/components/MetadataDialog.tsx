@@ -101,13 +101,19 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
         </HoverCardContent>
       </HoverCard>
 
-      <SheetContent side="right" className="w-[400px]">
-        <SheetHeader>
-          <SheetTitle>Feature Metadata</SheetTitle>
-        </SheetHeader>
-        <ScrollArea className="h-[calc(100vh-80px)] mt-6">
-          <MetadataContent {...props} />
-        </ScrollArea>
+      <SheetContent 
+        side="right" 
+        className="w-[400px] pointer-events-none"
+        style={{ pointerEvents: 'none' }}
+      >
+        <div className="h-full pointer-events-auto" style={{ pointerEvents: 'auto' }}>
+          <SheetHeader>
+            <SheetTitle>Feature Metadata</SheetTitle>
+          </SheetHeader>
+          <ScrollArea className="h-[calc(100vh-80px)] mt-6">
+            <MetadataContent {...props} />
+          </ScrollArea>
+        </div>
       </SheetContent>
     </Sheet>
   );
