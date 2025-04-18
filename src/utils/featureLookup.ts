@@ -38,6 +38,7 @@ export const findFeatureInfo = (
         // Navigate through each level of the path
         for (let i = 0; i < pathParts.length; i++) {
           const part = pathParts[i];
+          
           if (currentOutput[part]) {
             // If this is the last part of the path, we've found our target
             if (i === pathParts.length - 1) {
@@ -46,6 +47,7 @@ export const findFeatureInfo = (
               featureDefinition = feature;
               break;
             }
+            
             // Otherwise, go deeper if there are more outputs
             if (currentOutput[part].outputs) {
               currentOutput = currentOutput[part].outputs;
@@ -55,8 +57,35 @@ export const findFeatureInfo = (
               break;
             }
           } else {
-            found = false;
-            break;
+            // If the exact key doesn't exist, check if there are any keys that contain this part
+            // This is useful for array indices or dynamic keys
+            let foundNestedKey = false;
+            
+            for (const key of Object.keys(currentOutput)) {
+              // Check if the key contains the path part or represents an array index pattern
+              if (key.includes(part) || (part.match(/^\d+$/) && key.includes('[index]'))) {
+                // If this is the last part of the path, we've found our target
+                if (i === pathParts.length - 1) {
+                  description = currentOutput[key].description;
+                  abuseIndication = currentOutput[key].abuse_indication?.bot;
+                  featureDefinition = feature;
+                  foundNestedKey = true;
+                  break;
+                }
+                
+                // Otherwise, go deeper if there are more outputs
+                if (currentOutput[key].outputs) {
+                  currentOutput = currentOutput[key].outputs;
+                  foundNestedKey = true;
+                  break;
+                }
+              }
+            }
+            
+            if (!foundNestedKey) {
+              found = false;
+              break;
+            }
           }
         }
         
