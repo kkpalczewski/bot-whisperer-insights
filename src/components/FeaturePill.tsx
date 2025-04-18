@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DetectionFeature } from '@/config/detectionFeatures';
-import { ChevronDown, Clipboard, Check, Code, TrendingUp } from 'lucide-react';
+import { ChevronDown, Code } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
@@ -13,27 +13,21 @@ interface FeaturePillProps {
 }
 
 export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
-  const [value, setValue] = useState<any>('Click to evaluate');
-  const [copied, setCopied] = useState(false);
+  const [value, setValue] = useState<any>('Evaluating...');
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    evaluateCode();
+  }, []);
 
   const evaluateCode = () => {
     try {
-      // Use Function constructor to evaluate the code string safely
       const result = new Function(`return ${feature.code}`)();
       setValue(typeof result === 'object' ? JSON.stringify(result) : result);
-      toast.success("Evaluation complete!");
     } catch (error) {
       setValue(`Error: ${(error as Error).message}`);
-      toast.error(`Error: ${(error as Error).message}`);
+      toast.error(`Error evaluating ${feature.name}: ${(error as Error).message}`);
     }
-  };
-
-  const copyCode = () => {
-    navigator.clipboard.writeText(feature.code);
-    setCopied(true);
-    toast.success("Code copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
   };
 
   // Category color mapping
@@ -45,72 +39,36 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
     fingerprinting: 'bg-rose-700/20 text-rose-400'
   };
 
-  const getIconByCategory = () => {
-    const icons: Record<string, React.ReactNode> = {
-      browser: <Code size={16} />,
-      network: <TrendingUp size={16} />,
-      fingerprinting: <Clipboard size={16} />
-    };
-    return icons[feature.category] || <Code size={16} />;
-  };
-
   return (
-    <Card className="w-full mb-4 overflow-hidden dark:bg-gray-900 border-gray-800 shadow-lg hover:shadow-xl transition-all">
+    <Card className="border-b border-gray-800 rounded-none first:rounded-t-lg last:rounded-b-lg">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="pb-2 cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-          <div className="flex justify-between items-center">
+        <CardHeader className="p-4 cursor-pointer space-y-0" onClick={() => setIsOpen(!isOpen)}>
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CardTitle className="text-lg">{feature.name}</CardTitle>
-              <Badge className={`${categoryColor[feature.category]} ml-2`}>{feature.category}</Badge>
+              <h3 className="text-sm font-medium">{feature.name}</h3>
+              <Badge className={`${categoryColor[feature.category]} text-xs`}>{feature.category}</Badge>
             </div>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full">
-                <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-                <span className="sr-only">Toggle</span>
-              </Button>
-            </CollapsibleTrigger>
-          </div>
-          
-          <div className="flex justify-between items-center mt-2">
-            <div className="text-sm font-medium text-white/70">Value:</div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-sm truncate max-w-[300px] text-white/90">
+              <code className="text-xs bg-gray-800 px-2 py-1 rounded">
                 {typeof value === 'string' ? value : JSON.stringify(value)}
-              </span>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="ml-2 h-7 bg-gray-800" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  evaluateCode();
-                }}
-              >
-                Evaluate
-              </Button>
+              </code>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                </Button>
+              </CollapsibleTrigger>
             </div>
           </div>
         </CardHeader>
         
         <CollapsibleContent>
-          <CardContent className="pb-2 pt-0">
-            <p className="text-sm text-gray-300 mb-3">{feature.description}</p>
-            <div className="bg-gray-800 p-3 rounded-md flex items-start gap-2 relative">
-              <Code size={18} className="mt-1 text-gray-400" />
-              <pre className="font-mono text-sm overflow-x-auto whitespace-pre-wrap flex-1 text-gray-300">
+          <CardContent className="p-4 pt-0 space-y-2">
+            <p className="text-sm text-gray-400">{feature.description}</p>
+            <div className="bg-gray-800 p-3 rounded flex items-start gap-2">
+              <Code size={16} className="mt-1 text-gray-400" />
+              <pre className="text-xs overflow-x-auto whitespace-pre-wrap flex-1 text-gray-300">
                 {feature.code}
               </pre>
-              <Button 
-                size="sm" 
-                variant="ghost" 
-                className="absolute top-2 right-2" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  copyCode();
-                }}
-              >
-                {copied ? <Check size={16} /> : <Clipboard size={16} />}
-              </Button>
             </div>
           </CardContent>
         </CollapsibleContent>

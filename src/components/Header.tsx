@@ -10,23 +10,29 @@ export const Header = () => {
   const session = useSession();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const handleAuth = () => {
-    // This is a placeholder - when Supabase is connected, this will use actual auth
+  const handleAuth = async () => {
     if (session) {
-      // In a real app with Supabase connected, this would be:
-      // await supabase.auth.signOut()
-      toast.success("Logged out successfully", {
-        description: "You have been logged out of your account."
-      });
+      try {
+        await supabaseClient.auth.signOut();
+        toast.success("Logged out successfully");
+      } catch (error) {
+        toast.error("Error logging out");
+      }
     } else {
       setIsLoggingIn(true);
-      // Simulate login UI - in a real app this would open Supabase auth UI
-      setTimeout(() => {
-        setIsLoggingIn(false);
-        toast.success("This is a placeholder login message", {
-          description: "Connect Supabase to enable real authentication"
+      try {
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin
+          }
         });
-      }, 1500);
+        if (error) throw error;
+      } catch (error) {
+        toast.error("Error logging in");
+      } finally {
+        setIsLoggingIn(false);
+      }
     }
   };
 
