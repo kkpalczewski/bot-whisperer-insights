@@ -4,8 +4,9 @@
   codeName: browser_plugins
   type: array
   code: |
-    Array.from(navigator.plugins).map((p) => p.name)
+    JSON.stringify(Array.from(navigator.plugins).map((p) => p.name))
   description: List of browser plugins installed and enabled
   abuse_indication:
     bot: Automated browsers typically have no plugins or a very limited set. The absence of common plugins or unusual plugin combinations can indicate bot activity.
   category: browser
+
