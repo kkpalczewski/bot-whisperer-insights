@@ -41,11 +41,11 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
       ? String(value) 
       : String(value);
   
-  // Handle value truncation and formatting
+  // Handle value truncation
   const lines = stringValue.split('\n');
   const isLongValue = lines.length > 3 || stringValue.length > 150;
   
-  // Calculate truncated display value with improved formatting
+  // Calculate truncated display value
   let displayValue = stringValue;
   if (isLongValue && !isValueExpanded) {
     if (lines.length > 3) {
@@ -102,11 +102,11 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
       <TableCell className="py-2 align-top">
         <div className="relative">
           {isLongValue ? (
-            <div className="flex items-start space-x-1">
+            <div className="flex items-start">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <pre className="text-xs font-mono whitespace-pre-wrap break-all text-gray-400 max-h-24 overflow-hidden">
+                    <pre className="text-xs font-mono whitespace-pre-wrap break-all text-gray-400 max-h-24 overflow-y-auto">
                       {displayValue}
                     </pre>
                   </TooltipTrigger>
@@ -120,7 +120,7 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-5 w-5 p-0 flex-shrink-0"
+                className="h-5 w-5 p-0 ml-1 flex-shrink-0"
                 onClick={() => setIsValueExpanded(!isValueExpanded)}
               >
                 {isValueExpanded ? (
