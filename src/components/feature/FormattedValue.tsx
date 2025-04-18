@@ -8,6 +8,7 @@ export const FormattedValue: React.FC<{
     return <span className="text-gray-400">undefined</span>;
   }
 
+  // Handle boolean values directly
   if (typeof value === 'boolean') {
     return value ? (
       <span className="text-emerald-400">true</span>
@@ -41,6 +42,14 @@ export const FormattedValue: React.FC<{
     // Handle special values
     if (value === 'undefined') {
       return <span className="text-gray-400">undefined</span>;
+    }
+
+    // Handle boolean strings - convert them to properly colored booleans
+    if (value === 'true') {
+      return <span className="text-emerald-400">true</span>;
+    }
+    if (value === 'false') {
+      return <span className="text-red-400">false</span>;
     }
   }
 
