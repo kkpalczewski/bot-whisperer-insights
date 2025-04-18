@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { TableRow, TableCell } from '@/components/ui/table';
-import { FileJson, FileCode, FileText, ChevronDown, ChevronRight, AlertTriangle } from 'lucide-react';
+import { FileJson, FileCode, FileText, ChevronDown, ChevronRight, AlertTriangle, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MetadataDialog } from './MetadataDialog';
@@ -27,6 +26,20 @@ const getTypeIcon = (value: string | boolean | undefined) => {
   return <FileJson className="h-4 w-4 text-purple-400" />;
 };
 
+const truncateValue = (value: string | boolean | undefined): { displayValue: string, isTruncated: boolean } => {
+  if (typeof value !== 'string') {
+    return { displayValue: String(value), isTruncated: false };
+  }
+  
+  const lines = value.split('\n');
+  if (lines.length <= 3) {
+    return { displayValue: value, isTruncated: false };
+  }
+  
+  const truncated = lines.slice(0, 3).join('\n') + '\n...';
+  return { displayValue: truncated, isTruncated: true };
+};
+
 export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   feature,
   value,
@@ -39,6 +52,8 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   description,
   isTruncated = false
 }) => {
+  const { displayValue, isTruncated: isValueTruncated } = truncateValue(value);
+
   return (
     <TableRow 
       className={`${isExpanded ? 'bg-gray-800/20' : 'hover:bg-gray-800/50'} ${isTruncated ? 'text-gray-500 italic' : ''}`}
@@ -96,8 +111,22 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
       <TableCell className="p-1 w-[35%] font-mono text-xs font-medium">
         <div className="max-w-full overflow-hidden">
           <span className={`${error ? 'text-gray-400' : 'text-white'} break-all`}>
-            {value === undefined ? 'undefined' : (typeof value === 'boolean' ? value.toString() : value)}
+            {displayValue === undefined ? 'undefined' : displayValue}
           </span>
+          {isValueTruncated && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-5 w-5 p-0 ml-1">
+                    <MoreHorizontal className="h-4 w-4 text-gray-400" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent align="start" className="max-w-[600px] max-h-[400px] overflow-auto">
+                  <p className="text-xs font-mono whitespace-pre-wrap break-all">{value}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
       </TableCell>
       <TableCell className="p-1 w-[15%] text-xs text-gray-400">
