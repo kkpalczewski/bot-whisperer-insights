@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ExternalLink, Fingerprint } from 'lucide-react';
-import { LibraryInfo } from '@/config/detectionFeatures';
+import { LibraryInfo } from '@/config/fingerprintingLibraries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FeaturePill } from './FeaturePill';

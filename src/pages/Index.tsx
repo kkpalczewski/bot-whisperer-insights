@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { FeaturePill } from '@/components/FeaturePill';
 import { LibraryCard } from '@/components/LibraryCard';
@@ -10,11 +11,11 @@ import { Badge } from '@/components/ui/badge';
 
 const categories = [
   'all',
-  ...Array.from(new Set(features.map(f => f.category)))
+  ...Array.from(new Set(features.map(f => f.category))) as string[]
 ];
 
 const Index = () => {
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const filteredFeatures = selectedCategory === 'all' 
     ? features 
@@ -32,7 +33,7 @@ const Index = () => {
               <div className="flex items-center gap-2">
                 <Filter size={16} className="text-gray-400" />
                 <div className="flex gap-1">
-                  {categories.map(category => (
+                  {categories.map((category: string) => (
                     <Badge 
                       key={category}
                       variant={selectedCategory === category ? "default" : "outline"}
