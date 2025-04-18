@@ -1,0 +1,86 @@
+
+- id: fingerprint_data
+  name: Fingerprint Data
+  codeName: fingerprint_data
+  type: object
+  code: |
+    async () => {
+      const fp = await FingerprintJS.load();
+      const result = await fp.get();
+      return {
+        visitorId: result.visitorId,
+        confidence: result.confidence.score,
+        userAgent: result.components.userAgent,
+        webDriver: result.components.webDriver,
+        language: result.components.language,
+        platform: result.components.platform,
+        touchSupport: result.components.touchSupport,
+      };
+    }
+  description: Comprehensive browser fingerprinting data used for visitor identification
+  abuse_indication:
+    bot: Fingerprint consistency across sessions can reveal automated behavior. Low confidence scores, presence of webDriver, or unusual platform combinations often indicate bot activity.
+  category: fingerprinting
+  dependency: fingerprintjs
+  outputs:
+    visitorId:
+      name: Visitor ID
+      type: string
+      description: Unique visitor identifier
+      abuse_indication:
+        bot: Rapidly changing visitor IDs or patterns in ID generation can indicate bot rotation or spoofing attempts.
+    confidence:
+      name: Confidence Score
+      type: number
+      description: Confidence score of the fingerprint
+      abuse_indication:
+        bot: Low confidence scores often indicate spoofed or inconsistent browser characteristics typical of automated tools.
+    userAgent:
+      name: User Agent
+      type: string
+      description: Browser user agent string
+      abuse_indication:
+        bot: Inconsistencies between user agent and actual browser capabilities can reveal spoofed environments.
+    webDriver:
+      name: Web Driver
+      type: boolean
+      description: Whether web driver is available
+      abuse_indication:
+        bot: Direct indicator of automation - presence of webdriver suggests Selenium or similar automation tools.
+    language:
+      name: Language
+      type: string
+      description: Browser language
+      abuse_indication:
+        bot: Mismatches between language settings and IP geolocation can indicate automated traffic.
+    platform:
+      name: Platform
+      type: string
+      description: Operating system platform
+      abuse_indication:
+        bot: Inconsistencies between platform and other system characteristics can reveal virtualized environments.
+    touchSupport:
+      name: Touch Support Details
+      type: object
+      description: Touch support capabilities
+      abuse_indication:
+        bot: Mismatched touch capabilities compared to claimed device type can indicate emulated environments.
+      outputs:
+        maxTouchPoints:
+          name: Max Touch Points
+          type: number
+          description: Maximum number of touch points supported
+          abuse_indication:
+            bot: Unusual values or inconsistencies with device type can indicate emulated touch capabilities.
+        touchEvent:
+          name: Touch Event Support
+          type: boolean
+          description: Whether touch events are supported
+          abuse_indication:
+            bot: Mismatches between touch event support and device type can reveal emulated mobile devices.
+        touchStart:
+          name: Touch Start Support
+          type: boolean
+          description: Whether touchstart event is supported
+          abuse_indication:
+            bot: Inconsistent touch start support compared to other touch capabilities can indicate spoofed mobile devices.

@@ -1,0 +1,11 @@
+
+- id: has_touch_support
+  name: Touch Support
+  codeName: has_touch_support
+  type: boolean
+  code: |
+    'ontouchstart' in window
+  description: Whether the device supports touch input
+  abuse_indication:
+    bot: Desktop automation tools might incorrectly report touch capabilities. Mismatches between device type and touch support can indicate spoofing.
+  category: hardware

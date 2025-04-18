@@ -1,0 +1,17 @@
+
+- id: has_battery_api
+  name: Battery API Available
+  codeName: has_battery_api
+  type: boolean
+  code: |
+    (() => {
+      try {
+        return !!navigator.getBattery;
+      } catch (e) {
+        return false;
+      }
+    })()
+  description: Whether the browser supports the Battery Status API
+  abuse_indication:
+    bot: Virtual environments and automation tools often lack battery information. The absence of battery API in mobile user agents can indicate spoofing.
+  category: hardware

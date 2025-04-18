@@ -1,0 +1,17 @@
+
+- id: device_memory
+  name: Device Memory
+  codeName: device_memory
+  type: number
+  code: |
+    (() => {
+      try {
+        return navigator.deviceMemory || 0;
+      } catch (e) {
+        return 0;
+      }
+    })()
+  description: Amount of RAM memory available to the browser
+  abuse_indication:
+    bot: Automated environments often report standard or limited memory values. Inconsistencies between memory and other hardware indicators can reveal virtualization.
+  category: hardware

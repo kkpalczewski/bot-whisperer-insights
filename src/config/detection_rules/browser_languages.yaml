@@ -1,0 +1,11 @@
+
+- id: browser_languages
+  name: Browser Languages
+  codeName: browser_languages
+  type: array
+  code: |
+    navigator.languages || []
+  description: List of language preferences configured in the browser
+  abuse_indication:
+    bot: Bots often have missing or misconfigured language settings. Unusual language combinations or single language settings can indicate automated browsers.
+  category: browser

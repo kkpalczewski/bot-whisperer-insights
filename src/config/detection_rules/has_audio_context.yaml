@@ -1,0 +1,17 @@
+
+- id: has_audio_context
+  name: Audio Context Available
+  codeName: has_audio_context
+  type: boolean
+  code: |
+    (() => {
+      try {
+        return !!(window.AudioContext || window.webkitAudioContext);
+      } catch (e) {
+        return false;
+      }
+    })()
+  description: Whether the browser supports audio processing capabilities
+  abuse_indication:
+    bot: Headless browsers and basic automation tools often lack audio support. Missing or limited audio capabilities can indicate non-standard browser environments.
+  category: fingerprinting

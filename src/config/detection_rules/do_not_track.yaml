@@ -1,0 +1,20 @@
+
+- id: do_not_track
+  name: Do Not Track Setting
+  codeName: do_not_track
+  type: string
+  code: |
+    (() => {
+      try {
+        return navigator.doNotTrack ||
+          window.doNotTrack ||
+          navigator.msDoNotTrack ||
+          'Not available';
+      } catch (e) {
+        return 'Not available';
+      }
+    })()
+  description: The browser's Do Not Track preference setting
+  abuse_indication:
+    bot: Most users don't modify this setting. Unusual patterns in DNT settings across multiple requests can indicate automated behavior.
+  category: browser

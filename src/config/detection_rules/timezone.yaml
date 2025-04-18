@@ -1,0 +1,11 @@
+
+- id: timezone
+  name: Time Zone
+  codeName: timezone
+  type: string
+  code: |
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  description: The time zone setting of the browser
+  abuse_indication:
+    bot: Mismatches between timezone and IP geolocation can indicate VPN usage or bot networks. Bots may use default UTC or have inconsistent timezone settings.
+  category: browser

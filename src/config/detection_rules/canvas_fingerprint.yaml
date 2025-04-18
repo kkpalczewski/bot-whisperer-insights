@@ -1,0 +1,21 @@
+
+- id: canvas_fingerprint
+  name: Canvas Fingerprint
+  codeName: canvas_fingerprint
+  type: string
+  code: |
+    (() => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 240;
+      canvas.height = 60;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillText('BotWhisperer', 10, 50);
+        return canvas.toDataURL();
+      }
+      return null;
+    })()
+  description: Unique identifier based on canvas rendering differences
+  abuse_indication:
+    bot: Automated browsers often produce identical canvas fingerprints or fail to render properly. Variations in anti-aliasing and font rendering can expose headless browsers.
+  category: fingerprinting
