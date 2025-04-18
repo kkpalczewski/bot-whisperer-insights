@@ -33,8 +33,9 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   error,
   isTruncated
 }) => {
-  // Create the full ID path by preserving the entire parent path and appending the feature
-  // This ensures we have paths like "clientjs.device.os" 
+  // Create the full ID path appropriately
+  // If parent exists, the ID is parent.feature (like "clientjs.device" or "clientjs.device.os")
+  // If no parent, the ID is just the feature (like "clientjs")
   const id = parent ? `${parent}.${feature}` : feature;
   
   return (
