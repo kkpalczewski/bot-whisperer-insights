@@ -18,6 +18,9 @@ export interface DetectionFeature {
   type: 'string' | 'number' | 'array' | 'object' | 'boolean';
   code: string;
   description: string;
+  abuse_indication: {
+    bot: string;
+  };
   category: 'browser' | 'network' | 'behavior' | 'hardware' | 'fingerprinting';
   dependency?: string;
   outputs?: Record<string, FeatureValue>;
@@ -37,3 +40,4 @@ const parsed = parse(featuresYaml);
 
 export const detectionFeatures: DetectionFeature[] = parsed.detectionFeatures;
 export const fingerprintingLibraries: LibraryInfo[] = parsed.fingerprintingLibraries;
+

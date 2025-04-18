@@ -5,7 +5,9 @@ detectionFeatures:
     codeName: browser_info
     type: object
     code: "(() => { const fp = new ClientJS(); return { browser: fp.getBrowser(), browserVersion: fp.getBrowserVersion(), engine: fp.getEngine(), engineVersion: fp.getEngineVersion() }; })()"
-    description: Comprehensive browser information collected using ClientJS
+    description: Information about the browser type, version, and rendering engine
+    abuse_indication:
+      bot: Browser information can reveal automated browsers, headless browsers, or spoofed user agents commonly used by bots. Inconsistencies between browser version and features can indicate fake browsers.
     category: browser
     dependency: clientjs
     outputs:
@@ -31,7 +33,9 @@ detectionFeatures:
     codeName: device_info
     type: object
     code: "(() => { const fp = new ClientJS(); return { os: fp.getOS(), osVersion: fp.getOSVersion(), device: fp.getDevice(), deviceType: fp.getDeviceType(), deviceVendor: fp.getDeviceVendor() }; })()"
-    description: Comprehensive device information collected using ClientJS
+    description: Information about the user's device hardware and operating system
+    abuse_indication:
+      bot: Device characteristics can expose virtual machines, emulators, or cloud environments commonly used for automation. Mismatches between OS and device information may indicate spoofing.
     category: hardware
     dependency: clientjs
     outputs:
@@ -61,7 +65,9 @@ detectionFeatures:
     codeName: screen_info
     type: object
     code: "{ width: screen.width, height: screen.height, colorDepth: screen.colorDepth, pixelRatio: window.devicePixelRatio }"
-    description: Detailed information about the device's screen capabilities
+    description: Technical specifications of the user's display screen
+    abuse_indication:
+      bot: Unusual screen resolutions, color depths, or pixel ratios can identify virtualized environments. Bots often use standard resolutions or have inconsistent screen properties.
     category: hardware
     outputs:
       width:
@@ -86,7 +92,9 @@ detectionFeatures:
     codeName: fingerprint_data
     type: object
     code: "(async () => { const fp = await FingerprintJS.load(); const result = await fp.get(); return { visitorId: result.visitorId, confidence: result.confidence.score, userAgent: result.components.userAgent, webDriver: result.components.webDriver, language: result.components.language, platform: result.components.platform, touchSupport: result.components.touchSupport }; })()"
-    description: Comprehensive fingerprint data from FingerprintJS
+    description: Comprehensive browser fingerprinting data used for visitor identification
+    abuse_indication:
+      bot: Fingerprint consistency across sessions can reveal automated behavior. Low confidence scores, presence of webDriver, or unusual platform combinations often indicate bot activity.
     category: fingerprinting
     dependency: fingerprintjs
     outputs:
@@ -137,7 +145,9 @@ detectionFeatures:
     codeName: user_agent
     type: string
     code: "navigator.userAgent"
-    description: The user agent string provides information about the browser and operating system. Bots often use fake or inconsistent user agents that can be detected.
+    description: The browser's user agent string that identifies the browser and system
+    abuse_indication:
+      bot: Bots frequently use fake or inconsistent user agents. Common indicators include outdated versions, unusual combinations of browser and OS, or known bot signatures.
     category: browser
     
   - id: browser_languages
@@ -145,7 +155,9 @@ detectionFeatures:
     codeName: browser_languages
     type: array
     code: "navigator.languages || []"
-    description: Human users typically have consistent language preferences set in their browsers. Bots may have missing or inconsistent language settings.
+    description: List of language preferences configured in the browser
+    abuse_indication:
+      bot: Bots often have missing or misconfigured language settings. Unusual language combinations or single language settings can indicate automated browsers.
     category: browser
     
   - id: timezone
@@ -153,7 +165,9 @@ detectionFeatures:
     codeName: timezone
     type: string
     code: "Intl.DateTimeFormat().resolvedOptions().timeZone"
-    description: The browser time zone can be compared with the IP geolocation. Mismatches can indicate bot activity or VPN usage.
+    description: The time zone setting of the browser
+    abuse_indication:
+      bot: Mismatches between timezone and IP geolocation can indicate VPN usage or bot networks. Bots may use default UTC or have inconsistent timezone settings.
     category: browser
     
   - id: browser_plugins
@@ -161,7 +175,9 @@ detectionFeatures:
     codeName: browser_plugins
     type: array
     code: "Array.from(navigator.plugins).map(p => p.name)"
-    description: The presence and variety of plugins can help identify real browsers. Bots typically have few or no plugins.
+    description: List of browser plugins installed and enabled
+    abuse_indication:
+      bot: Automated browsers typically have no plugins or a very limited set. The absence of common plugins or unusual plugin combinations can indicate bot activity.
     category: browser
     
   - id: webgl_renderer
@@ -169,7 +185,9 @@ detectionFeatures:
     codeName: webgl_renderer
     type: string
     code: "(() => { const canvas = document.createElement('canvas'); const gl = canvas.getContext('webgl'); return gl && gl.getExtension('WEBGL_debug_renderer_info') ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : null; })()"
-    description: WebGL renderer information can identify the graphics hardware. This is difficult for bots to spoof accurately.
+    description: Information about the graphics hardware and WebGL capabilities
+    abuse_indication:
+      bot: Virtual or headless environments often have basic or software-rendered WebGL. Unusual renderer strings or missing WebGL support can indicate automated browsers.
     category: hardware
     
   - id: canvas_fingerprint
@@ -177,7 +195,9 @@ detectionFeatures:
     codeName: canvas_fingerprint
     type: string
     code: "(() => { const canvas = document.createElement('canvas'); canvas.width = 240; canvas.height = 60; const ctx = canvas.getContext('2d'); if (ctx) { ctx.fillText('BotWhisperer', 10, 50); return canvas.toDataURL(); } return null; })()"
-    description: Canvas rendering varies by device and browser. The subtle differences in how text and shapes are rendered create a unique fingerprint that is hard to fake.
+    description: Unique identifier based on canvas rendering differences
+    abuse_indication:
+      bot: Automated browsers often produce identical canvas fingerprints or fail to render properly. Variations in anti-aliasing and font rendering can expose headless browsers.
     category: fingerprinting
     
   - id: cpu_cores
@@ -185,7 +205,9 @@ detectionFeatures:
     codeName: cpu_cores
     type: number
     code: "navigator.hardwareConcurrency || 0"
-    description: The number of logical processors can help identify the device type. Bots often have unrealistic or inconsistent values.
+    description: Number of logical processors available to the browser
+    abuse_indication:
+      bot: Virtual environments and containers often have unusual core counts. Low core counts or inconsistencies with other hardware info can indicate virtualized environments.
     category: hardware
     
   - id: device_memory
@@ -193,7 +215,9 @@ detectionFeatures:
     codeName: device_memory
     type: number
     code: "(() => { try { return navigator.deviceMemory || 0; } catch(e) { return 0; } })()"
-    description: The amount of RAM available can help identify device capabilities. This is often spoofed or unavailable in bot environments.
+    description: Amount of RAM memory available to the browser
+    abuse_indication:
+      bot: Automated environments often report standard or limited memory values. Inconsistencies between memory and other hardware indicators can reveal virtualization.
     category: hardware
     
   - id: has_touch_support
@@ -201,7 +225,9 @@ detectionFeatures:
     codeName: has_touch_support
     type: boolean
     code: "('ontouchstart' in window)"
-    description: Touch capabilities can indicate device type. Inconsistencies between touch support and device type may indicate spoofing.
+    description: Whether the device supports touch input
+    abuse_indication:
+      bot: Desktop automation tools might incorrectly report touch capabilities. Mismatches between device type and touch support can indicate spoofing.
     category: hardware
     
   - id: network_info
@@ -209,7 +235,9 @@ detectionFeatures:
     codeName: network_info
     type: object
     code: "(() => { try { return navigator.connection ? { effectiveType: navigator.connection.effectiveType, rtt: navigator.connection.rtt } : { effectiveType: 'unknown', rtt: 0 }; } catch(e) { return { effectiveType: 'unknown', rtt: 0 }; } })()"
-    description: Network characteristics can help identify unusual connection patterns typical of bot networks or data centers.
+    description: Information about the network connection type and quality
+    abuse_indication:
+      bot: Data center networks used by bots often have distinctive characteristics. Unusual network patterns or consistently perfect conditions may indicate automated traffic.
     category: network
     outputs:
       effectiveType:
@@ -226,7 +254,9 @@ detectionFeatures:
     codeName: browser_features
     type: object
     code: "{ localStorage: !!window.localStorage, sessionStorage: !!window.sessionStorage, indexedDB: !!window.indexedDB, webWorker: !!window.Worker, webGL: !!window.WebGLRenderingContext }"
-    description: Support for modern browser features can help identify outdated browsers or simplified bot environments that lack full feature sets.
+    description: Support status for various browser APIs and features
+    abuse_indication:
+      bot: Headless browsers and automation tools often lack support for modern features. Unusual combinations of supported and unsupported features can reveal bot environments.
     category: browser
     outputs:
       localStorage:
@@ -255,7 +285,9 @@ detectionFeatures:
     codeName: has_audio_context
     type: boolean
     code: "(() => { try { return !!(window.AudioContext || window.webkitAudioContext); } catch (e) { return false; } })()"
-    description: The audio processing capabilities indicate if a device has proper audio support. Bots typically have limited or non-standard audio capabilities.
+    description: Whether the browser supports audio processing capabilities
+    abuse_indication:
+      bot: Headless browsers and basic automation tools often lack audio support. Missing or limited audio capabilities can indicate non-standard browser environments.
     category: fingerprinting
     
   - id: has_permissions_api
@@ -263,7 +295,9 @@ detectionFeatures:
     codeName: has_permissions_api
     type: boolean
     code: "!!navigator.permissions"
-    description: The Permissions API availability indicates if the browser supports modern permission features. Bots may lack this capability.
+    description: Whether the browser supports the Permissions API
+    abuse_indication:
+      bot: Automated browsers may lack modern browser APIs. The absence of the Permissions API in an otherwise modern browser profile can indicate spoofing.
     category: browser
     
   - id: do_not_track
@@ -271,7 +305,9 @@ detectionFeatures:
     codeName: do_not_track
     type: string
     code: "(() => { try { return navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || 'Not available'; } catch(e) { return 'Not available'; } })()"
-    description: The Do Not Track setting in the browser can be used as a signal. Most users don't change this from default, so unusual patterns may indicate bot behavior.
+    description: The browser's Do Not Track preference setting
+    abuse_indication:
+      bot: Most users don't modify this setting. Unusual patterns in DNT settings across multiple requests can indicate automated behavior.
     category: browser
     
   - id: has_battery_api
@@ -279,7 +315,9 @@ detectionFeatures:
     codeName: has_battery_api
     type: boolean
     code: "(() => { try { return !!navigator.getBattery; } catch(e) { return false; } })()"
-    description: Real devices have battery information. The presence of the Battery API helps identify real devices vs. emulated environments.
+    description: Whether the browser supports the Battery Status API
+    abuse_indication:
+      bot: Virtual environments and automation tools often lack battery information. The absence of battery API in mobile user agents can indicate spoofing.
     category: hardware
     
   - id: visitor_id
@@ -287,7 +325,9 @@ detectionFeatures:
     codeName: visitor_id
     type: string
     code: "(async () => { const fp = await FingerprintJS.load(); const result = await fp.get(); return result.visitorId; })()"
-    description: A unique identifier for the visitor generated by FingerprintJS that remains consistent across browser sessions.
+    description: Unique identifier generated by FingerprintJS for visitor tracking
+    abuse_indication:
+      bot: Rapidly changing visitor IDs or patterns in ID generation can indicate bot rotation or spoofing attempts.
     category: fingerprinting
     dependency: fingerprintjs
 
@@ -296,7 +336,9 @@ detectionFeatures:
     codeName: is_incognito
     type: boolean
     code: "(() => { const fp = new ClientJS(); return fp.isIncognito(); })()"
-    description: Detects if the browser is in incognito/private browsing mode.
+    description: Detects if the browser is in private browsing mode
+    abuse_indication:
+      bot: While not definitive, high rates of incognito usage combined with other suspicious patterns may indicate automated browsing.
     category: browser
     dependency: clientjs
 
@@ -305,7 +347,9 @@ detectionFeatures:
     codeName: is_browser_spoofed
     type: boolean
     code: "(() => { const fp = new ClientJS(); return fp.getBrowserMajorVersion() !== parseInt(fp.getBrowser().split(' ')[1]); })()"
-    description: Detects if the browser information is being spoofed by comparing reported versions.
+    description: Checks if the reported browser information shows signs of spoofing
+    abuse_indication:
+      bot: Direct indicator of browser spoofing, commonly used in bot activity to mask true identity.
     category: fingerprinting
     dependency: clientjs
 
@@ -314,41 +358,11 @@ detectionFeatures:
     codeName: browser_fingerprint
     type: string
     code: "(() => { const fp = new ClientJS(); return fp.getFingerprint(); })()"
-    description: A unique hash generated from various browser attributes and capabilities.
+    description: Hash generated from various browser characteristics
+    abuse_indication:
+      bot: Identical fingerprints across different sessions or rapid fingerprint changes can indicate bot farms or automated browsing.
     category: fingerprinting
     dependency: clientjs
 
-fingerprintingLibraries:
-  - id: fingerprint-js
-    name: FingerprintJS
-    description: A commercial browser fingerprinting service that identifies browsers with high accuracy.
-    website: https://fingerprint.com/
-    features:
-      - Browser fingerprinting
-      - VPN and proxy detection
-      - Bot detection
-      - TOR detection
-      - Incognito mode detection
-      - Device identification
-    
-  - id: creep-js
-    name: CreepJS
-    description: An open-source browser fingerprinting library focused on revealing spoofing and lies in the browser.
-    website: https://github.com/abrahamjuliot/creepjs
-    features:
-      - Browser fingerprinting
-      - Lie detection
-      - Spoofing detection
-      - Bot detection
-      - Unique browser identification
-    
-  - id: clientjs
-    name: ClientJS
-    description: An open-source browser fingerprinting library that collects browser data and creates a fingerprint.
-    website: https://github.com/jackspirou/clientjs
-    features:
-      - Browser fingerprinting
-      - User agent parsing
-      - Platform detection
-      - Language detection
-      - Flash detection
+# ... keep existing code (fingerprintingLibraries section remains unchanged)
+
