@@ -39,6 +39,22 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   description,
   isTruncated = false
 }) => {
+  // Function to truncate long strings without spaces
+  const truncateValue = (val: string | boolean | undefined): string => {
+    if (val === undefined) return 'undefined';
+    const stringVal = typeof val === 'boolean' ? val.toString() : val;
+    
+    // If the string is in the truncated "more items" row, return as is
+    if (isTruncated) return stringVal;
+    
+    // If it's a long string (>80 chars), truncate it with ellipsis
+    if (typeof stringVal === 'string' && stringVal.length > 80) {
+      return `${stringVal.substring(0, 77)}...`;
+    }
+    
+    return stringVal;
+  };
+
   return (
     <TableRow 
       className={`${isExpanded ? 'bg-gray-800/20' : 'hover:bg-gray-800/50'} ${isTruncated ? 'text-gray-500 italic' : ''}`}
@@ -96,7 +112,7 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
       <TableCell className="p-1 w-[35%] font-mono text-xs font-medium">
         <div className="max-w-full overflow-hidden">
           <span className={`${error ? 'text-gray-400' : 'text-white'} break-all`}>
-            {value === undefined ? 'undefined' : (typeof value === 'boolean' ? value.toString() : value)}
+            {truncateValue(value)}
           </span>
         </div>
       </TableCell>
