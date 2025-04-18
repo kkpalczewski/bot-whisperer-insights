@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   HoverCard,
@@ -13,7 +12,7 @@ import {
   DrawerTrigger,
   DrawerClose,
 } from "@/components/ui/drawer";
-import { Info, X } from 'lucide-react';
+import { Info, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -36,6 +35,14 @@ interface MetadataDialogProps {
 }
 
 const MetadataContent: React.FC<MetadataDialogProps> = (props) => {
+  const [isValueExpanded, setIsValueExpanded] = useState(false);
+  const value = props.value === undefined ? 'undefined' : String(props.value);
+  const lines = value.split('\n');
+  const isLongValue = lines.length > 3 || value.length > 150;
+  const displayValue = isValueExpanded ? value : 
+    (lines.length > 3 ? lines.slice(0, 3).join('\n') + '\n...' : 
+      value.length > 150 ? value.slice(0, 150) + '...' : value);
+
   return (
     <div className="space-y-3">
       <div>
@@ -49,9 +56,25 @@ const MetadataContent: React.FC<MetadataDialogProps> = (props) => {
 
       <div>
         <h4 className="text-sm font-medium mb-1">Value</h4>
-        <p className="text-sm font-mono text-gray-400">
-          {props.value === undefined ? 'undefined' : String(props.value)}
-        </p>
+        <div className="relative">
+          <p className="text-sm font-mono text-gray-400 whitespace-pre-wrap break-all">
+            {displayValue}
+          </p>
+          {isLongValue && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute -right-2 -top-2 h-6 w-6 p-0"
+              onClick={() => setIsValueExpanded(!isValueExpanded)}
+            >
+              {isValueExpanded ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </Button>
+          )}
+        </div>
       </div>
 
       <div>
