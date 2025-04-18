@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { TableRow, TableCell } from '@/components/ui/button';
+import { TableRow, TableCell } from '@/components/ui/table';
 import { FileJson, FileCode, FileText, ChevronDown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
