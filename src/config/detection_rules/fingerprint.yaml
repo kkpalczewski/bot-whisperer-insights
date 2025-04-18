@@ -21,12 +21,13 @@
         confidence: result.confidence.score,
         webDriver: result.components.webDriver,
         canvas: canvasData,
-        audioContext: !!(window.AudioContext || window.webkitAudioContext)
+        audioContext: !!(window.AudioContext || window.webkitAudioContext),
+        consistentId: result.visitorId // Adding consistent ID from the previous visitor_id feature
       };
     }
-  description: Comprehensive browser fingerprinting data
+  description: Comprehensive browser fingerprinting data including visitor identification
   abuse_indication:
-    bot: Fingerprint consistency patterns and component combinations can reveal automated behavior
+    bot: Fingerprint consistency patterns, component combinations, and visitor ID changes can reveal automated behavior
   category: fingerprinting
   dependency: fingerprintjs
   outputs:
@@ -50,3 +51,8 @@
       name: Audio Context
       type: boolean
       description: Audio processing capability
+    consistentId:
+      name: Consistent ID
+      type: string
+      description: Stable visitor identifier across sessions
+
