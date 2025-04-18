@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { features } from '@/config/detectionFeatures';
 import { FormattedValue } from '../feature/FormattedValue';
 import { MetadataSection } from './MetadataSection';
@@ -21,18 +21,6 @@ interface MetadataContentProps {
 export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   const value = props.value === undefined ? 'undefined' : String(props.value);
   const { description, abuseIndication } = findFeatureInfo(features, props.id);
-  
-  // Debug log to help track what's happening
-  useEffect(() => {
-    if (props.id.includes('clientjs') && props.id.includes('device.os')) {
-      console.log('Debugging clientjs device.os:', {
-        id: props.id,
-        description,
-        abuseIndication,
-        features: features.find(f => f.codeName === 'clientjs_fingerprint')
-      });
-    }
-  }, [props.id]);
   
   return (
     <div className="space-y-3">
