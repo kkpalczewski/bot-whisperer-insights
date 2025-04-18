@@ -2,14 +2,14 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useSupabaseSession } from '@supabase/auth-helpers-react';
+import { useSession } from '@supabase/auth-helpers-react';
 import { getBrowserFingerprint, getCanvasFingerprint } from '@/utils/fingerprint-helpers';
 import { SaveIcon, ShieldIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const FingerprintData = () => {
   const [loading, setLoading] = useState(false);
-  const session = useSupabaseSession();
+  const session = useSession();
 
   const handleSubmitFingerprint = async () => {
     if (!session) {

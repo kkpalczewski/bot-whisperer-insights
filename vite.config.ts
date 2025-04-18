@@ -11,5 +11,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-  assetsInclude: ['**/*.yaml']
+  assetsInclude: ['**/*.yaml'],
+  server: {
+    port: 8080
+  }
 })

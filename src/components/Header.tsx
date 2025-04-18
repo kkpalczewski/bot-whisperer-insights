@@ -1,12 +1,13 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useSupabaseSession } from '@supabase/auth-helpers-react';
-import { FingerprintIcon, LogIn, User, LogOut } from 'lucide-react';
+import { useSupabaseClient, useSession } from '@supabase/auth-helpers-react';
+import { FingerprintIcon, LogIn, LogOut } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const Header = () => {
-  const session = useSupabaseSession();
+  const supabaseClient = useSupabaseClient();
+  const session = useSession();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const handleAuth = () => {
