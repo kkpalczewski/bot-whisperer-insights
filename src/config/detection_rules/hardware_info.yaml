@@ -1,3 +1,4 @@
+
 - id: hardware_info
   name: Hardware Information
   codeName: hardware_info
@@ -5,7 +6,13 @@
   code: |
     {
       cpuCores: navigator.hardwareConcurrency || 0,
-      deviceMemory: navigator.deviceMemory || 0,
+      deviceMemory: (() => {
+        try {
+          return navigator.deviceMemory || 0;
+        } catch (e) {
+          return 0;
+        }
+      })(),
       batteryApi: !!navigator.getBattery,
       webglRenderer: (() => {
         const canvas = document.createElement('canvas');
@@ -15,24 +22,33 @@
           : null;
       })()
     }
-  description: Comprehensive hardware feature detection
+  description: Comprehensive hardware feature detection including CPU, memory, and graphics capabilities
   abuse_indication:
-    bot: Inconsistent hardware capabilities or unusual combinations can indicate virtualized environments
+    bot: Inconsistent hardware capabilities or unusual combinations can indicate virtualized environments. Virtual machines and containers often report unusual hardware configurations.
   category: hardware
   outputs:
     cpuCores:
       name: CPU Cores
       type: number
-      description: Number of logical processors
+      description: Number of logical processors available to the browser
+      abuse_indication:
+        bot: Virtual environments and containers often have unusual core counts. Low core counts or inconsistencies with other hardware info can indicate virtualized environments.
     deviceMemory:
       name: Device Memory
       type: number
-      description: Amount of RAM available
+      description: Amount of RAM memory available to the browser
+      abuse_indication:
+        bot: Automated environments often report standard or limited memory values. Inconsistencies between memory and other hardware indicators can reveal virtualization.
     batteryApi:
       name: Battery API Available
       type: boolean
       description: Whether battery status API is available
+      abuse_indication:
+        bot: Many virtualized environments lack battery API support or report suspicious battery states.
     webglRenderer:
       name: WebGL Renderer
       type: string
       description: Graphics hardware information
+      abuse_indication:
+        bot: Virtual machines often use generic graphics drivers or software rendering, which can be detected through WebGL.
+
