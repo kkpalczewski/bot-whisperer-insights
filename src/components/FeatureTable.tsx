@@ -19,10 +19,10 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
     <Table>
       <TableHeader>
         <TableRow className="border-b border-gray-800">
-          <TableHead className="w-1/2 font-medium text-xs py-2">Feature</TableHead>
-          <TableHead className="w-8 py-2"></TableHead>
-          <TableHead className="w-1/3 font-medium text-xs py-2">Value</TableHead>
-          <TableHead className="w-1/6 font-medium text-xs py-2">Parent</TableHead>
+          <TableHead className="w-[45%] font-medium text-xs py-2">Feature</TableHead>
+          <TableHead className="w-[5%] py-2"></TableHead>
+          <TableHead className="w-[35%] font-medium text-xs py-2">Value</TableHead>
+          <TableHead className="w-[15%] font-medium text-xs py-2">Parent</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>

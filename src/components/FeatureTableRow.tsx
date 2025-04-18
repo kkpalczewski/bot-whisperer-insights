@@ -41,7 +41,7 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
     <TableRow 
       className={`${isExpanded ? 'bg-gray-800/20' : 'hover:bg-gray-800/50'}`}
     >
-      <TableCell className="p-1 pl-4 w-1/2">
+      <TableCell className="p-1 w-[45%]">
         <div className="flex items-center">
           <div style={{ marginLeft: `${level * 16}px` }} className="flex items-center gap-2">
             {hasChildren && (
@@ -88,15 +88,15 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
           </div>
         </div>
       </TableCell>
-      <TableCell className="p-1 w-8">
+      <TableCell className="p-1 w-[5%]">
         {getTypeIcon(value)}
       </TableCell>
-      <TableCell className="p-1 w-1/3 font-mono text-xs font-medium">
+      <TableCell className="p-1 w-[35%] font-mono text-xs font-medium">
         <span className={error ? 'text-gray-400' : 'text-white'}>
           {value === undefined ? 'undefined' : (typeof value === 'boolean' ? value.toString() : value)}
         </span>
       </TableCell>
-      <TableCell className="p-1 w-1/6 text-xs text-gray-400">
+      <TableCell className="p-1 w-[15%] text-xs text-gray-400">
         {parent}
       </TableCell>
     </TableRow>
