@@ -37,18 +37,22 @@ export const features: DetectionFeature[] = Object.values(modules).flatMap(conte
     return parsed?.map((feature: DetectionFeature) => {
       if (feature.outputs) {
         // Recursively process nested outputs
-        const processOutputs = (outputs: Record<string, FeatureValue>): Record<string, FeatureValue> => {
+        const processOutputs = (outputs: Record<string, FeatureValue>, parentKey = ''): Record<string, FeatureValue> => {
           const processed: Record<string, FeatureValue> = {};
           
           for (const [key, value] of Object.entries(outputs)) {
+            const fullKey = parentKey ? `${parentKey}.${key}` : key;
             processed[key] = {
               ...value,
+              name: value.name || key, // Use key as name if not provided
               // Ensure description exists
-              description: value.description || feature.description || '',
+              description: value.description || feature.description || `Value for ${fullKey}`,
               // Ensure abuse_indication exists
               abuse_indication: value.abuse_indication || feature.abuse_indication || {},
+              // Ensure type exists
+              type: value.type || 'string',
               // Recursively process any nested outputs
-              outputs: value.outputs ? processOutputs(value.outputs) : undefined
+              outputs: value.outputs ? processOutputs(value.outputs, fullKey) : undefined
             };
           }
           
@@ -64,3 +68,4 @@ export const features: DetectionFeature[] = Object.values(modules).flatMap(conte
     return [];
   }
 });
+
