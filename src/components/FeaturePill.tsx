@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
-import { ChevronDown, Code, AlertTriangle, Package } from 'lucide-react';
+import { ChevronDown, Code, AlertTriangle, Package, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { safeEvaluate } from '@/utils/library-manager';
 
@@ -135,22 +136,18 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       return 'No data available';
     }
     
-    // Format for compact display of nested features
-    const keyValuePairs = Object.entries(nestedValues)
+    // Return compact display of key properties for collapsed view
+    return Object.entries(nestedValues)
       .map(([key, val]) => {
         const displayVal = 
           val === null || val === undefined ? 'N/A' :
           typeof val === 'object' ? (Array.isArray(val) ? `[${val.length}]` : `{...}`) :
-          String(val).length > 15 ? `${String(val).substring(0, 15)}...` : 
-          String(val);
+          String(val).substring(0, 15);
         
         return `${key}: ${displayVal}`;
       })
-      .join(', ');
-    
-    return keyValuePairs.length > 60 
-      ? `${keyValuePairs.substring(0, 60)}...` 
-      : keyValuePairs;
+      .slice(0, 3)  // Only show first 3 properties
+      .join(' | ');
   };
 
   const categoryColor: Record<string, string> = {
@@ -161,31 +158,42 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
     fingerprinting: 'bg-rose-700/20 text-rose-400'
   };
 
-  const renderOutputValues = () => {
+  const renderNestedValues = () => {
     if (!feature.outputs || !value.raw) return null;
     
     return (
-      <div className="grid gap-2 mt-2">
-        {Object.entries(feature.outputs).map(([key, output]) => (
-          <div key={key} className="bg-gray-800/50 p-2 rounded flex justify-between items-start">
-            <div>
+      <div className="grid gap-0 mt-1">
+        {Object.entries(feature.outputs).map(([key, output]) => {
+          const outputValue = value.raw[key];
+          const isUndefined = outputValue === undefined || outputValue === null;
+          
+          return (
+            <div key={key} className="flex justify-between items-center p-1 hover:bg-gray-800/50 rounded">
+              <span className="font-mono text-xs text-gray-400">{feature.codeName}.{key}</span>
               <div className="flex items-center gap-2">
-                <code className="text-xs font-bold">{key}</code>
-                <Badge variant="outline" className="text-xs">
-                  {output.type}
-                </Badge>
+                <span className={`font-mono text-xs ${isUndefined ? 'text-gray-500' : 'text-gray-200'}`}>
+                  {isUndefined ? 'undefined' : 
+                   typeof outputValue === 'object' ? 
+                     JSON.stringify(outputValue).substring(0, 20) + "..." : 
+                     String(outputValue)}
+                </span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-5 w-5 p-0">
+                        <Info className="h-3 w-3" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p className="text-xs">{output.description}</p>
+                      <p className="text-xs text-gray-400 mt-1">Type: {output.type}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
-              <p className="text-xs text-gray-400 mt-1">{output.description}</p>
             </div>
-            <div className="font-mono text-xs bg-gray-900 px-2 py-1 rounded max-w-[50%] overflow-hidden text-ellipsis whitespace-nowrap">
-              {value.raw[key] !== undefined ? 
-                (typeof value.raw[key] === 'object' ? 
-                  JSON.stringify(value.raw[key]).substring(0, 30) + "..." : 
-                  String(value.raw[key])) : 
-                'undefined'}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
@@ -193,7 +201,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   return (
     <Card className="border-b border-gray-800 rounded-none first:rounded-t-lg last:rounded-b-lg">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <CardHeader className="p-4 cursor-pointer space-y-0" onClick={() => setIsOpen(!isOpen)}>
+        <CardHeader className="p-2 cursor-pointer space-y-0" onClick={() => setIsOpen(!isOpen)}>
           <div className="flex items-center justify-between">
             <div className="grid grid-cols-[200px_120px_1fr] gap-4 items-center w-full">
               <div className="flex items-center gap-2">
@@ -209,17 +217,31 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
                 {feature.category}
               </Badge>
               <div className="flex items-center justify-between w-full">
-                <div className="font-mono text-xs bg-gray-800 px-2 py-1 rounded max-h-24 overflow-y-auto break-all">
-                  {isLoading ? (
-                    <span className="text-gray-400">Loading...</span>
-                  ) : hasError ? (
-                    <span className="text-rose-400">{value.display}</span>
-                  ) : feature.outputs ? (
-                    <span>{value.display}</span>
-                  ) : (
+                {isLoading ? (
+                  <span className="text-gray-400 text-xs">Loading...</span>
+                ) : hasError ? (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="font-mono text-xs bg-gray-800 px-2 py-1 rounded text-rose-400 cursor-help">
+                          {value.display.length > 30 ? value.display.substring(0, 30) + '...' : value.display}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs text-rose-400">{value.error}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : feature.outputs ? (
+                  <div className="font-mono text-xs bg-gray-800 px-2 py-1 rounded max-w-full overflow-hidden">
+                    {/* Inline display of nested features */}
+                    {renderNestedValues()}
+                  </div>
+                ) : (
+                  <div className="font-mono text-xs bg-gray-800 px-2 py-1 rounded max-h-24 overflow-y-auto break-all">
                     <pre className="whitespace-pre-wrap">{value.display}</pre>
-                  )}
-                </div>
+                  </div>
+                )}
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="h-6 w-6 p-0 ml-2 flex-shrink-0">
                     <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -231,7 +253,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
         </CardHeader>
         
         <CollapsibleContent>
-          <CardContent className="p-4 pt-0 space-y-2">
+          <CardContent className="p-3 pt-0 space-y-2">
             <div className="flex items-center gap-2 text-sm text-gray-400">
               <code className="text-xs bg-gray-900 px-2 py-1 rounded">{feature.codeName}</code>
               <code className="text-xs bg-gray-900 px-2 py-1 rounded">{feature.type}</code>
@@ -243,9 +265,33 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
             </div>
             <p className="text-sm text-gray-400">{feature.description}</p>
             
-            {feature.outputs && renderOutputValues()}
+            {feature.outputs && value.raw && (
+              <div className="bg-gray-800/50 p-2 rounded space-y-1">
+                <h4 className="text-xs font-semibold text-gray-300 mb-1">Output Properties</h4>
+                {Object.entries(feature.outputs).map(([key, output]) => (
+                  <div key={key} className="bg-gray-800 p-1.5 rounded flex justify-between items-start">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <code className="text-xs font-bold">{key}</code>
+                        <Badge variant="outline" className="text-xs">
+                          {output.type}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-0.5">{output.description}</p>
+                    </div>
+                    <div className="font-mono text-xs bg-gray-900 px-2 py-1 rounded max-w-[50%] overflow-hidden text-ellipsis">
+                      {value.raw[key] !== undefined ? 
+                        (typeof value.raw[key] === 'object' ? 
+                          JSON.stringify(value.raw[key]).substring(0, 30) + "..." : 
+                          String(value.raw[key])) : 
+                        'undefined'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
             
-            <div className="bg-gray-800 p-3 rounded flex items-start gap-2">
+            <div className="bg-gray-800 p-2 rounded flex items-start gap-2">
               <Code size={16} className="mt-1 text-gray-400" />
               <pre className="text-xs overflow-x-auto whitespace-pre-wrap flex-1 text-gray-300">
                 {feature.code}
@@ -253,7 +299,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
             </div>
             
             {hasError && (
-              <div className="bg-rose-900/20 border border-rose-800 p-3 rounded text-xs text-rose-300">
+              <div className="bg-rose-900/20 border border-rose-800 p-2 rounded text-xs text-rose-300">
                 <strong>Error:</strong> {value.error}
               </div>
             )}

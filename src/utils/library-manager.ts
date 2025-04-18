@@ -22,9 +22,17 @@ export const getClientJS = async (): Promise<any> => {
   try {
     // Check if ClientJS exists in window
     if (typeof window.ClientJS === 'undefined') {
-      // ClientJS not loaded yet
-      console.warn('ClientJS not available yet');
-      return null;
+      // Try to dynamically load ClientJS
+      try {
+        const ClientJS = await import('clientjs');
+        const clientjs = new ClientJS.default();
+        libraryInstances.clientjs = clientjs;
+        return clientjs;
+      } catch (e) {
+        console.error('Failed to load ClientJS from npm:', e);
+        toast.error('Failed to load ClientJS library');
+        return null;
+      }
     }
 
     // Initialize ClientJS
@@ -56,7 +64,8 @@ export const getFingerprintJS = async (): Promise<any> => {
         libraryInstances.fingerprintjs = fp;
         return fp;
       } catch (e) {
-        console.warn('FingerprintJS not available:', e);
+        console.error('Failed to load FingerprintJS:', e);
+        toast.error('Failed to load FingerprintJS library');
         return null;
       }
     } else {
@@ -82,17 +91,23 @@ export const safeEvaluate = async <T>(
   try {
     // Check for dependencies first
     if (dependency) {
-      if (dependency === 'clientjs' && !(await getClientJS())) {
-        return { 
-          value: null, 
-          error: `Dependency '${dependency}' not available` 
-        };
+      if (dependency === 'clientjs') {
+        const client = await getClientJS();
+        if (!client) {
+          return { 
+            value: null, 
+            error: `Dependency '${dependency}' not available` 
+          };
+        }
       }
-      if (dependency === 'fingerprintjs' && !(await getFingerprintJS())) {
-        return { 
-          value: null, 
-          error: `Dependency '${dependency}' not available` 
-        };
+      if (dependency === 'fingerprintjs') {
+        const fp = await getFingerprintJS();
+        if (!fp) {
+          return { 
+            value: null, 
+            error: `Dependency '${dependency}' not available` 
+          };
+        }
       }
     }
 
@@ -133,6 +148,8 @@ export const safeEvaluate = async <T>(
       if (actualType !== expectedType && 
           !(actualType === 'object' && expectedType === 'array' && Array.isArray(result))) {
         console.warn(`Type mismatch: expected ${expectedType}, got ${actualType}`);
+        // Return undefined instead of wrong type
+        return { value: null, error: `Type mismatch: expected ${expectedType}, got ${actualType}` };
       }
     }
 

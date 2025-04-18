@@ -1,3 +1,4 @@
+
 detectionFeatures:
   - id: browser_info
     name: Browser Information
@@ -162,7 +163,7 @@ detectionFeatures:
     name: Device Memory
     codeName: device_memory
     type: number
-    code: "(navigator as any).deviceMemory || 'Not available'"
+    code: "(() => { try { return navigator.deviceMemory || 0; } catch(e) { return 0; } })()"
     description: The amount of RAM available can help identify device capabilities. This is often spoofed or unavailable in bot environments.
     category: hardware
     
@@ -178,9 +179,18 @@ detectionFeatures:
     name: Network Information
     codeName: network_info
     type: object
-    code: "(navigator as any).connection ? { effectiveType: (navigator as any).connection.effectiveType, rtt: (navigator as any).connection.rtt } : 'Not available'"
+    code: "(() => { try { return navigator.connection ? { effectiveType: navigator.connection.effectiveType, rtt: navigator.connection.rtt } : { effectiveType: 'unknown', rtt: 0 }; } catch(e) { return { effectiveType: 'unknown', rtt: 0 }; } })()"
     description: Network characteristics can help identify unusual connection patterns typical of bot networks or data centers.
     category: network
+    outputs:
+      effectiveType:
+        name: Connection Type
+        type: string
+        description: The effective connection type (4g, 3g, 2g, slow-2g)
+      rtt:
+        name: Round Trip Time
+        type: number
+        description: The estimated round-trip time of the current connection
     
   - id: browser_features
     name: Browser Features
@@ -189,12 +199,33 @@ detectionFeatures:
     code: "{ localStorage: !!window.localStorage, sessionStorage: !!window.sessionStorage, indexedDB: !!window.indexedDB, webWorker: !!window.Worker, webGL: !!window.WebGLRenderingContext }"
     description: Support for modern browser features can help identify outdated browsers or simplified bot environments that lack full feature sets.
     category: browser
+    outputs:
+      localStorage:
+        name: Local Storage
+        type: boolean
+        description: Whether the browser supports localStorage
+      sessionStorage:
+        name: Session Storage
+        type: boolean
+        description: Whether the browser supports sessionStorage
+      indexedDB:
+        name: IndexedDB
+        type: boolean
+        description: Whether the browser supports indexedDB
+      webWorker:
+        name: Web Worker
+        type: boolean
+        description: Whether the browser supports Web Workers
+      webGL:
+        name: WebGL
+        type: boolean
+        description: Whether the browser supports WebGL
     
   - id: has_audio_context
     name: Audio Context Available
     codeName: has_audio_context
     type: boolean
-    code: "(() => { try { return !!(window.AudioContext || (window as any).webkitAudioContext); } catch (e) { return false; } })()"
+    code: "(() => { try { return !!(window.AudioContext || window.webkitAudioContext); } catch (e) { return false; } })()"
     description: The audio processing capabilities indicate if a device has proper audio support. Bots typically have limited or non-standard audio capabilities.
     category: fingerprinting
     
@@ -210,7 +241,7 @@ detectionFeatures:
     name: Do Not Track Setting
     codeName: do_not_track
     type: string
-    code: navigator.doNotTrack || (window as any).doNotTrack || navigator.msDoNotTrack || 'Not available'
+    code: "(() => { try { return navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || 'Not available'; } catch(e) { return 'Not available'; } })()"
     description: The Do Not Track setting in the browser can be used as a signal. Most users don't change this from default, so unusual patterns may indicate bot behavior.
     category: browser
     
@@ -218,9 +249,10 @@ detectionFeatures:
     name: Battery API Available
     codeName: has_battery_api
     type: boolean
-    code: "!!(navigator as any).getBattery"
+    code: "(() => { try { return !!navigator.getBattery; } catch(e) { return false; } })()"
     description: Real devices have battery information. The presence of the Battery API helps identify real devices vs. emulated environments.
     category: hardware
+    
   - id: visitor_id
     name: visitor_id
     codeName: visitor_id
