@@ -3,25 +3,26 @@ import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
 import { Code, AlertTriangle, Package, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Table, TableBody, TableHeader, TableHead, TableRow, TableCell } from '@/components/ui/table';
+import { Table, TableBody, TableHeader, TableHead, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { safeEvaluate } from '@/utils/library-manager';
 import { FeatureTableRow } from './FeatureTableRow';
 
-interface FeaturePillProps {
-  feature: DetectionFeature;
-}
-
 interface FeatureNode {
   id: string;
   feature: string;
-  value: string;
+  value: string | boolean | undefined;
   parent: string;
   level: number;
   children: FeatureNode[];
   isExpanded: boolean;
   description?: string;
+  error?: string;
+}
+
+interface FeaturePillProps {
+  feature: DetectionFeature;
 }
 
 export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
@@ -31,30 +32,38 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const [hasError, setHasError] = useState(false);
   const [codeVisible, setCodeVisible] = useState(false);
 
-  const formatValue = (val: any): string | boolean => {
-    if (val === null || val === undefined) return 'Not available';
-    if (typeof val === 'boolean') return val; // Return native boolean
+  const formatValue = (val: any, error?: string): string | boolean | undefined => {
+    if (error) return undefined;
+    if (val === null || val === undefined) return undefined;
+    if (typeof val === 'boolean') return val;
     if (Array.isArray(val)) return val.join(', ');
     if (typeof val === 'object') return JSON.stringify(val);
     return String(val);
+  };
+
+  const getParentName = (path: string): string => {
+    if (feature.dependency) return 'fingerprint_js';
+    return path.split('.')[0];
   };
 
   const buildFeatureTree = (
     value: any,
     path: string = feature.codeName,
     level: number = 0,
-    outputs?: Record<string, FeatureValue>
+    outputs?: Record<string, FeatureValue>,
+    error?: string
   ): FeatureNode[] => {
     if (!value || typeof value !== 'object' || Array.isArray(value)) {
       return [{
         id: path,
         feature: path,
-        value: formatValue(value),
-        parent: path.split('.')[0],
+        value: formatValue(value, error),
+        parent: getParentName(path),
         level,
         children: [],
         isExpanded: false,
-        description: outputs?.description || undefined
+        description: outputs?.description,
+        error
       }];
     }
 
@@ -63,29 +72,30 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       const currentPath = `${path}.${key}`;
       
       if (val && typeof val === 'object' && !Array.isArray(val)) {
-        const children = buildFeatureTree(val, currentPath, level + 1, output?.outputs);
-        const node: FeatureNode = {
+        const children = buildFeatureTree(val, currentPath, level + 1, output?.outputs, error);
+        return [{
           id: currentPath,
           feature: currentPath,
-          value: Array.isArray(val) ? formatValue(val) : 'Object',
-          parent: path.split('.')[0],
+          value: formatValue(val, error),
+          parent: getParentName(path),
           level,
           children,
           isExpanded: false,
-          description: output?.description || undefined
-        };
-        return [node];
+          description: output?.description,
+          error
+        }];
       }
       
       return [{
         id: currentPath,
         feature: currentPath,
-        value: formatValue(val),
-        parent: path.split('.')[0],
+        value: formatValue(val, error),
+        parent: getParentName(path),
         level,
         children: [],
         isExpanded: false,
-        description: output?.description || undefined
+        description: output?.description,
+        error
       }];
     });
   };
@@ -125,18 +135,9 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       if (result.error) {
         setHasError(true);
         toast.error(`Error evaluating ${feature.name}: ${result.error}`);
-        const errorNode: FeatureNode = {
-          id: feature.codeName,
-          feature: feature.codeName,
-          value: `Error: ${result.error}`,
-          parent: feature.codeName.split('.')[0],
-          level: 0,
-          children: [],
-          isExpanded: false,
-          description: undefined
-        };
-        setFeatureTree([errorNode]);
-        setFlattenedNodes([errorNode]);
+        const tree = buildFeatureTree(result.value, feature.codeName, 0, undefined, result.error);
+        setFeatureTree(tree);
+        setFlattenedNodes(flattenTree(tree));
       } else {
         const tree = buildFeatureTree(result.value);
         setFeatureTree(tree);
@@ -147,18 +148,9 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       setHasError(true);
       const errorMessage = (error as Error).message;
       toast.error(`Error evaluating ${feature.name}: ${errorMessage}`);
-      const errorNode: FeatureNode = {
-        id: feature.codeName,
-        feature: feature.codeName,
-        value: `Error: ${errorMessage}`,
-        parent: feature.codeName.split('.')[0],
-        level: 0,
-        children: [],
-        isExpanded: false,
-        description: undefined
-      };
-      setFeatureTree([errorNode]);
-      setFlattenedNodes([errorNode]);
+      const tree = buildFeatureTree({}, feature.codeName, 0, undefined, errorMessage);
+      setFeatureTree(tree);
+      setFlattenedNodes(flattenTree(tree));
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +162,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
 
   return (
     <Card className="border-b border-gray-800 rounded-none first:rounded-t-lg last:rounded-b-lg">
-      <CardHeader className="p-4 space-y-0">
+      <CardHeader className="p-2 space-y-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {hasError && <AlertTriangle size={16} className="text-yellow-500" />}
@@ -206,14 +198,14 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
         </div>
       </CardHeader>
       
-      <CardContent className="px-4 pb-4 pt-0 space-y-4">
+      <CardContent className="px-2 pb-2 pt-0 space-y-2">
         <Table>
           <TableHeader>
             <TableRow className="border-b border-gray-800">
-              <TableHead className="w-1/2 font-medium text-xs">Feature</TableHead>
-              <TableHead className="w-8"></TableHead>
-              <TableHead className="w-1/3 font-medium text-xs">Value</TableHead>
-              <TableHead className="w-1/6 font-medium text-xs">Parent</TableHead>
+              <TableHead className="w-1/2 font-medium text-xs py-2">Feature</TableHead>
+              <TableHead className="w-8 py-2"></TableHead>
+              <TableHead className="w-1/3 font-medium text-xs py-2">Value</TableHead>
+              <TableHead className="w-1/6 font-medium text-xs py-2">Parent</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -227,6 +219,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
                 hasChildren={node.children.length > 0}
                 onToggle={() => toggleNode(node.id)}
                 level={node.level}
+                error={node.error}
               />
             ))}
             {flattenedNodes.length === 0 && (
