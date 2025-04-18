@@ -6,6 +6,9 @@ export interface FeatureValue {
   type: 'string' | 'number' | 'array' | 'object' | 'boolean';
   description: string;
   outputs?: Record<string, FeatureValue>;
+  abuse_indication?: {
+    bot?: string;
+  };
 }
 
 export interface DetectionFeature {
