@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
 import { Code, AlertTriangle, Package, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Table, TableBody, TableHeader, TableHead, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableHeader, TableHead, TableRow, TableCell } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
 import { safeEvaluate } from '@/utils/library-manager';
@@ -50,7 +51,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
     value: any,
     path: string = feature.codeName,
     level: number = 0,
-    outputs?: Record<string, FeatureValue>,
+    outputs?: Record<string, any>,
     error?: string
   ): FeatureNode[] => {
     if (!value || typeof value !== 'object' || Array.isArray(value)) {
