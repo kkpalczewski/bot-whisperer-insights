@@ -1,12 +1,10 @@
 
 import React from 'react';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -24,17 +22,17 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = ({
   description
 }) => {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Popover>
+      <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
           <Info className="h-4 w-4 text-gray-400" />
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-mono">{feature}</DialogTitle>
-        </DialogHeader>
+      </PopoverTrigger>
+      <PopoverContent className="w-80" side="right" align="start">
         <div className="space-y-4">
+          <div>
+            <h3 className="text-lg font-mono mb-2">{feature}</h3>
+          </div>
           {description && (
             <div>
               <h4 className="text-sm font-medium mb-1">Description</h4>
@@ -52,7 +50,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = ({
             <p className="text-sm font-mono text-gray-400">{parent}</p>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </PopoverContent>
+    </Popover>
   );
 };
