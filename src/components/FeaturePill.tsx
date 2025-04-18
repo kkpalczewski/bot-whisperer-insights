@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DetectionFeature } from '@/config/detectionFeatures';
-import { ChevronDown, Code, AlertTriangle } from 'lucide-react';
+import { ChevronDown, Code, AlertTriangle, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +52,11 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
             display: String(val),
             raw: String(val)
           };
+        case 'boolean':
+          return {
+            display: String(val),
+            raw: val
+          };
         default:
           return {
             display: JSON.stringify(val),
@@ -68,6 +73,9 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   };
 
   useEffect(() => {
+    if (feature.dependency) {
+      toast.info(`This feature requires ${feature.dependency} library to work properly`);
+    }
     evaluateCode();
   }, []);
 
@@ -107,6 +115,9 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
                 <h3 className="text-sm font-medium truncate">
                   {hasError && <AlertTriangle size={14} className="inline text-yellow-500 mr-1" />}
                   {feature.name}
+                  {feature.dependency && (
+                    <Package size={14} className="inline text-blue-400 ml-1" />
+                  )}
                 </h3>
               </div>
               <Badge className={`${categoryColor[feature.category]} text-xs w-fit`}>

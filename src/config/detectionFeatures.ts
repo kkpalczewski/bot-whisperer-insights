@@ -9,10 +9,11 @@ export interface DetectionFeature {
   id: string;
   name: string;
   codeName: string;
-  type: 'string' | 'number' | 'array' | 'object';
+  type: 'string' | 'number' | 'array' | 'object' | 'boolean';
   code: string;
   description: string;
   category: 'browser' | 'network' | 'behavior' | 'hardware' | 'fingerprinting';
+  dependency?: string;
 }
 
 // Third-party fingerprinting libraries info
