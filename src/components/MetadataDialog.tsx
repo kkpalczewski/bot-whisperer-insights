@@ -6,12 +6,12 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -86,35 +86,31 @@ const MetadataContent: React.FC<MetadataDialogProps> = (props) => {
 
 export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
   return (
-    <Sheet>
+    <div className="inline-block">
       <HoverCard>
-        <SheetTrigger asChild>
-          <HoverCardTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
-              <Info className="h-4 w-4 text-gray-400" />
-            </Button>
-          </HoverCardTrigger>
-        </SheetTrigger>
+        <Drawer>
+          <DrawerTrigger asChild>
+            <HoverCardTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
+                <Info className="h-4 w-4 text-gray-400" />
+              </Button>
+            </HoverCardTrigger>
+          </DrawerTrigger>
+          
+          <DrawerContent className="max-h-[90vh] fixed right-0 h-screen w-[400px] rounded-l-lg rounded-r-none">
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Feature Metadata</DrawerTitle>
+            </DrawerHeader>
+            <ScrollArea className="h-[calc(100vh-120px)] px-4">
+              <MetadataContent {...props} />
+            </ScrollArea>
+          </DrawerContent>
+        </Drawer>
         
         <HoverCardContent className="w-80" side="right" align="start">
           <MetadataContent {...props} />
         </HoverCardContent>
       </HoverCard>
-
-      <SheetContent 
-        side="right" 
-        className="w-[400px] pointer-events-none"
-        style={{ pointerEvents: 'none' }}
-      >
-        <div className="h-full pointer-events-auto" style={{ pointerEvents: 'auto' }}>
-          <SheetHeader>
-            <SheetTitle>Feature Metadata</SheetTitle>
-          </SheetHeader>
-          <ScrollArea className="h-[calc(100vh-80px)] mt-6">
-            <MetadataContent {...props} />
-          </ScrollArea>
-        </div>
-      </SheetContent>
-    </Sheet>
+    </div>
   );
 };
