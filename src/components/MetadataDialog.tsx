@@ -88,7 +88,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
   return (
     <div className="inline-block">
       <HoverCard>
-        <Drawer>
+        <Drawer shouldScaleBackground={false}>
           <DrawerTrigger asChild>
             <HoverCardTrigger asChild>
               <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
@@ -97,7 +97,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
             </HoverCardTrigger>
           </DrawerTrigger>
           
-          <DrawerContent className="max-h-[90vh] fixed right-0 h-screen w-[400px] rounded-l-lg rounded-r-none">
+          <DrawerContent className="max-h-screen fixed inset-y-0 right-0 mt-0 pt-0 h-full w-[400px] rounded-l-lg rounded-r-none">
             <DrawerHeader className="text-left">
               <DrawerTitle>Feature Metadata</DrawerTitle>
             </DrawerHeader>
