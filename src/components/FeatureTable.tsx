@@ -15,43 +15,6 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
   isLoading,
   onToggleNode
 }) => {
-  const processNodes = (nodes: FeatureNode[]) => {
-    const result: FeatureNode[] = [];
-    let currentParent = '';
-    let count = 0;
-    
-    nodes.forEach((node) => {
-      if (node.parent !== currentParent) {
-        currentParent = node.parent;
-        count = 0;
-      }
-      
-      if (count < 3) {
-        result.push(node);
-        count++;
-      } else if (count === 3) {
-        // Instead of using "..." as the feature name, we'll use a more descriptive name
-        const remainingCount = nodes.filter(n => n.parent === currentParent).length - 3;
-        result.push({
-          ...node,
-          feature: `${remainingCount} more items`,
-          value: '',
-          id: `${currentParent}-more`,
-          children: [],
-          isExpanded: false,
-          level: node.level,
-          parent: node.parent,
-          isTruncated: true
-        });
-        count++;
-      }
-    });
-    
-    return result;
-  };
-
-  const processedNodes = processNodes(nodes);
-
   return (
     <Table>
       <TableHeader>
@@ -63,7 +26,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {processedNodes.map((node) => (
+        {nodes.map((node) => (
           <FeatureTableRow
             key={node.id}
             feature={node.feature}
