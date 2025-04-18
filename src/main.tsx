@@ -1,6 +1,6 @@
 
 import { createRoot } from 'react-dom/client'
-import { App } from './App'
+import App from './App'
 import './index.css'
 import { ThemeProvider } from 'next-themes'
 import { supabase } from '@/integrations/supabase/client'
