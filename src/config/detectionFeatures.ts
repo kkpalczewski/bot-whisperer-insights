@@ -26,5 +26,4 @@ export interface DetectionFeature {
   outputs?: Record<string, FeatureValue>;
 }
 
-const parsed = parse(featuresYaml);
-export const features = parsed.detectionFeatures || [];
+export const features = parse(featuresYaml) || [];

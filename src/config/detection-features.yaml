@@ -1,372 +1,371 @@
-detectionFeatures:
-  - id: clientjs_fingerprint
-    name: ClientJS Fingerprint
-    codeName: clientjs_fingerprint
-    type: object
-    code: "async () => { const fp = await new ClientJS(); return { browser: { name: fp.getBrowser(), version: fp.getBrowserVersion(), engine: fp.getEngine(), engineVersion: fp.getEngineVersion() }, device: { os: fp.getOS(), osVersion: fp.getOSVersion(), device: fp.getDevice(), deviceType: fp.getDeviceType(), deviceVendor: fp.getDeviceVendor() }, fingerprint: fp.getFingerprint(), isIncognito: fp.isIncognito(), browserSpoofed: fp.getBrowserMajorVersion() !== parseInt(fp.getBrowser().split(' ')[1]) }; }"
-    description: Comprehensive browser and device fingerprinting using ClientJS
-    abuse_indication:
-      bot: Combined fingerprinting data can reveal patterns of automated behavior, spoofed browsers, and virtual environments.
-    category: fingerprinting
-    dependency: clientjs
-    outputs:
-      browser:
-        name: Browser Information
-        type: object
-        description: Detailed browser information
-        outputs:
-          name:
-            name: Browser Name
-            type: string
-            description: The name of the browser being used
-            abuse_indication:
-              bot: Unusual browser names or known automation tools like PhantomJS, Selenium WebDriver can directly indicate bot activity.
-          version:
-            name: Browser Version
-            type: string
-            description: The version of the browser
-            abuse_indication:
-              bot: Outdated or inconsistent versions compared to other features can reveal spoofed browsers or automation tools.
-          engine:
-            name: Browser Engine
-            type: string
-            description: The browser's rendering engine
-            abuse_indication:
-              bot: Mismatches between engine and browser version can indicate spoofed or automated browsers.
-          engineVersion:
-            name: Engine Version
-            type: string
-            description: The version of the browser engine
-            abuse_indication:
-              bot: Inconsistent engine versions compared to the browser version can reveal automated or spoofed browsers.
-      device:
-        name: Device Information
-        type: object
-        description: Information about the device and operating system
-        outputs:
-          os:
-            name: Operating System
-            type: string
-            description: The operating system name
-            abuse_indication:
-              bot: Server operating systems or Linux distributions commonly used in cloud environments can indicate automated traffic.
-          osVersion:
-            name: OS Version
-            type: string
-            description: The operating system version
-            abuse_indication:
-              bot: Outdated or unusual OS versions, especially in combination with modern browser versions, can indicate virtualized environments.
-          device:
-            name: Device
-            type: string
-            description: The device name
-            abuse_indication:
-              bot: Generic device names or those commonly used in virtual machines can indicate automated environments.
-          deviceType:
-            name: Device Type
-            type: string
-            description: The type of device (desktop, mobile, tablet)
-            abuse_indication:
-              bot: Mismatches between device type and other characteristics (like touch support) can reveal emulated environments.
-          deviceVendor:
-            name: Device Vendor
-            type: string
-            description: The manufacturer of the device
-            abuse_indication:
-              bot: Generic or missing vendor information can indicate virtual or emulated devices.
-      fingerprint:
-        name: Fingerprint Hash
-        type: string
-        description: Unique hash generated from browser characteristics
-        abuse_indication:
-          bot: Rapidly changing fingerprints or patterns in fingerprint generation can indicate bot rotation or spoofing attempts.
-      isIncognito:
-        name: Incognito Mode
-        type: boolean
-        description: Whether the browser is in incognito/private mode
-        abuse_indication:
-          bot: High rates of incognito usage combined with other suspicious patterns may indicate automated browsing.
-      browserSpoofed:
-        name: Browser Spoofed
-        type: boolean
-        description: Whether the browser information shows signs of spoofing
-        abuse_indication:
-          bot: Direct indicator of browser spoofing, commonly used in bot activity to mask true identity.
+- id: clientjs_fingerprint
+  name: ClientJS Fingerprint
+  codeName: clientjs_fingerprint
+  type: object
+  code: "async () => { const fp = await new ClientJS(); return { browser: { name: fp.getBrowser(), version: fp.getBrowserVersion(), engine: fp.getEngine(), engineVersion: fp.getEngineVersion() }, device: { os: fp.getOS(), osVersion: fp.getOSVersion(), device: fp.getDevice(), deviceType: fp.getDeviceType(), deviceVendor: fp.getDeviceVendor() }, fingerprint: fp.getFingerprint(), isIncognito: fp.isIncognito(), browserSpoofed: fp.getBrowserMajorVersion() !== parseInt(fp.getBrowser().split(' ')[1]) }; }"
+  description: Comprehensive browser and device fingerprinting using ClientJS
+  abuse_indication:
+    bot: Combined fingerprinting data can reveal patterns of automated behavior, spoofed browsers, and virtual environments.
+  category: fingerprinting
+  dependency: clientjs
+  outputs:
+    browser:
+      name: Browser Information
+      type: object
+      description: Detailed browser information
+      outputs:
+        name:
+          name: Browser Name
+          type: string
+          description: The name of the browser being used
+          abuse_indication:
+            bot: Unusual browser names or known automation tools like PhantomJS, Selenium WebDriver can directly indicate bot activity.
+        version:
+          name: Browser Version
+          type: string
+          description: The version of the browser
+          abuse_indication:
+            bot: Outdated or inconsistent versions compared to other features can reveal spoofed browsers or automation tools.
+        engine:
+          name: Browser Engine
+          type: string
+          description: The browser's rendering engine
+          abuse_indication:
+            bot: Mismatches between engine and browser version can indicate spoofed or automated browsers.
+        engineVersion:
+          name: Engine Version
+          type: string
+          description: The version of the browser engine
+          abuse_indication:
+            bot: Inconsistent engine versions compared to the browser version can reveal automated or spoofed browsers.
+    device:
+      name: Device Information
+      type: object
+      description: Information about the device and operating system
+      outputs:
+        os:
+          name: Operating System
+          type: string
+          description: The operating system name
+          abuse_indication:
+            bot: Server operating systems or Linux distributions commonly used in cloud environments can indicate automated traffic.
+        osVersion:
+          name: OS Version
+          type: string
+          description: The operating system version
+          abuse_indication:
+            bot: Outdated or unusual OS versions, especially in combination with modern browser versions, can indicate virtualized environments.
+        device:
+          name: Device
+          type: string
+          description: The device name
+          abuse_indication:
+            bot: Generic device names or those commonly used in virtual machines can indicate automated environments.
+        deviceType:
+          name: Device Type
+          type: string
+          description: The type of device (desktop, mobile, tablet)
+          abuse_indication:
+            bot: Mismatches between device type and other characteristics (like touch support) can reveal emulated environments.
+        deviceVendor:
+          name: Device Vendor
+          type: string
+          description: The manufacturer of the device
+          abuse_indication:
+            bot: Generic or missing vendor information can indicate virtual or emulated devices.
+    fingerprint:
+      name: Fingerprint Hash
+      type: string
+      description: Unique hash generated from browser characteristics
+      abuse_indication:
+        bot: Rapidly changing fingerprints or patterns in fingerprint generation can indicate bot rotation or spoofing attempts.
+    isIncognito:
+      name: Incognito Mode
+      type: boolean
+      description: Whether the browser is in incognito/private mode
+      abuse_indication:
+        bot: High rates of incognito usage combined with other suspicious patterns may indicate automated browsing.
+    browserSpoofed:
+      name: Browser Spoofed
+      type: boolean
+      description: Whether the browser information shows signs of spoofing
+      abuse_indication:
+        bot: Direct indicator of browser spoofing, commonly used in bot activity to mask true identity.
 
-  - id: fingerprint_data
-    name: Fingerprint Data
-    codeName: fingerprint_data
-    type: object
-    code: "async () => { const fp = await FingerprintJS.load(); const result = await fp.get(); return { visitorId: result.visitorId, confidence: result.confidence.score, userAgent: result.components.userAgent, webDriver: result.components.webDriver, language: result.components.language, platform: result.components.platform, touchSupport: result.components.touchSupport }; }"
-    description: Comprehensive browser fingerprinting data used for visitor identification
-    abuse_indication:
-      bot: Fingerprint consistency across sessions can reveal automated behavior. Low confidence scores, presence of webDriver, or unusual platform combinations often indicate bot activity.
-    category: fingerprinting
-    dependency: fingerprintjs
-    outputs:
-      visitorId:
-        name: Visitor ID
-        type: string
-        description: Unique visitor identifier
-        abuse_indication:
-          bot: Rapidly changing visitor IDs or patterns in ID generation can indicate bot rotation or spoofing attempts.
-      confidence:
-        name: Confidence Score
-        type: number
-        description: Confidence score of the fingerprint
-        abuse_indication:
-          bot: Low confidence scores often indicate spoofed or inconsistent browser characteristics typical of automated tools.
-      userAgent:
-        name: User Agent
-        type: string
-        description: Browser user agent string
-        abuse_indication:
-          bot: Inconsistencies between user agent and actual browser capabilities can reveal spoofed environments.
-      webDriver:
-        name: Web Driver
-        type: boolean
-        description: Whether web driver is available
-        abuse_indication:
-          bot: Direct indicator of automation - presence of webdriver suggests Selenium or similar automation tools.
-      language:
-        name: Language
-        type: string
-        description: Browser language
-        abuse_indication:
-          bot: Mismatches between language settings and IP geolocation can indicate automated traffic.
-      platform:
-        name: Platform
-        type: string
-        description: Operating system platform
-        abuse_indication:
-          bot: Inconsistencies between platform and other system characteristics can reveal virtualized environments.
-      touchSupport:
-        name: Touch Support Details
-        type: object
-        description: Touch support capabilities
-        abuse_indication:
-          bot: Mismatched touch capabilities compared to claimed device type can indicate emulated environments.
-        outputs:
-          maxTouchPoints:
-            name: Max Touch Points
-            type: number
-            description: Maximum number of touch points supported
-            abuse_indication:
-              bot: Unusual values or inconsistencies with device type can indicate emulated touch capabilities.
-          touchEvent:
-            name: Touch Event Support
-            type: boolean
-            description: Whether touch events are supported
-            abuse_indication:
-              bot: Mismatches between touch event support and device type can reveal emulated mobile devices.
-          touchStart:
-            name: Touch Start Support
-            type: boolean
-            description: Whether touchstart event is supported
-            abuse_indication:
-              bot: Inconsistent touch start support compared to other touch capabilities can indicate spoofed mobile devices.
+- id: fingerprint_data
+  name: Fingerprint Data
+  codeName: fingerprint_data
+  type: object
+  code: "async () => { const fp = await FingerprintJS.load(); const result = await fp.get(); return { visitorId: result.visitorId, confidence: result.confidence.score, userAgent: result.components.userAgent, webDriver: result.components.webDriver, language: result.components.language, platform: result.components.platform, touchSupport: result.components.touchSupport }; }"
+  description: Comprehensive browser fingerprinting data used for visitor identification
+  abuse_indication:
+    bot: Fingerprint consistency across sessions can reveal automated behavior. Low confidence scores, presence of webDriver, or unusual platform combinations often indicate bot activity.
+  category: fingerprinting
+  dependency: fingerprintjs
+  outputs:
+    visitorId:
+      name: Visitor ID
+      type: string
+      description: Unique visitor identifier
+      abuse_indication:
+        bot: Rapidly changing visitor IDs or patterns in ID generation can indicate bot rotation or spoofing attempts.
+    confidence:
+      name: Confidence Score
+      type: number
+      description: Confidence score of the fingerprint
+      abuse_indication:
+        bot: Low confidence scores often indicate spoofed or inconsistent browser characteristics typical of automated tools.
+    userAgent:
+      name: User Agent
+      type: string
+      description: Browser user agent string
+      abuse_indication:
+        bot: Inconsistencies between user agent and actual browser capabilities can reveal spoofed environments.
+    webDriver:
+      name: Web Driver
+      type: boolean
+      description: Whether web driver is available
+      abuse_indication:
+        bot: Direct indicator of automation - presence of webdriver suggests Selenium or similar automation tools.
+    language:
+      name: Language
+      type: string
+      description: Browser language
+      abuse_indication:
+        bot: Mismatches between language settings and IP geolocation can indicate automated traffic.
+    platform:
+      name: Platform
+      type: string
+      description: Operating system platform
+      abuse_indication:
+        bot: Inconsistencies between platform and other system characteristics can reveal virtualized environments.
+    touchSupport:
+      name: Touch Support Details
+      type: object
+      description: Touch support capabilities
+      abuse_indication:
+        bot: Mismatched touch capabilities compared to claimed device type can indicate emulated environments.
+      outputs:
+        maxTouchPoints:
+          name: Max Touch Points
+          type: number
+          description: Maximum number of touch points supported
+          abuse_indication:
+            bot: Unusual values or inconsistencies with device type can indicate emulated touch capabilities.
+        touchEvent:
+          name: Touch Event Support
+          type: boolean
+          description: Whether touch events are supported
+          abuse_indication:
+            bot: Mismatches between touch event support and device type can reveal emulated mobile devices.
+        touchStart:
+          name: Touch Start Support
+          type: boolean
+          description: Whether touchstart event is supported
+          abuse_indication:
+            bot: Inconsistent touch start support compared to other touch capabilities can indicate spoofed mobile devices.
 
-  - id: user_agent
-    name: User Agent
-    codeName: user_agent
-    type: string
-    code: "navigator.userAgent"
-    description: The browser's user agent string that identifies the browser and system
-    abuse_indication:
-      bot: Bots frequently use fake or inconsistent user agents. Common indicators include outdated versions, unusual combinations of browser and OS, or known bot signatures.
-    category: browser
+- id: user_agent
+  name: User Agent
+  codeName: user_agent
+  type: string
+  code: "navigator.userAgent"
+  description: The browser's user agent string that identifies the browser and system
+  abuse_indication:
+    bot: Bots frequently use fake or inconsistent user agents. Common indicators include outdated versions, unusual combinations of browser and OS, or known bot signatures.
+  category: browser
     
-  - id: browser_languages
-    name: Browser Languages
-    codeName: browser_languages
-    type: array
-    code: "navigator.languages || []"
-    description: List of language preferences configured in the browser
-    abuse_indication:
-      bot: Bots often have missing or misconfigured language settings. Unusual language combinations or single language settings can indicate automated browsers.
-    category: browser
+- id: browser_languages
+  name: Browser Languages
+  codeName: browser_languages
+  type: array
+  code: "navigator.languages || []"
+  description: List of language preferences configured in the browser
+  abuse_indication:
+    bot: Bots often have missing or misconfigured language settings. Unusual language combinations or single language settings can indicate automated browsers.
+  category: browser
     
-  - id: timezone
-    name: Time Zone
-    codeName: timezone
-    type: string
-    code: "Intl.DateTimeFormat().resolvedOptions().timeZone"
-    description: The time zone setting of the browser
-    abuse_indication:
-      bot: Mismatches between timezone and IP geolocation can indicate VPN usage or bot networks. Bots may use default UTC or have inconsistent timezone settings.
-    category: browser
+- id: timezone
+  name: Time Zone
+  codeName: timezone
+  type: string
+  code: "Intl.DateTimeFormat().resolvedOptions().timeZone"
+  description: The time zone setting of the browser
+  abuse_indication:
+    bot: Mismatches between timezone and IP geolocation can indicate VPN usage or bot networks. Bots may use default UTC or have inconsistent timezone settings.
+  category: browser
     
-  - id: browser_plugins
-    name: Browser Plugins
-    codeName: browser_plugins
-    type: array
-    code: "Array.from(navigator.plugins).map(p => p.name)"
-    description: List of browser plugins installed and enabled
-    abuse_indication:
-      bot: Automated browsers typically have no plugins or a very limited set. The absence of common plugins or unusual plugin combinations can indicate bot activity.
-    category: browser
+- id: browser_plugins
+  name: Browser Plugins
+  codeName: browser_plugins
+  type: array
+  code: "Array.from(navigator.plugins).map(p => p.name)"
+  description: List of browser plugins installed and enabled
+  abuse_indication:
+    bot: Automated browsers typically have no plugins or a very limited set. The absence of common plugins or unusual plugin combinations can indicate bot activity.
+  category: browser
     
-  - id: webgl_renderer
-    name: WebGL Renderer
-    codeName: webgl_renderer
-    type: string
-    code: "(() => { const canvas = document.createElement('canvas'); const gl = canvas.getContext('webgl'); return gl && gl.getExtension('WEBGL_debug_renderer_info') ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : null; })()"
-    description: Information about the graphics hardware and WebGL capabilities
-    abuse_indication:
-      bot: Virtual or headless environments often have basic or software-rendered WebGL. Unusual renderer strings or missing WebGL support can indicate automated browsers.
-    category: hardware
+- id: webgl_renderer
+  name: WebGL Renderer
+  codeName: webgl_renderer
+  type: string
+  code: "(() => { const canvas = document.createElement('canvas'); const gl = canvas.getContext('webgl'); return gl && gl.getExtension('WEBGL_debug_renderer_info') ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : null; })()"
+  description: Information about the graphics hardware and WebGL capabilities
+  abuse_indication:
+    bot: Virtual or headless environments often have basic or software-rendered WebGL. Unusual renderer strings or missing WebGL support can indicate automated browsers.
+  category: hardware
     
-  - id: canvas_fingerprint
-    name: Canvas Fingerprint
-    codeName: canvas_fingerprint
-    type: string
-    code: "(() => { const canvas = document.createElement('canvas'); canvas.width = 240; canvas.height = 60; const ctx = canvas.getContext('2d'); if (ctx) { ctx.fillText('BotWhisperer', 10, 50); return canvas.toDataURL(); } return null; })()"
-    description: Unique identifier based on canvas rendering differences
-    abuse_indication:
-      bot: Automated browsers often produce identical canvas fingerprints or fail to render properly. Variations in anti-aliasing and font rendering can expose headless browsers.
-    category: fingerprinting
+- id: canvas_fingerprint
+  name: Canvas Fingerprint
+  codeName: canvas_fingerprint
+  type: string
+  code: "(() => { const canvas = document.createElement('canvas'); canvas.width = 240; canvas.height = 60; const ctx = canvas.getContext('2d'); if (ctx) { ctx.fillText('BotWhisperer', 10, 50); return canvas.toDataURL(); } return null; })()"
+  description: Unique identifier based on canvas rendering differences
+  abuse_indication:
+    bot: Automated browsers often produce identical canvas fingerprints or fail to render properly. Variations in anti-aliasing and font rendering can expose headless browsers.
+  category: fingerprinting
     
-  - id: cpu_cores
-    name: CPU Cores
-    codeName: cpu_cores
-    type: number
-    code: "navigator.hardwareConcurrency || 0"
-    description: Number of logical processors available to the browser
-    abuse_indication:
-      bot: Virtual environments and containers often have unusual core counts. Low core counts or inconsistencies with other hardware info can indicate virtualized environments.
-    category: hardware
+- id: cpu_cores
+  name: CPU Cores
+  codeName: cpu_cores
+  type: number
+  code: "navigator.hardwareConcurrency || 0"
+  description: Number of logical processors available to the browser
+  abuse_indication:
+    bot: Virtual environments and containers often have unusual core counts. Low core counts or inconsistencies with other hardware info can indicate virtualized environments.
+  category: hardware
     
-  - id: device_memory
-    name: Device Memory
-    codeName: device_memory
-    type: number
-    code: "(() => { try { return navigator.deviceMemory || 0; } catch(e) { return 0; } })()"
-    description: Amount of RAM memory available to the browser
-    abuse_indication:
-      bot: Automated environments often report standard or limited memory values. Inconsistencies between memory and other hardware indicators can reveal virtualization.
-    category: hardware
+- id: device_memory
+  name: Device Memory
+  codeName: device_memory
+  type: number
+  code: "(() => { try { return navigator.deviceMemory || 0; } catch(e) { return 0; } })()"
+  description: Amount of RAM memory available to the browser
+  abuse_indication:
+    bot: Automated environments often report standard or limited memory values. Inconsistencies between memory and other hardware indicators can reveal virtualization.
+  category: hardware
     
-  - id: has_touch_support
-    name: Touch Support
-    codeName: has_touch_support
-    type: boolean
-    code: "('ontouchstart' in window)"
-    description: Whether the device supports touch input
-    abuse_indication:
-      bot: Desktop automation tools might incorrectly report touch capabilities. Mismatches between device type and touch support can indicate spoofing.
-    category: hardware
+- id: has_touch_support
+  name: Touch Support
+  codeName: has_touch_support
+  type: boolean
+  code: "('ontouchstart' in window)"
+  description: Whether the device supports touch input
+  abuse_indication:
+    bot: Desktop automation tools might incorrectly report touch capabilities. Mismatches between device type and touch support can indicate spoofing.
+  category: hardware
     
-  - id: network_info
-    name: Network Information
-    codeName: network_info
-    type: object
-    code: "(() => { try { return navigator.connection ? { effectiveType: navigator.connection.effectiveType, rtt: navigator.connection.rtt } : { effectiveType: 'unknown', rtt: 0 }; } catch(e) { return { effectiveType: 'unknown', rtt: 0 }; } })()"
-    description: Information about the network connection type and quality
-    abuse_indication:
-      bot: Data center networks used by bots often have distinctive characteristics. Unusual network patterns or consistently perfect conditions may indicate automated traffic.
-    category: network
-    outputs:
-      effectiveType:
-        name: Connection Type
-        type: string
-        description: The effective connection type (4g, 3g, 2g, slow-2g)
-        abuse_indication:
-          bot: Consistently poor connection types or those associated with data centers can indicate bot activity.
-      rtt:
-        name: Round Trip Time
-        type: number
-        description: The estimated round-trip time of the current connection
-        abuse_indication:
-          bot: Extremely low or stable RTT values can indicate connections within a data center, common for bots.
+- id: network_info
+  name: Network Information
+  codeName: network_info
+  type: object
+  code: "(() => { try { return navigator.connection ? { effectiveType: navigator.connection.effectiveType, rtt: navigator.connection.rtt } : { effectiveType: 'unknown', rtt: 0 }; } catch(e) { return { effectiveType: 'unknown', rtt: 0 }; } })()"
+  description: Information about the network connection type and quality
+  abuse_indication:
+    bot: Data center networks used by bots often have distinctive characteristics. Unusual network patterns or consistently perfect conditions may indicate automated traffic.
+  category: network
+  outputs:
+    effectiveType:
+      name: Connection Type
+      type: string
+      description: The effective connection type (4g, 3g, 2g, slow-2g)
+      abuse_indication:
+        bot: Consistently poor connection types or those associated with data centers can indicate bot activity.
+    rtt:
+      name: Round Trip Time
+      type: number
+      description: The estimated round-trip time of the current connection
+      abuse_indication:
+        bot: Extremely low or stable RTT values can indicate connections within a data center, common for bots.
     
-  - id: browser_features
-    name: Browser Features
-    codeName: browser_features
-    type: object
-    code: "{ localStorage: !!window.localStorage, sessionStorage: !!window.sessionStorage, indexedDB: !!window.indexedDB, webWorker: !!window.Worker, webGL: !!window.WebGLRenderingContext }"
-    description: Support status for various browser APIs and features
-    abuse_indication:
-      bot: Headless browsers and automation tools often lack support for modern features. Unusual combinations of supported and unsupported features can reveal bot environments.
-    category: browser
-    outputs:
-      localStorage:
-        name: Local Storage
-        type: boolean
-        description: Whether the browser supports localStorage
-        abuse_indication:
-          bot: Disabled localStorage, especially when other features are enabled, can indicate privacy-focused or automated browsers.
-      sessionStorage:
-        name: Session Storage
-        type: boolean
-        description: Whether the browser supports sessionStorage
-        abuse_indication:
-          bot: Lack of sessionStorage support can indicate automated environments or privacy-focused browsers.
-      indexedDB:
-        name: IndexedDB
-        type: boolean
-        description: Whether the browser supports indexedDB
-        abuse_indication:
-          bot: Absence of IndexedDB support can reveal headless browsers or automation tools.
-      webWorker:
-        name: Web Worker
-        type: boolean
-        description: Whether the browser supports Web Workers
-        abuse_indication:
-          bot: Disabled Web Workers can indicate automated environments or browsers configured for minimal resource usage.
-      webGL:
-        name: WebGL
-        type: boolean
-        description: Whether the browser supports WebGL
-        abuse_indication:
-          bot: Lack of WebGL support or basic software rendering can indicate virtualized or headless environments.
+- id: browser_features
+  name: Browser Features
+  codeName: browser_features
+  type: object
+  code: "{ localStorage: !!window.localStorage, sessionStorage: !!window.sessionStorage, indexedDB: !!window.indexedDB, webWorker: !!window.Worker, webGL: !!window.WebGLRenderingContext }"
+  description: Support status for various browser APIs and features
+  abuse_indication:
+    bot: Headless browsers and automation tools often lack support for modern features. Unusual combinations of supported and unsupported features can reveal bot environments.
+  category: browser
+  outputs:
+    localStorage:
+      name: Local Storage
+      type: boolean
+      description: Whether the browser supports localStorage
+      abuse_indication:
+        bot: Disabled localStorage, especially when other features are enabled, can indicate privacy-focused or automated browsers.
+    sessionStorage:
+      name: Session Storage
+      type: boolean
+      description: Whether the browser supports sessionStorage
+      abuse_indication:
+        bot: Lack of sessionStorage support can indicate automated environments or privacy-focused browsers.
+    indexedDB:
+      name: IndexedDB
+      type: boolean
+      description: Whether the browser supports indexedDB
+      abuse_indication:
+        bot: Absence of IndexedDB support can reveal headless browsers or automation tools.
+    webWorker:
+      name: Web Worker
+      type: boolean
+      description: Whether the browser supports Web Workers
+      abuse_indication:
+        bot: Disabled Web Workers can indicate automated environments or browsers configured for minimal resource usage.
+    webGL:
+      name: WebGL
+      type: boolean
+      description: Whether the browser supports WebGL
+      abuse_indication:
+        bot: Lack of WebGL support or basic software rendering can indicate virtualized or headless environments.
     
-  - id: has_audio_context
-    name: Audio Context Available
-    codeName: has_audio_context
-    type: boolean
-    code: "(() => { try { return !!(window.AudioContext || window.webkitAudioContext); } catch (e) { return false; } })()"
-    description: Whether the browser supports audio processing capabilities
-    abuse_indication:
-      bot: Headless browsers and basic automation tools often lack audio support. Missing or limited audio capabilities can indicate non-standard browser environments.
-    category: fingerprinting
+- id: has_audio_context
+  name: Audio Context Available
+  codeName: has_audio_context
+  type: boolean
+  code: "(() => { try { return !!(window.AudioContext || window.webkitAudioContext); } catch (e) { return false; } })()"
+  description: Whether the browser supports audio processing capabilities
+  abuse_indication:
+    bot: Headless browsers and basic automation tools often lack audio support. Missing or limited audio capabilities can indicate non-standard browser environments.
+  category: fingerprinting
     
-  - id: has_permissions_api
-    name: Permissions API Available
-    codeName: has_permissions_api
-    type: boolean
-    code: "!!navigator.permissions"
-    description: Whether the browser supports the Permissions API
-    abuse_indication:
-      bot: Automated browsers may lack modern browser APIs. The absence of the Permissions API in an otherwise modern browser profile can indicate spoofing.
-    category: browser
+- id: has_permissions_api
+  name: Permissions API Available
+  codeName: has_permissions_api
+  type: boolean
+  code: "!!navigator.permissions"
+  description: Whether the browser supports the Permissions API
+  abuse_indication:
+    bot: Automated browsers may lack modern browser APIs. The absence of the Permissions API in an otherwise modern browser profile can indicate spoofing.
+  category: browser
     
-  - id: do_not_track
-    name: Do Not Track Setting
-    codeName: do_not_track
-    type: string
-    code: "(() => { try { return navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || 'Not available'; } catch(e) { return 'Not available'; } })()"
-    description: The browser's Do Not Track preference setting
-    abuse_indication:
-      bot: Most users don't modify this setting. Unusual patterns in DNT settings across multiple requests can indicate automated behavior.
-    category: browser
+- id: do_not_track
+  name: Do Not Track Setting
+  codeName: do_not_track
+  type: string
+  code: "(() => { try { return navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || 'Not available'; } catch(e) { return 'Not available'; } })()"
+  description: The browser's Do Not Track preference setting
+  abuse_indication:
+    bot: Most users don't modify this setting. Unusual patterns in DNT settings across multiple requests can indicate automated behavior.
+  category: browser
     
-  - id: has_battery_api
-    name: Battery API Available
-    codeName: has_battery_api
-    type: boolean
-    code: "(() => { try { return !!navigator.getBattery; } catch(e) { return false; } })()"
-    description: Whether the browser supports the Battery Status API
-    abuse_indication:
-      bot: Virtual environments and automation tools often lack battery information. The absence of battery API in mobile user agents can indicate spoofing.
-    category: hardware
+- id: has_battery_api
+  name: Battery API Available
+  codeName: has_battery_api
+  type: boolean
+  code: "(() => { try { return !!navigator.getBattery; } catch(e) { return false; } })()"
+  description: Whether the browser supports the Battery Status API
+  abuse_indication:
+    bot: Virtual environments and automation tools often lack battery information. The absence of battery API in mobile user agents can indicate spoofing.
+  category: hardware
     
-  - id: visitor_id
-    name: visitor_id
-    codeName: visitor_id
-    type: string
-    code: "async () => { const fp = await FingerprintJS.load(); const result = await fp.get(); return result.visitorId; }"
-    description: Unique identifier generated by FingerprintJS for visitor tracking
-    abuse_indication:
-      bot: Rapidly changing visitor IDs or patterns in ID generation can indicate bot rotation or spoofing attempts.
-    category: fingerprinting
-    dependency: fingerprintjs
+- id: visitor_id
+  name: visitor_id
+  codeName: visitor_id
+  type: string
+  code: "async () => { const fp = await FingerprintJS.load(); const result = await fp.get(); return result.visitorId; }"
+  description: Unique identifier generated by FingerprintJS for visitor tracking
+  abuse_indication:
+    bot: Rapidly changing visitor IDs or patterns in ID generation can indicate bot rotation or spoofing attempts.
+  category: fingerprinting
+  dependency: fingerprintjs
