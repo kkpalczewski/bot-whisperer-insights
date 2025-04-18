@@ -2,7 +2,7 @@
 import { parse } from 'yaml';
 
 // @ts-ignore
-import featuresYaml from '../config/detection-features.yaml?raw';
+import featuresYaml from './detection-features.yaml?raw';
 
 export interface FeatureValue {
   name: string;
@@ -26,17 +26,5 @@ export interface DetectionFeature {
   outputs?: Record<string, FeatureValue>;
 }
 
-// Third-party fingerprinting libraries info
-export interface LibraryInfo {
-  id: string;
-  name: string;
-  description: string;
-  website: string;
-  features: string[];
-}
-
-// Parse the YAML file content
 const parsed = parse(featuresYaml);
-
-export const detectionFeatures: DetectionFeature[] = parsed.detectionFeatures || [];
-export const fingerprintingLibraries: LibraryInfo[] = parsed.fingerprintingLibraries || [];
+export const features = parsed.detectionFeatures || [];

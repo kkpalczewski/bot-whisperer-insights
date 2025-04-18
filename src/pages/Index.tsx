@@ -1,24 +1,24 @@
-
 import { useState } from 'react';
 import { FeaturePill } from '@/components/FeaturePill';
 import { LibraryCard } from '@/components/LibraryCard';
 import { Header } from '@/components/Header';
 import { FingerprintData } from '@/components/FingerprintData';
-import { detectionFeatures, fingerprintingLibraries } from '@/config/detectionFeatures';
+import { features } from '@/config/detectionFeatures';
+import { libraries } from '@/config/fingerprintingLibraries';
 import { Filter } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const categories = [
   'all',
-  ...Array.from(new Set(detectionFeatures.map(f => f.category)))
+  ...Array.from(new Set(features.map(f => f.category)))
 ];
 
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const filteredFeatures = selectedCategory === 'all' 
-    ? detectionFeatures 
-    : detectionFeatures.filter(f => f.category === selectedCategory);
+    ? features 
+    : features.filter(f => f.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-200">
@@ -53,11 +53,11 @@ const Index = () => {
             </div>
           </section>
 
-          {fingerprintingLibraries && fingerprintingLibraries.length > 0 && (
+          {libraries && libraries.length > 0 && (
             <section className="mt-16">
               <h2 className="text-2xl font-bold text-white mb-6">Fingerprinting Libraries</h2>
               <div className="space-y-0">
-                {fingerprintingLibraries.map((library) => (
+                {libraries.map((library) => (
                   <LibraryCard key={library.id} library={library} />
                 ))}
               </div>
