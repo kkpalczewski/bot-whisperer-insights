@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const FormattedValue: React.FC<{
@@ -19,9 +18,9 @@ export const FormattedValue: React.FC<{
 
   // Check if the value is an array (it will be a string but formatted as [item1, item2])
   if (typeof value === 'string') {
-    // Handle arrays
+    // Handle arrays - using a vivid purple color
     if (value.startsWith('[') && value.endsWith(']')) {
-      return <span className="text-purple-400">{value}</span>;
+      return <span className="text-[#8B5CF6]">{value}</span>;
     }
     
     // Handle objects
