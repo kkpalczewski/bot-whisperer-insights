@@ -1,0 +1,52 @@
+
+- id: fingerprint
+  name: Browser Fingerprint
+  codeName: fingerprint
+  type: object
+  code: |
+    async () => {
+      const fp = await FingerprintJS.load();
+      const result = await fp.get();
+      const canvas = document.createElement('canvas');
+      canvas.width = 240;
+      canvas.height = 60;
+      const ctx = canvas.getContext('2d');
+      const canvasData = ctx ? (() => {
+        ctx.fillText('BotWhisperer', 10, 50);
+        return canvas.toDataURL();
+      })() : null;
+      
+      return {
+        visitorId: result.visitorId,
+        confidence: result.confidence.score,
+        webDriver: result.components.webDriver,
+        canvas: canvasData,
+        audioContext: !!(window.AudioContext || window.webkitAudioContext)
+      };
+    }
+  description: Comprehensive browser fingerprinting data
+  abuse_indication:
+    bot: Fingerprint consistency patterns and component combinations can reveal automated behavior
+  category: fingerprinting
+  dependency: fingerprintjs
+  outputs:
+    visitorId:
+      name: Visitor ID
+      type: string
+      description: Unique visitor identifier
+    confidence:
+      name: Confidence Score
+      type: number
+      description: Fingerprint confidence score
+    webDriver:
+      name: Web Driver
+      type: boolean
+      description: Selenium/automation detection
+    canvas:
+      name: Canvas Fingerprint
+      type: string
+      description: Rendering-based fingerprint
+    audioContext:
+      name: Audio Context
+      type: boolean
+      description: Audio processing capability

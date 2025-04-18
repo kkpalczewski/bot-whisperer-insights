@@ -10,39 +10,49 @@
       indexedDB: !!window.indexedDB,
       webWorker: !!window.Worker,
       webGL: !!window.WebGLRenderingContext,
+      permissionsApi: !!navigator.permissions,
+      languages: navigator.languages || [],
+      doNotTrack: navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || 'Not available',
+      plugins: Array.from(navigator.plugins).map((p) => p.name)
     }
-  description: Support status for various browser APIs and features
+  description: Comprehensive browser feature detection including storage, APIs, and settings
   abuse_indication:
-    bot: Headless browsers and automation tools often lack support for modern features. Unusual combinations of supported and unsupported features can reveal bot environments.
+    bot: Unusual combinations of supported and unsupported features, or inconsistent configurations can reveal automated environments
   category: browser
   outputs:
     localStorage:
       name: Local Storage
       type: boolean
       description: Whether the browser supports localStorage
-      abuse_indication:
-        bot: Disabled localStorage, especially when other features are enabled, can indicate privacy-focused or automated browsers.
     sessionStorage:
       name: Session Storage
       type: boolean
       description: Whether the browser supports sessionStorage
-      abuse_indication:
-        bot: Lack of sessionStorage support can indicate automated environments or privacy-focused browsers.
     indexedDB:
       name: IndexedDB
       type: boolean
       description: Whether the browser supports indexedDB
-      abuse_indication:
-        bot: Absence of IndexedDB support can reveal headless browsers or automation tools.
     webWorker:
       name: Web Worker
       type: boolean
       description: Whether the browser supports Web Workers
-      abuse_indication:
-        bot: Disabled Web Workers can indicate automated environments or browsers configured for minimal resource usage.
     webGL:
       name: WebGL
       type: boolean
       description: Whether the browser supports WebGL
-      abuse_indication:
-        bot: Lack of WebGL support or basic software rendering can indicate virtualized or headless environments.
+    permissionsApi:
+      name: Permissions API
+      type: boolean
+      description: Whether the browser supports the Permissions API
+    languages:
+      name: Browser Languages
+      type: array
+      description: List of configured browser languages
+    doNotTrack:
+      name: Do Not Track Setting
+      type: string
+      description: Browser's Do Not Track preference
+    plugins:
+      name: Browser Plugins
+      type: array
+      description: List of installed browser plugins

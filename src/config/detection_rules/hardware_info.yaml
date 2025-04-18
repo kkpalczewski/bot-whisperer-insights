@@ -1,0 +1,44 @@
+
+- id: hardware_info
+  name: Hardware Information
+  codeName: hardware_info
+  type: object
+  code: |
+    {
+      cpuCores: navigator.hardwareConcurrency || 0,
+      deviceMemory: navigator.deviceMemory || 0,
+      touchSupport: 'ontouchstart' in window,
+      batteryApi: !!navigator.getBattery,
+      webglRenderer: (() => {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl');
+        return gl && gl.getExtension('WEBGL_debug_renderer_info')
+          ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL)
+          : null;
+      })()
+    }
+  description: Comprehensive hardware feature detection
+  abuse_indication:
+    bot: Inconsistent hardware capabilities or unusual combinations can indicate virtualized environments
+  category: hardware
+  outputs:
+    cpuCores:
+      name: CPU Cores
+      type: number
+      description: Number of logical processors
+    deviceMemory:
+      name: Device Memory
+      type: number
+      description: Amount of RAM available
+    touchSupport:
+      name: Touch Support
+      type: boolean
+      description: Whether touch input is supported
+    batteryApi:
+      name: Battery API
+      type: boolean
+      description: Whether battery status API is available
+    webglRenderer:
+      name: WebGL Renderer
+      type: string
+      description: Graphics hardware information
