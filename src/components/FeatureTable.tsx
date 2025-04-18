@@ -30,7 +30,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
           <FeatureTableRow
             key={node.id}
             node={node}
-            onToggle={onToggleNode}
+            onToggle={() => onToggleNode(node.id)}
           />
         ))}
         {nodes.length === 0 && (
