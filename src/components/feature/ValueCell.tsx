@@ -7,27 +7,52 @@ import { FormattedValue } from './FormattedValue';
 
 interface ValueCellProps {
   value: string | boolean | undefined;
+  type?: string;
   error?: string;
+  parseValue?: boolean;
 }
 
-export const ValueCell: React.FC<ValueCellProps> = ({ value, error }) => {
+export const ValueCell: React.FC<ValueCellProps> = ({ value, type, error, parseValue }) => {
   const [isValueExpanded, setIsValueExpanded] = useState(false);
   
-  const stringValue = value === undefined 
+  const parseTypedValue = (val: string | boolean | undefined, type?: string) => {
+    if (val === undefined) return undefined;
+    if (typeof val === 'boolean') return val;
+    
+    try {
+      switch (type) {
+        case 'number':
+          return parseFloat(String(val));
+        case 'boolean':
+          return val === 'true';
+        case 'array':
+          return Array.isArray(val) ? val : String(val).split(',');
+        case 'object':
+          return typeof val === 'string' ? JSON.parse(val) : val;
+        default:
+          return String(val);
+      }
+    } catch (e) {
+      return String(val);
+    }
+  };
+  
+  const displayValue = parseValue ? parseTypedValue(value, type) : value;
+  const stringValue = displayValue === undefined 
     ? 'undefined' 
-    : typeof value === 'boolean' 
-      ? String(value) 
-      : String(value);
+    : typeof displayValue === 'boolean' 
+      ? String(displayValue) 
+      : String(displayValue);
   
   const lines = stringValue.split('\n');
   const isLongValue = lines.length > 3 || stringValue.length > 150;
   
-  let displayValue = stringValue;
+  let truncatedValue = stringValue;
   if (isLongValue && !isValueExpanded) {
     if (lines.length > 3) {
-      displayValue = lines.slice(0, 3).join('\n') + '\n...';
+      truncatedValue = lines.slice(0, 3).join('\n') + '\n...';
     } else if (stringValue.length > 150) {
-      displayValue = stringValue.slice(0, 150) + '...';
+      truncatedValue = stringValue.slice(0, 150) + '...';
     }
   }
 
@@ -39,7 +64,7 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, error }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <pre className="text-xs font-mono whitespace-pre-wrap break-all font-semibold max-h-24 overflow-y-auto">
-                  <FormattedValue value={displayValue} />
+                  <FormattedValue value={truncatedValue} />
                 </pre>
               </TooltipTrigger>
               <TooltipContent side="bottom" align="start" className="max-w-md">
@@ -67,7 +92,7 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, error }) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <pre className="text-xs font-mono whitespace-pre-wrap break-all font-semibold">
-                <FormattedValue value={displayValue} />
+                <FormattedValue value={truncatedValue} />
               </pre>
             </TooltipTrigger>
             <TooltipContent side="bottom" align="start">

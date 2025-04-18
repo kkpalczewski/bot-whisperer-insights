@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { DetectionFeature } from '@/config/detectionFeatures';
 import { safeEvaluate } from '@/utils/library-manager';
@@ -8,6 +7,7 @@ export interface FeatureNode {
   id: string;
   feature: string;
   value: string | boolean | undefined;
+  type?: string;
   parent: string;
   level: number;
   children: FeatureNode[];
@@ -49,6 +49,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         id: path,
         feature: path,
         value: formatValue(value, error),
+        type: feature.type,
         parent: getParentName(path, feature.dependency),
         level,
         children: [],
@@ -68,6 +69,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
           id: currentPath,
           feature: key,
           value: formatValue(val, error),
+          type: output?.type || feature.type,
           parent: getParentName(path, feature.dependency),
           level,
           children,
@@ -81,6 +83,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         id: currentPath,
         feature: key,
         value: formatValue(val, error),
+        type: output?.type || feature.type,
         parent: getParentName(path, feature.dependency),
         level,
         children: [],

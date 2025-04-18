@@ -9,6 +9,7 @@ import { ParentCell } from './feature/ParentCell';
 interface FeatureTableRowProps {
   feature: string;
   value: string | boolean | undefined;
+  type?: string;
   parent: string;
   level: number;
   onToggle: () => void;
@@ -22,6 +23,7 @@ interface FeatureTableRowProps {
 export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   feature,
   value,
+  type,
   parent,
   level,
   onToggle,
@@ -61,6 +63,15 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
       
       <TableCell className="py-2 align-top">
         <ValueCell value={value} error={error} />
+      </TableCell>
+
+      <TableCell className="py-2 align-top">
+        <ValueCell 
+          value={value} 
+          type={type} 
+          error={error}
+          parseValue={true} 
+        />
       </TableCell>
       
       <TableCell className="py-2 align-top">
