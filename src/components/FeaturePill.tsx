@@ -12,13 +12,20 @@ interface FeaturePillProps {
   feature: DetectionFeature;
 }
 
+// Define a proper type for the return value of formatValue
+interface FormattedValue {
+  display: string;
+  raw: any;
+  error?: string; // Make error optional
+}
+
 export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
-  const [value, setValue] = useState<any>('Evaluating...');
+  const [value, setValue] = useState<FormattedValue>({ display: 'Evaluating...', raw: null });
   const [isOpen, setIsOpen] = useState(false);
   const [hasError, setHasError] = useState(false);
 
   // Format value based on type and for display
-  const formatValue = (val: any, type: string): { display: string; raw: any } => {
+  const formatValue = (val: any, type: string): FormattedValue => {
     try {
       if (val === null || val === undefined) {
         return { display: 'Not available', raw: null };
@@ -73,7 +80,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       setHasError(false);
     } catch (error) {
       setHasError(true);
-      const errorValue = {
+      const errorValue: FormattedValue = {
         display: `Error: ${(error as Error).message}`,
         raw: null,
         error: (error as Error).message
