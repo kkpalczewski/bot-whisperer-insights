@@ -79,7 +79,7 @@ export const getFingerprintJS = async (): Promise<any> => {
 
   try {
     // Check if FingerprintJS exists in window
-    if (typeof (window as any).FingerprintJS === 'undefined') {
+    if (typeof window.FingerprintJS === 'undefined') {
       // Try to load from npm package
       try {
         const fpjs = await import('@fingerprintjs/fingerprintjs');
@@ -94,7 +94,7 @@ export const getFingerprintJS = async (): Promise<any> => {
       }
     } else {
       // Use window.FingerprintJS
-      const fp = await (window as any).FingerprintJS.load();
+      const fp = await window.FingerprintJS.load();
       libraryInstances.fingerprintjs = fp;
       return fp;
     }
@@ -164,7 +164,7 @@ export const safeEvaluate = async <T>(
     `;
 
     // Execute the wrapped code
-    const result = await new Function('window', wrappedCode)(window);
+    const result = await Function('window', wrappedCode)(window);
     
     // Type validation based on expected type
     if (result !== null && result !== undefined) {
