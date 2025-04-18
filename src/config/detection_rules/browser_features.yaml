@@ -1,3 +1,4 @@
+
 - id: browser_features
   name: Browser Features
   codeName: browser_features
@@ -13,6 +14,15 @@
           return false;
         }
       })(),
+      localStorage: !!window.localStorage,
+      sessionStorage: !!window.sessionStorage,
+      indexedDB: !!window.indexedDB,
+      webWorker: !!window.Worker,
+      webGL: !!window.WebGLRenderingContext,
+      permissionsApi: !!navigator.permissions,
+      languages: navigator.languages || [],
+      doNotTrack: navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || 'Not available',
+      plugins: Array.from(navigator.plugins).map((p) => p.name)
     }
   description: Core browser features and capabilities
   abuse_indication:
@@ -31,3 +41,39 @@
       name: Audio Context Available
       type: boolean
       description: Whether the browser supports audio processing capabilities
+    localStorage:
+      name: Local Storage
+      type: boolean
+      description: Whether the browser supports localStorage
+    sessionStorage:
+      name: Session Storage
+      type: boolean
+      description: Whether the browser supports sessionStorage
+    indexedDB:
+      name: IndexedDB
+      type: boolean
+      description: Whether the browser supports indexedDB
+    webWorker:
+      name: Web Worker
+      type: boolean
+      description: Whether the browser supports Web Workers
+    webGL:
+      name: WebGL
+      type: boolean
+      description: Whether the browser supports WebGL
+    permissionsApi:
+      name: Permissions API
+      type: boolean
+      description: Whether the browser supports the Permissions API
+    languages:
+      name: Browser Languages
+      type: array
+      description: List of configured browser languages
+    doNotTrack:
+      name: Do Not Track Setting
+      type: string
+      description: Browser's Do Not Track preference
+    plugins:
+      name: Browser Plugins
+      type: array
+      description: List of installed browser plugins
