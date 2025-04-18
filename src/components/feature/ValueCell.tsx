@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { FormattedValue } from './FormattedValue';
 
 interface ValueCellProps {
   value: string | boolean | undefined;
@@ -37,13 +38,13 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, error }) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <pre className="text-xs font-mono whitespace-pre-wrap break-all text-sky-300 font-semibold max-h-24 overflow-y-auto">
-                  {displayValue}
+                <pre className="text-xs font-mono whitespace-pre-wrap break-all font-semibold max-h-24 overflow-y-auto">
+                  <FormattedValue value={displayValue} />
                 </pre>
               </TooltipTrigger>
               <TooltipContent side="bottom" align="start" className="max-w-md">
-                <pre className="text-xs font-mono whitespace-pre-wrap break-all max-h-60 overflow-y-auto text-sky-200">
-                  {stringValue}
+                <pre className="text-xs font-mono whitespace-pre-wrap break-all max-h-60 overflow-y-auto">
+                  <FormattedValue value={stringValue} />
                 </pre>
               </TooltipContent>
             </Tooltip>
@@ -65,13 +66,13 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, error }) => {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <pre className="text-xs font-mono whitespace-pre-wrap break-all text-sky-300 font-semibold">
-                {displayValue}
+              <pre className="text-xs font-mono whitespace-pre-wrap break-all font-semibold">
+                <FormattedValue value={displayValue} />
               </pre>
             </TooltipTrigger>
             <TooltipContent side="bottom" align="start">
-              <pre className="text-xs font-mono whitespace-pre-wrap break-all text-sky-200">
-                {stringValue}
+              <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+                <FormattedValue value={stringValue} />
               </pre>
             </TooltipContent>
           </Tooltip>

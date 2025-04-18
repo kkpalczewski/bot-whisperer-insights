@@ -38,7 +38,7 @@ export const FeatureCell: React.FC<FeatureCellProps> = ({
             )}
           </Button>
         )}
-        <span className="text-sm font-mono text-gray-500 truncate">{feature}</span>
+        <span className="text-sm font-mono text-gray-200 font-medium">{feature}</span>
       </div>
     </div>
   );
