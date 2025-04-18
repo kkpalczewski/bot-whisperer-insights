@@ -8,9 +8,10 @@ import { FormattedValue } from './FormattedValue';
 interface ValueCellProps {
   value: string | boolean | undefined;
   error?: string;
+  expectedType?: string;
 }
 
-export const ValueCell: React.FC<ValueCellProps> = ({ value, error }) => {
+export const ValueCell: React.FC<ValueCellProps> = ({ value, error, expectedType }) => {
   const [isValueExpanded, setIsValueExpanded] = useState(false);
   
   const stringValue = value === undefined 
@@ -39,12 +40,12 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, error }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <pre className="text-xs font-mono whitespace-pre-wrap break-all font-semibold max-h-24 overflow-y-auto">
-                  <FormattedValue value={displayValue} />
+                  <FormattedValue value={displayValue} expectedType={expectedType} />
                 </pre>
               </TooltipTrigger>
               <TooltipContent side="bottom" align="start" className="max-w-md">
                 <pre className="text-xs font-mono whitespace-pre-wrap break-all max-h-60 overflow-y-auto">
-                  <FormattedValue value={stringValue} />
+                  <FormattedValue value={stringValue} expectedType={expectedType} />
                 </pre>
               </TooltipContent>
             </Tooltip>
@@ -67,12 +68,12 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, error }) => {
           <Tooltip>
             <TooltipTrigger asChild>
               <pre className="text-xs font-mono whitespace-pre-wrap break-all font-semibold">
-                <FormattedValue value={displayValue} />
+                <FormattedValue value={displayValue} expectedType={expectedType} />
               </pre>
             </TooltipTrigger>
             <TooltipContent side="bottom" align="start">
               <pre className="text-xs font-mono whitespace-pre-wrap break-all">
-                <FormattedValue value={stringValue} />
+                <FormattedValue value={stringValue} expectedType={expectedType} />
               </pre>
             </TooltipContent>
           </Tooltip>
