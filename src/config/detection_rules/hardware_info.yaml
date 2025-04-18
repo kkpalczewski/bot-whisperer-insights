@@ -1,3 +1,4 @@
+
 - id: hardware_info
   name: Hardware Information
   codeName: hardware_info
@@ -12,7 +13,7 @@
         const gl = canvas.getContext('webgl');
         return gl && gl.getExtension('WEBGL_debug_renderer_info')
           ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL)
-          : null;
+          : 'WebGL information not available';
       })()
     }
   description: Comprehensive hardware feature detection

@@ -5,7 +5,7 @@
   type: object
   code: |
     {
-      user_agent: navigator.userAgent.toString(),
+      user_agent: navigator.userAgent,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       audio_context: (() => {
         try {
