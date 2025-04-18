@@ -151,10 +151,12 @@ export const safeEvaluate = async <T>(
     }
 
     // Create a safe async wrapper function to evaluate the code
+    // Make sure we're executing the code as an async function
     const wrappedCode = `
       async function evaluateFeature() {
         try {
-          return ${modifiedCode};
+          const fn = ${modifiedCode};
+          return typeof fn === 'function' ? await fn() : fn;
         } catch (e) {
           console.error("Error evaluating feature code:", e);
           throw e;
