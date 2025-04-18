@@ -32,7 +32,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const formatValue = (val: any): string => {
     if (val === null || val === undefined) return 'Not available';
     if (typeof val === 'boolean') return val ? 'Yes' : 'No';
-    if (Array.isArray(val)) return JSON.stringify(val);
+    if (Array.isArray(val)) return val.join(', ');
     if (typeof val === 'object') return JSON.stringify(val);
     return String(val);
   };
@@ -57,17 +57,27 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
       const currentCodeName = `${parentCodeName}.${key}`;
       const currentName = output?.name || key;
       
+      if (Array.isArray(val)) {
+        return [{
+          codeName: currentCodeName,
+          fieldName: currentName,
+          value: formatValue(val),
+          parent: parentCodeName.split('.')[0],
+          description: output?.description
+        }];
+      }
+
       if (val && typeof val === 'object' && output?.outputs) {
         return flattenFeatures(val, currentCodeName, currentName, output.outputs);
       }
 
-      return {
+      return [{
         codeName: currentCodeName,
         fieldName: currentName,
         value: formatValue(val),
         parent: parentCodeName.split('.')[0],
         description: output?.description
-      };
+      }];
     });
   };
 

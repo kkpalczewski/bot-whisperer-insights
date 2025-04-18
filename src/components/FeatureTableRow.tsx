@@ -27,12 +27,12 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   return (
     <TableRow className={`${!isExpanded ? 'hover:bg-gray-800/50' : 'bg-gray-800/20'}`}>
       <TableCell className="w-64 font-mono text-xs text-gray-300">
-        {fieldName}
+        {codeName}
       </TableCell>
       <TableCell className="w-8">
         {getTypeIcon(value)}
       </TableCell>
-      <TableCell className="w-96 font-mono text-sm font-medium text-white">
+      <TableCell className="w-96 font-mono text-xs font-medium text-white">
         {value}
       </TableCell>
       <TableCell className="w-32 text-xs text-gray-400">
