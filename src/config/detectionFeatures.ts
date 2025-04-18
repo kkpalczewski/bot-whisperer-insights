@@ -38,6 +38,5 @@ export interface LibraryInfo {
 // Parse the YAML file content
 const parsed = parse(featuresYaml);
 
-export const detectionFeatures: DetectionFeature[] = parsed.detectionFeatures;
-export const fingerprintingLibraries: LibraryInfo[] = parsed.fingerprintingLibraries;
-
+export const detectionFeatures: DetectionFeature[] = parsed.detectionFeatures || [];
+export const fingerprintingLibraries: LibraryInfo[] = parsed.fingerprintingLibraries || [];

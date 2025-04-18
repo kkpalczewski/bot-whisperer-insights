@@ -53,14 +53,16 @@ const Index = () => {
             </div>
           </section>
 
-          <section className="mt-16">
-            <h2 className="text-2xl font-bold text-white mb-6">Fingerprinting Libraries</h2>
-            <div className="space-y-0">
-              {fingerprintingLibraries.map((library) => (
-                <LibraryCard key={library.id} library={library} />
-              ))}
-            </div>
-          </section>
+          {fingerprintingLibraries && fingerprintingLibraries.length > 0 && (
+            <section className="mt-16">
+              <h2 className="text-2xl font-bold text-white mb-6">Fingerprinting Libraries</h2>
+              <div className="space-y-0">
+                {fingerprintingLibraries.map((library) => (
+                  <LibraryCard key={library.id} library={library} />
+                ))}
+              </div>
+            </section>
+          )}
 
           <FingerprintData />
         </div>
