@@ -28,7 +28,8 @@ import userAgentYaml from './detection_rules/user_agent.yaml?raw';
 import browserInfoYaml from './detection_rules/browser_features.yaml?raw';
 import hardwareInfoYaml from './detection_rules/hardware_info.yaml?raw';
 import networkInfoYaml from './detection_rules/network_info.yaml?raw';
-import fingerprintYaml from './detection_rules/fingerprint.yaml?raw';
+import fingerprintjsDataYaml from './detection_rules/fingerprintjs_data.yaml?raw';
+import canvasFingerprintYaml from './detection_rules/canvas_fingerprint.yaml?raw';
 
 // Parse each YAML file and combine
 const yamlFiles = [
@@ -37,7 +38,8 @@ const yamlFiles = [
   browserInfoYaml,
   hardwareInfoYaml,
   networkInfoYaml,
-  fingerprintYaml
+  fingerprintjsDataYaml,
+  canvasFingerprintYaml
 ];
 
 export const features: DetectionFeature[] = yamlFiles.flatMap(file => {
@@ -49,3 +51,4 @@ export const features: DetectionFeature[] = yamlFiles.flatMap(file => {
     return [];
   }
 });
+

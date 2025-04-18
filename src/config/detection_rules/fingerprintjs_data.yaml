@@ -1,20 +1,12 @@
 
-- id: fingerprint
-  name: Browser Fingerprint
-  codeName: fingerprint
+- id: fingerprintjs_data
+  name: FingerprintJS Data
+  codeName: fingerprintjs_data
   type: object
   code: |
     async () => {
       const fp = await FingerprintJS.load();
       const result = await fp.get();
-      const canvas = document.createElement('canvas');
-      canvas.width = 240;
-      canvas.height = 60;
-      const ctx = canvas.getContext('2d');
-      const canvasData = ctx ? (() => {
-        ctx.fillText('BotWhisperer', 10, 50);
-        return canvas.toDataURL();
-      })() : null;
       
       return {
         visitorId: result.visitorId,
@@ -24,12 +16,11 @@
         language: result.components.language,
         platform: result.components.platform,
         touchSupport: result.components.touchSupport,
-        canvas: canvasData,
         audioContext: !!(window.AudioContext || window.webkitAudioContext),
         consistentId: result.visitorId
       };
     }
-  description: Comprehensive browser fingerprinting data including visitor identification and system capabilities
+  description: Comprehensive browser identification data collected using FingerprintJS
   abuse_indication:
     bot: Fingerprint consistency patterns, component combinations, visitor ID changes, and unusual platform/language combinations can reveal automated behavior
   category: fingerprinting
@@ -77,10 +68,6 @@
       description: Touch support capabilities
       abuse_indication:
         bot: Mismatched touch capabilities compared to claimed device type can indicate emulated environments.
-    canvas:
-      name: Canvas Fingerprint
-      type: string
-      description: Rendering-based fingerprint
     audioContext:
       name: Audio Context
       type: boolean

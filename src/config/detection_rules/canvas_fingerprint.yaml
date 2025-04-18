@@ -19,3 +19,4 @@
   abuse_indication:
     bot: Automated browsers often produce identical canvas fingerprints or fail to render properly. Variations in anti-aliasing and font rendering can expose headless browsers.
   category: fingerprinting
+
