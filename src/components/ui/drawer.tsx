@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
 
@@ -41,7 +42,7 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-y-0 right-0 z-50 h-screen w-[400px] border-l bg-background p-6",
+        "fixed inset-y-0 right-0 z-50 h-screen w-[400px] border-l bg-background p-6 focus:outline-none",
         className
       )}
       {...props}
