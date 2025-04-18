@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronDown } from 'lucide-react';
@@ -14,28 +13,45 @@ interface ValueCellProps {
 export const ValueCell: React.FC<ValueCellProps> = ({ value, error, expectedType }) => {
   const [isValueExpanded, setIsValueExpanded] = useState(false);
   
-  const stringValue = value === undefined 
-    ? 'undefined' 
-    : typeof value === 'boolean' 
-      ? String(value) 
-      : String(value);
+  const rawValue = value === undefined ? 'undefined' : String(value);
+  let parsedValue = rawValue;
+
+  try {
+    // Attempt to parse the value based on expectedType
+    if (expectedType === 'boolean') {
+      parsedValue = String(value === 'true' || value === true);
+    } else if (expectedType === 'number' && !isNaN(Number(value))) {
+      parsedValue = String(Number(value));
+    } else if (expectedType === 'object' && typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        parsedValue = JSON.stringify(parsed, null, 2);
+      } catch {
+        // If parsing fails, keep the raw value
+        parsedValue = rawValue;
+      }
+    }
+  } catch {
+    // If any parsing fails, keep the raw value
+    parsedValue = rawValue;
+  }
   
-  const lines = stringValue.split('\n');
-  const isLongValue = lines.length > 3 || stringValue.length > 150;
+  const lines = parsedValue.split('\n');
+  const isLongValue = lines.length > 3 || parsedValue.length > 150;
   
-  let displayValue = stringValue;
+  let displayValue = parsedValue;
   if (isLongValue && !isValueExpanded) {
     if (lines.length > 3) {
       displayValue = lines.slice(0, 3).join('\n') + '\n...';
-    } else if (stringValue.length > 150) {
-      displayValue = stringValue.slice(0, 150) + '...';
+    } else if (parsedValue.length > 150) {
+      displayValue = parsedValue.slice(0, 150) + '...';
     }
   }
 
   return (
     <div className="relative">
-      {isLongValue ? (
-        <div className="flex items-start">
+      <div className="flex items-start gap-2">
+        <div className="flex-1">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -44,16 +60,29 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, error, expectedType
                 </pre>
               </TooltipTrigger>
               <TooltipContent side="bottom" align="start" className="max-w-md">
-                <pre className="text-xs font-mono whitespace-pre-wrap break-all max-h-60 overflow-y-auto">
-                  <FormattedValue value={stringValue} expectedType={expectedType} />
-                </pre>
+                <div className="space-y-1">
+                  <div className="text-xs text-gray-400">Raw value:</div>
+                  <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+                    {rawValue}
+                  </pre>
+                  {rawValue !== parsedValue && (
+                    <>
+                      <div className="text-xs text-gray-400">Parsed value:</div>
+                      <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+                        {parsedValue}
+                      </pre>
+                    </>
+                  )}
+                </div>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+        </div>
+        {isLongValue && (
           <Button
             variant="ghost"
             size="icon"
-            className="h-5 w-5 p-0 ml-1 flex-shrink-0"
+            className="h-5 w-5 p-0 flex-shrink-0"
             onClick={() => setIsValueExpanded(!isValueExpanded)}
           >
             {isValueExpanded ? (
@@ -62,23 +91,8 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, error, expectedType
               <ChevronRight className="h-4 w-4 text-gray-400" />
             )}
           </Button>
-        </div>
-      ) : (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <pre className="text-xs font-mono whitespace-pre-wrap break-all font-semibold">
-                <FormattedValue value={displayValue} expectedType={expectedType} />
-              </pre>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" align="start">
-              <pre className="text-xs font-mono whitespace-pre-wrap break-all">
-                <FormattedValue value={stringValue} expectedType={expectedType} />
-              </pre>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
+        )}
+      </div>
       {error && (
         <div className="mt-1">
           <span className="text-xs text-red-400">{error}</span>
