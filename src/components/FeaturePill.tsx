@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { DetectionFeature, FeatureValue } from '@/config/detectionFeatures';
 import { ChevronDown, Code, AlertTriangle, Package, Info } from 'lucide-react';
@@ -34,9 +33,16 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
 
       switch (type) {
         case 'array':
+          if (!Array.isArray(val)) {
+            return {
+              display: 'Invalid array',
+              raw: null,
+              error: 'Expected array but got ' + typeof val
+            };
+          }
           return {
-            display: Array.isArray(val) ? `[${val.length} items]` : String(val),
-            raw: Array.isArray(val) ? val : [val]
+            display: JSON.stringify(val),
+            raw: val
           };
         case 'object':
           return {
