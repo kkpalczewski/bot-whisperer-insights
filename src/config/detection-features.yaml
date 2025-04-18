@@ -1,117 +1,4 @@
 detectionFeatures:
-  - id: browser_info
-    name: Browser Information
-    codeName: browser_info
-    type: object
-    code: "async () => { const fp = await new ClientJS(); return { browser: fp.getBrowser(), browserVersion: fp.getBrowserVersion(), engine: fp.getEngine(), engineVersion: fp.getEngineVersion() }; }"
-    description: Information about the browser type, version, and rendering engine
-    abuse_indication:
-      bot: Browser information can reveal automated browsers, headless browsers, or spoofed user agents commonly used by bots. Inconsistencies between browser version and features can indicate fake browsers.
-    category: browser
-    dependency: clientjs
-    outputs:
-      browser:
-        name: Browser Name
-        type: string
-        description: The name of the browser being used
-        abuse_indication:
-          bot: Unusual browser names or known automation tools like PhantomJS, Selenium WebDriver can directly indicate bot activity.
-      browserVersion:
-        name: Browser Version
-        type: string
-        description: The version of the browser
-        abuse_indication:
-          bot: Outdated or inconsistent versions compared to other features can reveal spoofed browsers or automation tools.
-      engine:
-        name: Browser Engine
-        type: string
-        description: The browser's rendering engine
-        abuse_indication:
-          bot: Mismatches between engine and browser version can indicate spoofed or automated browsers.
-      engineVersion:
-        name: Engine Version
-        type: string
-        description: The version of the browser engine
-        abuse_indication:
-          bot: Inconsistent engine versions compared to the browser version can reveal automated or spoofed browsers.
-
-  - id: device_info
-    name: Device Information
-    codeName: device_info
-    type: object
-    code: "async () => { const fp = await new ClientJS(); return { os: fp.getOS(), osVersion: fp.getOSVersion(), device: fp.getDevice(), deviceType: fp.getDeviceType(), deviceVendor: fp.getDeviceVendor() }; }"
-    description: Information about the user's device hardware and operating system
-    abuse_indication:
-      bot: Device characteristics can expose virtual machines, emulators, or cloud environments commonly used for automation. Mismatches between OS and device information may indicate spoofing.
-    category: hardware
-    dependency: clientjs
-    outputs:
-      os:
-        name: Operating System
-        type: string
-        description: The operating system name
-        abuse_indication:
-          bot: Server operating systems or Linux distributions commonly used in cloud environments can indicate automated traffic.
-      osVersion:
-        name: OS Version
-        type: string
-        description: The operating system version
-        abuse_indication:
-          bot: Outdated or unusual OS versions, especially in combination with modern browser versions, can indicate virtualized environments.
-      device:
-        name: Device
-        type: string
-        description: The device name
-        abuse_indication:
-          bot: Generic device names or those commonly used in virtual machines can indicate automated environments.
-      deviceType:
-        name: Device Type
-        type: string
-        description: The type of device (desktop, mobile, tablet)
-        abuse_indication:
-          bot: Mismatches between device type and other characteristics (like touch support) can reveal emulated environments.
-      deviceVendor:
-        name: Device Vendor
-        type: string
-        description: The manufacturer of the device
-        abuse_indication:
-          bot: Generic or missing vendor information can indicate virtual or emulated devices.
-
-  - id: screen_info
-    name: Screen Information
-    codeName: screen_info
-    type: object
-    code: "{ width: screen.width, height: screen.height, colorDepth: screen.colorDepth, pixelRatio: window.devicePixelRatio }"
-    description: Technical specifications of the user's display screen
-    abuse_indication:
-      bot: Unusual screen resolutions, color depths, or pixel ratios can identify virtualized environments. Bots often use standard resolutions or have inconsistent screen properties.
-    category: hardware
-    outputs:
-      width:
-        name: Screen Width
-        type: number
-        description: The width of the screen in pixels
-        abuse_indication:
-          bot: Standard or rounded screen widths (like exactly 1024 or 1920) are common in virtualized environments.
-      height:
-        name: Screen Height
-        type: number
-        description: The height of the screen in pixels
-        abuse_indication:
-          bot: Automated browsers often use common heights (like 768 or 1080) that might not match with other hardware characteristics.
-      colorDepth:
-        name: Color Depth
-        type: number
-        description: The color depth of the screen
-        abuse_indication:
-          bot: Unusual color depths or values inconsistent with the reported operating system can indicate virtual displays.
-      pixelRatio:
-        name: Device Pixel Ratio
-        type: number
-        description: The ratio between physical pixels and logical pixels
-        abuse_indication:
-          bot: Round number ratios or values inconsistent with the claimed device type can reveal emulated displays.
-
   - id: clientjs_fingerprint
     name: ClientJS Fingerprint
     codeName: clientjs_fingerprint
@@ -132,18 +19,26 @@ detectionFeatures:
             name: Browser Name
             type: string
             description: The name of the browser being used
+            abuse_indication:
+              bot: Unusual browser names or known automation tools like PhantomJS, Selenium WebDriver can directly indicate bot activity.
           version:
             name: Browser Version
             type: string
             description: The version of the browser
+            abuse_indication:
+              bot: Outdated or inconsistent versions compared to other features can reveal spoofed browsers or automation tools.
           engine:
             name: Browser Engine
             type: string
             description: The browser's rendering engine
+            abuse_indication:
+              bot: Mismatches between engine and browser version can indicate spoofed or automated browsers.
           engineVersion:
             name: Engine Version
             type: string
             description: The version of the browser engine
+            abuse_indication:
+              bot: Inconsistent engine versions compared to the browser version can reveal automated or spoofed browsers.
       device:
         name: Device Information
         type: object
@@ -153,34 +48,50 @@ detectionFeatures:
             name: Operating System
             type: string
             description: The operating system name
+            abuse_indication:
+              bot: Server operating systems or Linux distributions commonly used in cloud environments can indicate automated traffic.
           osVersion:
             name: OS Version
             type: string
             description: The operating system version
+            abuse_indication:
+              bot: Outdated or unusual OS versions, especially in combination with modern browser versions, can indicate virtualized environments.
           device:
             name: Device
             type: string
             description: The device name
+            abuse_indication:
+              bot: Generic device names or those commonly used in virtual machines can indicate automated environments.
           deviceType:
             name: Device Type
             type: string
             description: The type of device (desktop, mobile, tablet)
+            abuse_indication:
+              bot: Mismatches between device type and other characteristics (like touch support) can reveal emulated environments.
           deviceVendor:
             name: Device Vendor
             type: string
             description: The manufacturer of the device
+            abuse_indication:
+              bot: Generic or missing vendor information can indicate virtual or emulated devices.
       fingerprint:
         name: Fingerprint Hash
         type: string
         description: Unique hash generated from browser characteristics
+        abuse_indication:
+          bot: Rapidly changing fingerprints or patterns in fingerprint generation can indicate bot rotation or spoofing attempts.
       isIncognito:
         name: Incognito Mode
         type: boolean
         description: Whether the browser is in incognito/private mode
+        abuse_indication:
+          bot: High rates of incognito usage combined with other suspicious patterns may indicate automated browsing.
       browserSpoofed:
         name: Browser Spoofed
         type: boolean
         description: Whether the browser information shows signs of spoofing
+        abuse_indication:
+          bot: Direct indicator of browser spoofing, commonly used in bot activity to mask true identity.
 
   - id: fingerprint_data
     name: Fingerprint Data
@@ -459,36 +370,3 @@ detectionFeatures:
       bot: Rapidly changing visitor IDs or patterns in ID generation can indicate bot rotation or spoofing attempts.
     category: fingerprinting
     dependency: fingerprintjs
-
-  - id: is_incognito
-    name: is_incognito
-    codeName: is_incognito
-    type: boolean
-    code: "async () => { const fp = await new ClientJS(); return fp.isIncognito(); }"
-    description: Detects if the browser is in private browsing mode
-    abuse_indication:
-      bot: While not definitive, high rates of incognito usage combined with other suspicious patterns may indicate automated browsing.
-    category: browser
-    dependency: clientjs
-
-  - id: is_browser_spoofed
-    name: is_browser_spoofed
-    codeName: is_browser_spoofed
-    type: boolean
-    code: "async () => { const fp = await new ClientJS(); return fp.getBrowserMajorVersion() !== parseInt(fp.getBrowser().split(' ')[1]); }"
-    description: Checks if the reported browser information shows signs of spoofing
-    abuse_indication:
-      bot: Direct indicator of browser spoofing, commonly used in bot activity to mask true identity.
-    category: fingerprinting
-    dependency: clientjs
-
-  - id: browser_fingerprint
-    name: browser_fingerprint
-    codeName: browser_fingerprint
-    type: string
-    code: "async () => { const fp = await new ClientJS(); return fp.getFingerprint(); }"
-    description: Hash generated from various browser characteristics
-    abuse_indication:
-      bot: Identical fingerprints across different sessions or rapid fingerprint changes can indicate bot farms or automated browsing.
-    category: fingerprinting
-    dependency: clientjs
