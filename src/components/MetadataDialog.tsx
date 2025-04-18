@@ -1,10 +1,10 @@
 
 import React from 'react';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -22,13 +22,13 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = ({
   description
 }) => {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <HoverCard>
+      <HoverCardTrigger asChild>
         <Button variant="ghost" size="icon" className="h-5 w-5 p-0">
           <Info className="h-4 w-4 text-gray-400" />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80" side="right" align="start">
+      </HoverCardTrigger>
+      <HoverCardContent className="w-80" side="right" align="start">
         <div className="space-y-4">
           <div>
             <h3 className="text-lg font-mono mb-2">{feature}</h3>
@@ -50,7 +50,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = ({
             <p className="text-sm font-mono text-gray-400">{parent}</p>
           </div>
         </div>
-      </PopoverContent>
-    </Popover>
+      </HoverCardContent>
+    </HoverCard>
   );
 };
