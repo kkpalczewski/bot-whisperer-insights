@@ -1,4 +1,3 @@
-
 - id: browser_features
   name: Browser Features
   codeName: browser_features
@@ -20,6 +19,7 @@
       webWorker: !!window.Worker,
       webGL: !!window.WebGLRenderingContext,
       permissionsApi: !!navigator.permissions,
+      touchSupport: 'ontouchstart' in window,
       languages: navigator.languages || [],
       doNotTrack: navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack || 'Not available',
       plugins: Array.from(navigator.plugins).map((p) => p.name)
@@ -62,9 +62,13 @@
       type: boolean
       description: Whether the browser supports WebGL
     permissionsApi:
-      name: Permissions API
+      name: Permissions API Available
       type: boolean
       description: Whether the browser supports the Permissions API
+    touchSupport:
+      name: Touch Support
+      type: boolean
+      description: Whether the device supports touch input
     languages:
       name: Browser Languages
       type: array

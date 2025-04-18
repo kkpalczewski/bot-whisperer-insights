@@ -1,4 +1,3 @@
-
 - id: hardware_info
   name: Hardware Information
   codeName: hardware_info
@@ -7,7 +6,6 @@
     {
       cpuCores: navigator.hardwareConcurrency || 0,
       deviceMemory: navigator.deviceMemory || 0,
-      touchSupport: 'ontouchstart' in window,
       batteryApi: !!navigator.getBattery,
       webglRenderer: (() => {
         const canvas = document.createElement('canvas');
@@ -30,12 +28,8 @@
       name: Device Memory
       type: number
       description: Amount of RAM available
-    touchSupport:
-      name: Touch Support
-      type: boolean
-      description: Whether touch input is supported
     batteryApi:
-      name: Battery API
+      name: Battery API Available
       type: boolean
       description: Whether battery status API is available
     webglRenderer:
