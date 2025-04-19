@@ -2,26 +2,11 @@ import react from "@vitejs/plugin-react";
 import { componentTagger } from "lovable-tagger";
 import path from "path";
 import { defineConfig } from "vite";
-import deadfile from "vite-plugin-deadfile";
 
 export default defineConfig(({ mode }) => ({
-  plugins: [
-    react(),
-    mode === "development" && componentTagger(),
-    deadfile({
-      root: "src",
-      exclude: [
-        "**/node_modules/**",
-        "**/dist/**",
-        "**/public/**",
-        "**/*.d.ts",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/__tests__/**",
-        "**/vite-env.d.ts",
-      ],
-    }),
-  ].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger()].filter(
+    Boolean
+  ),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
