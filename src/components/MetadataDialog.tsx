@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   HoverCard,
   HoverCardContent,
@@ -43,6 +43,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
   const drawerId = `drawer-${props.id}`;
   const { isOpen, setIsOpen, handleOpen } = useGlobalDrawer(drawerId);
   const isMobile = useIsMobile();
+  const [showMobileTooltip, setShowMobileTooltip] = useState(false);
   
   // Handle ESC key press to close drawer
   useEffect(() => {
@@ -60,27 +61,35 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
     setIsOpen(false);
   };
 
-  // Render different components based on device type
-  const InfoButton = () => (
-    <Button 
-      variant="ghost" 
-      size="icon" 
-      className="h-5 w-5 p-0"
-      onClick={isMobile ? undefined : handleOpen}
-    >
-      <Info className="h-4 w-4 text-gray-400" />
-    </Button>
+  const handleMobileButtonClick = () => {
+    setShowMobileTooltip(!showMobileTooltip);
+  };
+
+  // InfoButton for different contexts
+  const InfoButton = React.forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof Button>>(
+    (props, ref) => (
+      <Button 
+        {...props}
+        ref={ref}
+        variant="ghost" 
+        size="icon" 
+        className="h-5 w-5 p-0"
+      >
+        <Info className="h-4 w-4 text-gray-400" />
+      </Button>
+    )
   );
+  InfoButton.displayName = "InfoButton";
 
   return (
     <div className="inline-block" style={{ position: 'relative', zIndex: 30 }}>
       {isMobile ? (
         <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild onClick={handleOpen}>
-              <InfoButton />
+          <Tooltip open={showMobileTooltip} onOpenChange={setShowMobileTooltip}>
+            <TooltipTrigger asChild>
+              <InfoButton onClick={handleMobileButtonClick} />
             </TooltipTrigger>
-            <TooltipContent>
+            <TooltipContent side="right" align="start" className="w-72 max-w-[90vw]">
               <MetadataContent {...props} />
             </TooltipContent>
           </Tooltip>
@@ -94,7 +103,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
           >
             <DrawerTrigger asChild>
               <HoverCardTrigger asChild>
-                <InfoButton />
+                <InfoButton onClick={handleOpen} />
               </HoverCardTrigger>
             </DrawerTrigger>
             

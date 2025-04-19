@@ -6,7 +6,9 @@ import { cn } from "@/lib/utils"
 
 const TooltipProvider = TooltipPrimitive.Provider
 
-const Tooltip = TooltipPrimitive.Root
+const Tooltip = ({ open, onOpenChange, ...props }: TooltipPrimitive.TooltipProps) => (
+  <TooltipPrimitive.Root open={open} onOpenChange={onOpenChange} {...props} />
+)
 
 const TooltipTrigger = TooltipPrimitive.Trigger
 
