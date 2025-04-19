@@ -1,4 +1,3 @@
-
 import { toast } from 'sonner';
 
 // Global store for library instances
@@ -120,24 +119,10 @@ export const getCreepJS = async (): Promise<any> => {
       return window.CreepJS;
     }
 
-    // Try to load CreepJS from npm
-    try {
-      // Try to import from the npm package
-      const creepjsModule = await import('creepjs');
-      if (creepjsModule.default || creepjsModule) {
-        const CreepJS = creepjsModule.default || creepjsModule;
-        libraryInstances.creepjs = CreepJS;
-        
-        // Also set it on window for easy access
-        window.CreepJS = CreepJS;
-        return CreepJS;
-      }
-    } catch (e) {
-      console.warn('Failed to load CreepJS from npm import:', e);
-      // Continue with other loading methods
-    }
+    // Skip the direct import attempt since it's causing issues
+    // and go straight to the CDN loading approach
 
-    // If we couldn't load CreepJS, create a script tag to load it
+    // Create a script tag to load CreepJS from CDN
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
       script.src = 'https://cdn.jsdelivr.net/npm/creepjs@latest/dist/creep.min.js';
