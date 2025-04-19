@@ -36,33 +36,21 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
 const DrawerContent = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, ...props }, ref) => {
-  // Creating a custom handler to close the drawer when clicking the overlay
-  const handleCloseDrawer = () => {
-    // Access the parent Drawer's setState through the provided onChange callback
-    if (props.onChange) {
-      // We need to call this properly with an event object that matches the expected type
-      // or modify our approach to match Vaul's API
-      props.onChange(false as any); // Using 'as any' temporarily to make it compile
-    }
-  };
-
-  return (
-    <DrawerPortal>
-      <DrawerOverlay onClick={handleCloseDrawer} />
-      <DrawerPrimitive.Content
-        ref={ref}
-        className={cn(
-          "fixed inset-y-0 right-0 z-50 h-screen w-[400px] border-l bg-background p-6 focus:outline-none",
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </DrawerPrimitive.Content>
-    </DrawerPortal>
-  )
-})
+>(({ className, children, ...props }, ref) => (
+  <DrawerPortal>
+    <DrawerOverlay onClick={() => props.onOpenChange?.(false)} />
+    <DrawerPrimitive.Content
+      ref={ref}
+      className={cn(
+        "fixed inset-y-0 right-0 z-50 h-screen w-[400px] border-l bg-background p-6 focus:outline-none",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </DrawerPrimitive.Content>
+  </DrawerPortal>
+))
 DrawerContent.displayName = "DrawerContent"
 
 const DrawerHeader = ({

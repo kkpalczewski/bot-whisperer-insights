@@ -47,6 +47,10 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, setIsOpen]);
 
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
     <div className="inline-block" style={{ position: 'relative', zIndex: 30 }}>
       <HoverCard>
@@ -71,11 +75,15 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
           <DrawerContent className="fixed inset-y-0 right-0 left-auto h-full w-[400px] rounded-l-lg rounded-r-none max-w-full">
             <DrawerHeader className="flex justify-between items-center text-left">
               <DrawerTitle>Feature Metadata</DrawerTitle>
-              <DrawerClose asChild>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                  <X className="h-4 w-4" />
-                </Button>
-              </DrawerClose>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={handleClose}
+                className="h-8 w-8"
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">Close</span>
+              </Button>
             </DrawerHeader>
             <ScrollArea className="h-[calc(100vh-120px)] px-4">
               <MetadataContent {...props} />
