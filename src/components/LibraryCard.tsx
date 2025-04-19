@@ -3,7 +3,6 @@ import { ExternalLink, Fingerprint } from 'lucide-react';
 import { LibraryInfo } from '@/config/fingerprintingLibraries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { getBrowserFingerprint, getCanvasFingerprint } from '@/utils/fingerprint-helpers';
 import { toast } from 'sonner';
 import { getClientJS, getFingerprintJS, getCreepJS } from '@/utils/library-manager';
 
@@ -37,9 +36,7 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
             };
           } else {
             result = {
-              visitorId: Math.random().toString(36).substring(2, 15),
-              confidence: { score: 0.95 },
-              components: getBrowserFingerprint()
+              error: 'FingerprintJS library not available'
             };
           }
           break;
@@ -52,46 +49,19 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
             try {
               const creepResult = await creepJs.get();
               result = {
-                fingerprint: creepResult.fingerprint || Math.random().toString(36).substring(2, 10),
-                lies: creepResult.lies || {
-                  detected: false,
-                  score: Math.random()
-                },
-                bot: creepResult.bot !== undefined ? creepResult.bot : Math.random() > 0.9,
-                components: creepResult.components || {
-                  ...getBrowserFingerprint(),
-                  canvas: getCanvasFingerprint()
-                }
+                fingerprint: creepResult.fingerprint,
+                lies: creepResult.lies,
+                bot: creepResult.bot,
+                components: creepResult.components
               };
             } catch (e) {
               console.error("Error with CreepJS:", e);
               result = {
-                fingerprint: Math.random().toString(36).substring(2, 10),
-                lies: {
-                  detected: false,
-                  score: Math.random()
-                },
-                bot: Math.random() > 0.9,
-                components: {
-                  ...getBrowserFingerprint(),
-                  canvas: getCanvasFingerprint()
-                },
                 error: (e as Error).message
               };
             }
           } else {
-            toast.error("CreepJS library failed to load");
             result = {
-              fingerprint: "Error: CreepJS not available",
-              lies: {
-                detected: false,
-                score: 0
-              },
-              bot: false,
-              components: {
-                ...getBrowserFingerprint(),
-                canvas: getCanvasFingerprint()
-              },
               error: "CreepJS library not available"
             };
           }
@@ -106,32 +76,33 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
               browser: clientJs.getBrowser(),
               language: navigator.language,
               os: clientJs.getOS(),
-              device: clientJs.getDevice(),
-              canvasPrint: getCanvasFingerprint().slice(0, 20) + '...',
+              device: clientJs.getDevice()
             };
           } else {
-            toast.error("ClientJS library failed to load");
             result = {
-              fingerprint: "Error: ClientJS not available",
-              browser: navigator.userAgent,
-              language: navigator.language,
-              os: navigator.platform,
-              device: navigator.platform,
-              canvasPrint: getCanvasFingerprint().slice(0, 20) + '...',
+              error: "ClientJS library not available"
             };
           }
           break;
         }
         
         default:
-          result = "Unknown library";
+          result = {
+            error: "Unknown library"
+          };
       }
       
       setFingerprintValue(result);
-      toast.success(`Generated ${library.name} fingerprint`);
+      if (!result.error) {
+        toast.success(`Generated ${library.name} fingerprint`);
+      } else {
+        toast.error(`Error: ${result.error}`);
+      }
     } catch (error) {
       console.error("Error generating fingerprint:", error);
-      setFingerprintValue(`Error: ${(error as Error).message}`);
+      setFingerprintValue({
+        error: (error as Error).message
+      });
       toast.error(`Error generating fingerprint: ${(error as Error).message}`);
     } finally {
       setIsLoading(false);

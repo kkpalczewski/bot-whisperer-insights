@@ -1,9 +1,9 @@
-import React from 'react';
-import { features } from '@/config/detectionFeatures';
-import { FormattedValue } from '../feature/FormattedValue';
-import { MetadataSection } from './MetadataSection';
-import { ExpandableValue } from './ExpandableValue';
-import { findFeatureInfo } from '@/utils/featureLookup';
+import { features } from "@/config/detectionFeatures";
+import { findFeatureInfo } from "@/utils/featureLookup";
+import React from "react";
+import { FormattedValue } from "../feature/FormattedValue";
+import { ExpandableValue } from "./ExpandableValue";
+import { MetadataSection } from "./MetadataSection";
 
 /**
  * Props for the MetadataContent component
@@ -66,33 +66,42 @@ interface MetadataContentProps {
 }
 
 export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
-  const value = props.value === undefined ? 'undefined' : String(props.value);
-  
+  const value = props.value === undefined ? "undefined" : String(props.value);
+
   // Find feature info using the full path ID
-  const { description: featureDescription, abuseIndication: featureAbuseIndication } = findFeatureInfo(features, props.id);
-  
+  const {
+    description: featureDescription,
+    abuseIndication: featureAbuseIndication,
+  } = findFeatureInfo(features, props.id);
+
   // If no specific feature metadata found, try to get parent metadata
   let description = featureDescription;
   let abuseIndication = featureAbuseIndication;
   let isUsingParentDescription = false;
   let isUsingParentAbuseIndication = false;
-  
+
   if (!description && props.parent) {
-    const { description: parentDescription } = findFeatureInfo(features, props.parent);
+    const { description: parentDescription } = findFeatureInfo(
+      features,
+      props.parent
+    );
     if (parentDescription) {
       description = parentDescription;
       isUsingParentDescription = true;
     }
   }
-  
+
   if (!abuseIndication && props.parent) {
-    const { abuseIndication: parentAbuseIndication } = findFeatureInfo(features, props.parent);
+    const { abuseIndication: parentAbuseIndication } = findFeatureInfo(
+      features,
+      props.parent
+    );
     if (parentAbuseIndication) {
       abuseIndication = parentAbuseIndication;
       isUsingParentAbuseIndication = true;
     }
   }
-  
+
   return (
     <div className="space-y-3">
       <MetadataSection title="Feature">
@@ -111,23 +120,29 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
         <p className="text-sm font-mono text-gray-400">{props.parent || "—"}</p>
       </MetadataSection>
 
-      {(description || props.description) && (
-        <MetadataSection title={isUsingParentDescription ? "Parent Description" : "Description"}>
-          <p className="text-sm text-gray-400">
-            {description || props.description}
-            {isUsingParentDescription && (
-              <span className="ml-2 text-xs text-gray-500">(inherited from parent)</span>
-            )}
+      {description && (
+        <div className="mb-4">
+          <h4 className="text-sm font-medium mb-1">Description</h4>
+          <p className="text-sm text-gray-400 whitespace-pre-line">
+            {description}
           </p>
-        </MetadataSection>
+        </div>
       )}
 
       {abuseIndication && (
-        <MetadataSection title={isUsingParentAbuseIndication ? "Parent Bot Abuse Indication" : "Bot Abuse Indication"}>
+        <MetadataSection
+          title={
+            isUsingParentAbuseIndication
+              ? "Parent Bot Abuse Indication"
+              : "Bot Abuse Indication"
+          }
+        >
           <p className="text-sm text-yellow-400">
             {abuseIndication}
             {isUsingParentAbuseIndication && (
-              <span className="ml-2 text-xs text-gray-500">(inherited from parent)</span>
+              <span className="ml-2 text-xs text-gray-500">
+                (inherited from parent)
+              </span>
             )}
           </p>
         </MetadataSection>

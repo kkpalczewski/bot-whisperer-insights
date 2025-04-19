@@ -68,7 +68,7 @@
       suggest virtualization. Missing or generic battery API implementation on mobile devices indicates automation. Software-based
       WebGL renderers (llvmpipe, swiftshader) are typical in virtualized environments. Inconsistent hardware capability combinations
       across different APIs reveal automated browsers.
-  dependency: devicedetector
+  dependency: deviceDetector
   outputs:
     device:
       name: Device Information
@@ -84,7 +84,7 @@
           type reveals automation. Hardware capabilities exceeding typical device specifications indicate virtualized environment.
       outputs:
         type:
-          name: Device Type Analysis
+          name: Device Type
           type: string
           description: |
             Sophisticated device type classification system. Analyzes screen characteristics (screen.width/height), touch support
@@ -96,7 +96,7 @@
               characteristics suggests automated environment. Generic or missing type information indicates potential automation.
               Perfect consistency in device type across sessions reveals virtualized environment.
         brand:
-          name: Device Brand Analysis
+          name: Device Brand
           type: string
           description: |
             Advanced device vendor identification system. Combines hardware information (navigator.vendor), platform detection,
@@ -108,7 +108,7 @@
               device type suggests automated environment. Unsupported vendor for claimed device indicates potential automation.
               Perfect consistency in vendor information across requests reveals virtualized environment.
         model:
-          name: Device Model Analysis
+          name: Device Model
           type: string
           description: |
             Sophisticated device model verification system. Analyzes hardware configuration, capabilities, and model-specific
@@ -119,7 +119,7 @@
               'Virtual Machine') suggest virtualization. Model inconsistent with hardware capabilities reveals automation.
               Perfect consistency in model information across sessions indicates virtualized environment.
     os:
-      name: Operating System Analysis
+      name: Operating System
       type: object
       description: |
         Comprehensive operating system analysis system. Combines user agent parsing, platform detection (navigator.platform),
@@ -132,7 +132,7 @@
           information across requests reveals virtualized environment.
       outputs:
         name:
-          name: OS Name Analysis
+          name: OS Name
           type: string
           description: |
             Advanced operating system identification system. Combines user agent parsing, platform detection, and OS-specific
@@ -143,7 +143,7 @@
               'Unknown') suggest virtualization. OS inconsistent with hardware capabilities reveals automation. Perfect
               consistency in OS name across sessions indicates virtualized environment.
         version:
-          name: OS Version Analysis
+          name: OS Version
           type: string
           description: |
             Sophisticated OS version verification system. Analyzes version components (major.minor.build), build numbers, and
@@ -154,7 +154,7 @@
               capabilities suggests automated environment. Missing or invalid version format indicates potential automation.
               Perfect consistency in OS version across requests reveals virtualized environment.
         platform:
-          name: Platform Architecture Analysis
+          name: Platform
           type: string
           description: |
             Advanced platform architecture analysis system. Verifies CPU architecture, instruction set support, and platform
@@ -165,7 +165,7 @@
               suggests automated browser. Generic or missing platform information indicates potential automation. Perfect
               consistency in platform information across sessions reveals virtualized environment.
     client:
-      name: Browser Information Analysis
+      name: Browser Information
       type: object
       description: |
         Comprehensive browser and rendering engine analysis system. Combines user agent parsing, feature detection, and
@@ -178,7 +178,7 @@
           in browser information across requests reveals virtualized environment.
       outputs:
         type:
-          name: Client Type Analysis
+          name: Client Type
           type: string
           description: |
             Advanced client type classification system. Analyzes user agent patterns, feature support, and capability detection.
@@ -189,7 +189,7 @@
               suggests automated browser. Generic or missing type information indicates potential automation. Perfect
               consistency in client type across sessions reveals virtualized environment.
         name:
-          name: Browser Name Analysis
+          name: Browser Name
           type: string
           description: |
             Sophisticated browser identification system. Combines user agent parsing, feature detection, and browser-specific
@@ -200,7 +200,7 @@
               suggests automated browser. Generic or missing browser name indicates potential automation. Perfect consistency
               in browser name across requests reveals virtualized environment.
         version:
-          name: Browser Version Analysis
+          name: Browser Version
           type: string
           description: |
             Advanced browser version verification system. Analyzes version components (major.minor.build), build numbers, and
@@ -211,7 +211,7 @@
               with engine suggests automated browser. Missing or invalid version format indicates potential automation.
               Perfect consistency in browser version across sessions reveals virtualized environment.
         engine:
-          name: Browser Engine Analysis
+          name: Browser Engine
           type: string
           description: |
             Sophisticated rendering engine identification system. Combines user agent parsing, feature detection, and
@@ -223,7 +223,7 @@
               name suggests automated browser. Generic or missing engine name indicates potential automation. Perfect
               consistency in engine information across requests reveals virtualized environment.
         engineVersion:
-          name: Engine Version Analysis
+          name: Engine Version
           type: string
           description: |
             Advanced engine version verification system. Analyzes version components, compatibility markers, and feature support.
@@ -234,7 +234,7 @@
               with Chrome 100+ suggests automated browser. Missing or invalid version format indicates potential automation.
               Perfect consistency in engine version across sessions reveals virtualized environment.
     bot:
-      name: Bot Detection Analysis
+      name: Bot Detection
       type: object
       description: |
         Comprehensive bot identification and classification system. Combines signature detection, behavioral analysis, and
@@ -247,7 +247,7 @@
           indicates potential automation. Perfect consistency in bot information across requests reveals virtualized environment.
       outputs:
         name:
-          name: Bot Name Analysis
+          name: Bot Name
           type: string
           description: |
             Advanced bot identification system. Combines signature detection, behavioral analysis, and capability verification.
@@ -258,7 +258,7 @@
               Name inconsistent with capabilities suggests sophisticated automation. Generic or missing bot name indicates
               potential automation. Perfect consistency in bot name across sessions reveals virtualized environment.
         category:
-          name: Bot Category Analysis
+          name: Bot Category
           type: string
           description: |
             Sophisticated bot classification system. Analyzes behavior patterns, capability sets, and interaction methods.
@@ -269,7 +269,7 @@
               with capabilities indicates sophisticated automation. Generic or missing category information suggests potential
               automation. Perfect consistency in bot category across requests reveals virtualized environment.
         url:
-          name: Bot URL Analysis
+          name: Bot URL
           type: string
           description: |
             Advanced bot source verification system. Combines URL pattern analysis, domain validation, and documentation checks.
@@ -280,7 +280,7 @@
               capabilities suggests sophisticated automation. Generic or missing URL information indicates potential automation.
               Perfect consistency in bot URL across sessions reveals virtualized environment.
         producer:
-          name: Bot Producer Analysis
+          name: Bot Producer
           type: object
           description: |
             Comprehensive bot creator identification system. Combines producer information, framework detection, and capability
@@ -293,7 +293,7 @@
               automation. Perfect consistency in producer information across requests reveals virtualized environment.
           outputs:
             name:
-              name: Producer Name Analysis
+              name: Producer Name
               type: string
               description: |
                 Advanced producer identification system. Combines name pattern analysis, framework detection, and capability
@@ -304,7 +304,7 @@
                   with capabilities suggests sophisticated automation. Generic or missing producer name indicates potential
                   automation. Perfect consistency in producer name across sessions reveals virtualized environment.
             url:
-              name: Producer URL Analysis
+              name: Producer URL
               type: string
               description: |
                 Sophisticated producer source verification system. Combines URL pattern analysis, domain validation, and

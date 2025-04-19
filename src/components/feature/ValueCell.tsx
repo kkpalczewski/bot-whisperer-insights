@@ -53,7 +53,7 @@ export const ValueCell: React.FC<ValueCellProps> = ({ value, type, error, parseV
   };
   
   // Handle display value
-  let displayValue = parseValue ? parseTypedValue(value, type) : value;
+  const displayValue = parseValue ? parseTypedValue(value, type) : value;
   
   // Convert to string for display
   let stringValue = '';

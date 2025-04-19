@@ -1,8 +1,9 @@
 import { getClientJS } from './clientjs-manager';
 import { getFingerprintJS } from './fingerprintjs-manager';
 import { getCreepJS } from './creepjs-manager';
+import { getDeviceDetector } from './device-detector-manager';
 
-export type LibraryDependency = 'clientjs' | 'fingerprintjs' | 'creepjs';
+export type LibraryDependency = 'clientjs' | 'fingerprintjs' | 'creepjs' | 'deviceDetector';
 
 /**
  * Checks if a required library dependency is available
@@ -32,6 +33,13 @@ export const checkDependency = async (dependency: LibraryDependency): Promise<{
         return {
           available: !!creep,
           error: !creep ? `Dependency '${dependency}' not available` : undefined
+        };
+      }
+      case 'deviceDetector': {
+        const detector = await getDeviceDetector();
+        return {
+          available: !!detector,
+          error: !detector ? `Dependency '${dependency}' not available` : undefined
         };
       }
       default:
