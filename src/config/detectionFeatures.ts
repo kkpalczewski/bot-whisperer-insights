@@ -21,7 +21,6 @@ export interface DetectionFeature {
   abuse_indication: {
     bot: string;
   };
-  category: 'browser' | 'network' | 'behavior' | 'hardware' | 'fingerprinting';
   dependency?: string;
   outputs?: Record<string, FeatureValue>;
 }

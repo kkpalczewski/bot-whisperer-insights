@@ -1,4 +1,3 @@
-
 - id: fingerprintjs_data
   name: FingerprintJS Data
   codeName: fingerprintjs_data
@@ -34,55 +33,374 @@
         };
       }
     }
-  description: Comprehensive browser identification data collected using FingerprintJS
+  description: |
+    Advanced browser fingerprinting implementation using FingerprintJS library for sophisticated visitor identification and automation detection.
+    The system performs comprehensive analysis of browser characteristics through component fingerprinting (combining canvas, WebGL, audio, and font rendering),
+    behavioral pattern analysis (timing, event handling, and API interaction), and consistency verification across multiple system APIs.
+    Confidence scoring (0.0-1.0) is based on component stability, feature support verification, and pattern recognition algorithms.
+    Key detection methods include:
+    1) Multi-component fingerprinting with confidence scoring based on component stability and consistency
+    2) WebDriver and automation framework detection through browser control patterns and script injection markers
+    3) Platform and language consistency verification across multiple system APIs
+    4) Touch support capability analysis with device type verification
+    5) Visitor ID generation and persistence tracking across sessions
+    6) Component-specific anomaly detection through pattern recognition and statistical analysis
+    All checks are performed asynchronously with proper error handling and fallback mechanisms.
   abuse_indication:
-    bot: Fingerprint consistency patterns, component combinations, visitor ID changes, and unusual platform/language combinations can reveal automated behavior
-  category: fingerprinting
+    bot: |
+      Automated environments typically exhibit specific fingerprint patterns that differ from legitimate browsers.
+      Confidence scores below 0.5 with inconsistent component behavior indicate sophisticated automation.
+      WebDriver presence in desktop browser claims (e.g., Chrome with WebDriver) suggests automated environment.
+      Platform-language mismatches (e.g., Windows with zh-CN locale) indicate potential automation.
+      Touch support inconsistencies with device type (e.g., desktop claiming touch capabilities) suggest automated browser.
+      Visitor ID changes occurring more frequently than every 5 minutes indicate potential automation.
   dependency: fingerprintjs
   outputs:
     visitorId:
-      name: Visitor ID
+      name: Visitor ID Analysis
       type: string
-      description: Unique visitor identifier
+      description: |
+        Sophisticated visitor identification system generating unique fingerprints from multiple browser characteristics.
+        Combines component-specific fingerprints (canvas, WebGL, audio, fonts), system capabilities, browser configuration, and hardware information.
+        Expected to remain stable across sessions for legitimate browsers, with natural variation patterns (changes every 24-48 hours).
       abuse_indication:
-        bot: Rapidly changing visitor IDs or patterns in ID generation can indicate bot rotation or spoofing attempts.
+        bot: |
+          Visitor ID changing more frequently than every 5 minutes indicates automated browser.
+          ID pattern matching known automation tools (e.g., 'selenium', 'puppeteer') suggests automated environment.
+          Inconsistent ID generation patterns across components indicate potential automation.
+      outputs:
+        idStability:
+          name: ID Stability Analysis
+          type: boolean
+          description: |
+            Indicates if visitor ID remains stable across sessions.
+            Expected: true for legitimate browsers (changes every 24-48 hours), false for automated environments.
+            Virtual machines often show perfect stability or frequent changes.
+          abuse_indication:
+            bot: |
+              ID changing more frequently than every 5 minutes indicates automated browser.
+              Perfect stability across different browsers suggests automated environment.
+        patternMatch:
+          name: Pattern Matching
+          type: string
+          description: |
+            Matches ID patterns against known automation tools.
+            Expected: no matches for legitimate browsers.
+            Common patterns include 'selenium', 'puppeteer', 'playwright', and 'cypress'.
+          abuse_indication:
+            bot: |
+              Pattern matching 'selenium' or 'puppeteer' indicates automated browser.
+              Generic pattern matching suggests automated environment.
     confidence:
-      name: Confidence Score
+      name: Confidence Score Analysis
       type: number
-      description: Fingerprint confidence score
+      description: |
+        Sophisticated confidence scoring system based on component consistency and behavioral patterns.
+        Scores range from 0.0 to 1.0, with higher values indicating more legitimate browser characteristics.
+        Combines component consistency (canvas, WebGL, audio), feature support verification, property value stability, and pattern recognition.
       abuse_indication:
-        bot: Low confidence scores often indicate spoofed or inconsistent browser characteristics.
+        bot: |
+          Confidence score below 0.5 (high automation likelihood) indicates automated browser.
+          Score between 0.5-0.7 (suspicious) suggests browser manipulation.
+          Score between 0.7-0.9 (low confidence) indicates potential spoofing.
+      outputs:
+        componentScore:
+          name: Component Consistency Score
+          type: number
+          description: |
+            Score based on component behavior consistency.
+            Expected: >0.8 for legitimate browsers.
+            Components include canvas, WebGL, audio, and font rendering.
+          abuse_indication:
+            bot: |
+              Score below 0.5 indicates automated browser.
+              Perfect consistency (1.0) suggests automated environment.
+        patternScore:
+          name: Pattern Recognition Score
+          type: number
+          description: |
+            Score based on behavioral pattern analysis.
+            Expected: >0.7 for legitimate browsers.
+            Analyzes timing patterns, event handling, and API interaction.
+          abuse_indication:
+            bot: |
+              Score below 0.4 indicates automated browser.
+              Unnatural pattern recognition suggests automated environment.
     userAgent:
-      name: User Agent
+      name: User Agent Analysis
       type: string
-      description: Browser user agent string
+      description: |
+        Comprehensive user agent string analysis system.
+        Parses browser name, version, platform, engine, and feature support claims.
+        Verifies consistency across multiple browser APIs and capabilities.
+        Expected format: Mozilla/[version] ([system info]) [engine]/[version] [platform]/[version].
       abuse_indication:
-        bot: Inconsistencies between user agent and actual browser capabilities can reveal spoofed environments.
+        bot: |
+          User agent containing 'HeadlessChrome' or 'PhantomJS' indicates automated browser.
+          Version claiming Chrome 90+ on Windows 7 (incompatible) suggests automated environment.
+          Feature support claims inconsistent with browser version indicate potential automation.
+      outputs:
+        browserVersion:
+          name: Browser Version Analysis
+          type: string
+          description: |
+            Analyzes browser version claims and compatibility.
+            Expected: consistent version numbers across APIs.
+            Format: major.minor.build (e.g., 91.0.4472.124).
+          abuse_indication:
+            bot: |
+              Version claiming Chrome 90+ on Windows 7 indicates automated browser.
+              Inconsistent version numbers suggest automated environment.
+        platformMatch:
+          name: Platform Compatibility
+          type: boolean
+          description: |
+            Verifies platform-browser version compatibility.
+            Expected: true for legitimate combinations.
+            Checks OS version, architecture, and browser compatibility.
+          abuse_indication:
+            bot: |
+              Incompatible platform-browser combination indicates automated browser.
+              Generic platform claims suggest automated environment.
     webDriver:
-      name: Web Driver
+      name: WebDriver Detection
       type: boolean
-      description: Selenium/automation detection
+      description: |
+        Advanced automation framework detection system.
+        Identifies Selenium WebDriver presence, automation tool markers, browser control patterns, and script injection.
+        Combines multiple detection methods (navigator.webdriver, window._selenium, etc.) for maximum reliability.
       abuse_indication:
-        bot: Direct indicator of automation - presence of webdriver suggests Selenium or similar automation tools.
+        bot: |
+          WebDriver presence in desktop browser indicates automated browser.
+          Browser control patterns matching Selenium/Puppeteer suggest automated environment.
+          Script injection markers in navigation timing indicate potential automation.
+      outputs:
+        frameworkDetected:
+          name: Framework Detection
+          type: string
+          description: |
+            Identifies specific automation frameworks.
+            Expected: null for legitimate browsers.
+            Common frameworks: Selenium, Puppeteer, Playwright, Cypress.
+          abuse_indication:
+            bot: |
+              Detection of 'selenium' or 'puppeteer' indicates automated browser.
+              Generic framework detection suggests automated environment.
+        controlPattern:
+          name: Control Pattern Analysis
+          type: boolean
+          description: |
+            Analyzes browser control patterns.
+            Expected: false for legitimate browsers.
+            Checks for automated navigation, event handling, and API interaction.
+          abuse_indication:
+            bot: |
+              Automated control patterns indicate automated browser.
+              Unnatural interaction patterns suggest automated environment.
     language:
-      name: Language
+      name: Language Analysis
       type: string
-      description: Browser language
+      description: |
+        Sophisticated language configuration analysis system.
+        Verifies primary language, regional settings, Accept-Language header, and system locale consistency.
+        Detects anomalies in language-region combinations and locale settings.
+        Expected format: language-REGION (e.g., en-US, fr-FR).
       abuse_indication:
-        bot: Mismatches between language settings and IP geolocation can indicate automated traffic.
+        bot: |
+          Language-region mismatch (e.g., en-US with zh-CN locale) indicates automated browser.
+          Unusual language combinations (e.g., en,fr,de,zh) suggest automated environment.
+          Inconsistent locale settings across APIs indicate potential automation.
+      outputs:
+        primaryLanguage:
+          name: Primary Language
+          type: string
+          description: |
+            Identifies primary browser language.
+            Expected: consistent with system locale.
+            Format: ISO 639-1 language code (e.g., en, fr, de).
+          abuse_indication:
+            bot: |
+              Language inconsistent with system locale indicates automated browser.
+              Generic language setting suggests automated environment.
+        localeConsistency:
+          name: Locale Consistency
+          type: boolean
+          description: |
+            Verifies locale consistency across APIs.
+            Expected: true for legitimate browsers.
+            Checks navigator.language, Intl.DateTimeFormat, and system settings.
+          abuse_indication:
+            bot: |
+              Inconsistent locale settings indicate automated browser.
+              Perfect locale consistency suggests automated environment.
     platform:
-      name: Platform
-      type: string
-      description: Operating system platform
-      abuse_indication:
-        bot: Inconsistencies between platform and other system characteristics can reveal virtualized environments.
-    touchSupport:
-      name: Touch Support Details
+      name: Platform Analysis
       type: object
-      description: Touch support capabilities
+      description: |
+        Advanced operating system platform analysis system.
+        Verifies OS name, version, architecture, system capabilities, and hardware information consistency.
+        Detects virtualization markers and platform-browser compatibility issues.
+        Expected format: OS/version (architecture) (e.g., Windows/10.0 (x64)).
       abuse_indication:
-        bot: Mismatched touch capabilities compared to claimed device type can indicate emulated environments.
+        bot: |
+          OS claiming Windows 10 with Chrome 32-bit (incompatible) indicates automated browser.
+          Architecture inconsistent with OS version (e.g., x86 on Windows 11) suggests automated environment.
+          Virtual environment markers in system capabilities indicate potential automation.
+      outputs:
+        value:
+          name: Platform Value
+          type: string
+          description: |
+            Raw platform string from browser.
+            Expected: specific OS and version combinations.
+            Format: OS/version (architecture) (e.g., Windows/10.0 (x64)).
+          abuse_indication:
+            bot: |
+              Generic platform string (e.g., 'Linux x86_64') indicates automated browser.
+              Inconsistent platform claims suggest automated environment.
+        duration:
+          name: Detection Duration
+          type: number
+          description: |
+            Time taken to detect platform information in milliseconds.
+            Expected: 1-10ms for legitimate browsers.
+            Virtual machines often show unnaturally fast or slow detection times.
+          abuse_indication:
+            bot: |
+              Duration < 1ms (unnaturally fast) indicates automated browser.
+              Duration > 50ms (suspiciously slow) suggests automated environment.
+        osVersion:
+          name: OS Version Analysis
+          type: string
+          description: |
+            Analyzes OS version claims and compatibility.
+            Expected: consistent version numbers across APIs.
+            Format: major.minor.build (e.g., 10.0.19043).
+          abuse_indication:
+            bot: |
+              Version claiming Windows 10 with incompatible features indicates automated browser.
+              Inconsistent version numbers suggest automated environment.
+        architectureMatch:
+          name: Architecture Compatibility
+          type: boolean
+          description: |
+            Verifies OS-architecture compatibility.
+            Expected: true for legitimate combinations.
+            Checks CPU architecture, OS version, and browser compatibility.
+          abuse_indication:
+            bot: |
+              Incompatible OS-architecture combination indicates automated browser.
+              Generic architecture claims suggest automated environment.
+    touchSupport:
+      name: Touch Support Analysis
+      type: object
+      description: |
+        Comprehensive touch capability analysis system.
+        Verifies touch event support, multi-touch detection, device type, and input method consistency.
+        Detects anomalies in touch support claims and device type compatibility.
+        Expected: true for mobile devices, false for desktop.
+      abuse_indication:
+        bot: |
+          Desktop browser claiming touch support indicates automated browser.
+          Touch capabilities inconsistent with device type suggest automated environment.
+          Virtual input patterns in touch events indicate potential automation.
+      outputs:
+        value:
+          name: Touch Support Value
+          type: object
+          description: |
+            Detailed touch support capabilities.
+            Expected: consistent with device type and browser version.
+            Includes maxTouchPoints, touchEvent, and touchStart support.
+          outputs:
+            maxTouchPoints:
+              name: Maximum Touch Points
+              type: number
+              description: |
+                Maximum number of simultaneous touch points supported.
+                Expected: 0 for desktop, 2-10 for mobile devices.
+                Virtual machines often report inconsistent touch point counts.
+              abuse_indication:
+                bot: |
+                  maxTouchPoints > 0 on desktop indicates automated browser.
+                  Unnatural touch point count suggests automated environment.
+            touchEvent:
+              name: Touch Event Support
+              type: boolean
+              description: |
+                Indicates if touch events are supported.
+                Expected: false for desktop, true for mobile.
+                Checks for touchstart, touchmove, touchend events.
+              abuse_indication:
+                bot: |
+                  touchEvent true on desktop indicates automated browser.
+                  Inconsistent touch event support suggests automated environment.
+            touchStart:
+              name: Touch Start Event
+              type: boolean
+              description: |
+                Indicates if touchstart event is supported.
+                Expected: matches touchEvent value.
+                Virtual machines often report inconsistent event support.
+              abuse_indication:
+                bot: |
+                  touchStart inconsistent with touchEvent indicates automated browser.
+                  Unnatural touch event support suggests automated environment.
+        duration:
+          name: Detection Duration
+          type: number
+          description: |
+            Time taken to detect touch capabilities in milliseconds.
+            Expected: 1-5ms for legitimate browsers.
+            Virtual machines often show unnaturally fast or slow detection times.
+          abuse_indication:
+            bot: |
+              Duration < 1ms (unnaturally fast) indicates automated browser.
+              Duration > 20ms (suspiciously slow) suggests automated environment.
+        deviceType:
+          name: Device Type Analysis
+          type: string
+          description: |
+            Analyzes device type claims and compatibility.
+            Expected: consistent with touch support.
+            Checks navigator.userAgent, platform, and device capabilities.
+          abuse_indication:
+            bot: |
+              Device type inconsistent with touch support indicates automated browser.
+              Generic device type suggests automated environment.
     consistentId:
-      name: Consistent ID
+      name: Consistent Visitor ID
       type: string
-      description: Stable visitor identifier across sessions
+      description: |
+        Advanced persistent visitor identification system.
+        Tracks cross-session consistency, browser fingerprint stability, component behavior, and pattern persistence.
+        Detects anomalies in ID generation and session boundary behavior.
+        Expected: stable across sessions with natural variation (changes every 24-48 hours).
+      abuse_indication:
+        bot: |
+          ID remaining identical across different browsers indicates automated browser.
+          Unusual persistence patterns (e.g., perfect stability) suggest automated environment.
+          Session boundary anomalies (e.g., no ID changes) indicate potential automation.
+      outputs:
+        sessionConsistency:
+          name: Session Consistency
+          type: boolean
+          description: |
+            Verifies ID consistency across sessions.
+            Expected: natural variation for legitimate browsers.
+            Virtual machines often show perfect consistency or frequent changes.
+          abuse_indication:
+            bot: |
+              Perfect session consistency indicates automated browser.
+              Unnatural variation patterns suggest automated environment.
+        crossBrowserMatch:
+          name: Cross-Browser Analysis
+          type: boolean
+          description: |
+            Analyzes ID consistency across different browsers.
+            Expected: false for legitimate browsers.
+            Checks Chrome, Firefox, Safari, and Edge fingerprints.
+          abuse_indication:
+            bot: |
+              ID matching across different browsers indicates automated browser.
+              Consistent cross-browser patterns suggest automated environment.

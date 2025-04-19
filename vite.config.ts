@@ -1,22 +1,20 @@
-
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import react from "@vitejs/plugin-react";
 import { componentTagger } from "lovable-tagger";
+import path from "path";
+import { defineConfig } from "vite";
 
 export default defineConfig(({ mode }) => ({
-  plugins: [
-    react(),
-    mode === 'development' && componentTagger(),
-  ].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger()].filter(
+    Boolean
+  ),
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
-  assetsInclude: ['**/*.yaml'],
+  assetsInclude: ["**/*.yaml"],
   optimizeDeps: {
-    exclude: ['glob'], // Exclude glob from optimization to prevent browser compatibility issues
+    exclude: ["glob"], // Exclude glob from optimization to prevent browser compatibility issues
   },
   server: {
     host: "::",
@@ -24,7 +22,12 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     // Define environment variables that will be replaced at build time
-    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.SUPABASE_URL || 'https://ssqhxvxdxghrxthxdojc.supabase.co'),
-    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzcWh4dnhkeGdocnh0aHhkb2pjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODg0OTksImV4cCI6MjA2MDU2NDQ5OX0.CPwNQXenUwDqC9qpAAeGiE6WzdQxneX6dTVNDLAPszg')
-  }
-}))
+    "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(
+      process.env.SUPABASE_URL || "https://ssqhxvxdxghrxthxdojc.supabase.co"
+    ),
+    "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(
+      process.env.SUPABASE_ANON_KEY ||
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzcWh4dnhkeGdocnh0aHhkb2pjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODg0OTksImV4cCI6MjA2MDU2NDQ5OX0.CPwNQXenUwDqC9qpAAeGiE6WzdQxneX6dTVNDLAPszg"
+    ),
+  },
+}));

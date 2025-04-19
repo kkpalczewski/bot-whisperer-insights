@@ -1,4 +1,3 @@
-
 - id: creepjs_data
   name: CreepJS Data
   codeName: creepjs_data
@@ -72,79 +71,379 @@
         };
       }
     }
-  description: Advanced fingerprinting and lie detection using CreepJS library
+  description: |
+    Advanced browser fingerprinting and lie detection implementation using CreepJS library for sophisticated automation detection.
+    The system performs comprehensive analysis of browser characteristics through component fingerprinting (canvas, WebGL, audio, fonts),
+    behavioral pattern analysis (timing, event handling, API interaction), and consistency verification across multiple system APIs.
+    Lie detection (0.0-1.0) is based on property consistency, feature support verification, and pattern recognition algorithms.
+    Key detection methods include:
+    1) Multi-component fingerprinting with advanced analysis of canvas rendering (2D/WebGL), audio processing (Web Audio API), font rendering (FontFace API), and WebGL capabilities
+    2) Sophisticated lie detection system analyzing browser property consistency (navigator, window, document), feature support verification (API availability), and API behavior patterns
+    3) Stealth technique identification through anti-fingerprinting measures (canvas blocking, WebGL spoofing), privacy-focused modifications (user agent masking), and browser hardening detection
+    4) Automated bot detection using behavioral analysis (event timing, API response), property consistency checks (navigator properties), and timing-based detection (performance.now)
+    5) Component-specific anomaly detection through pattern recognition (rendering artifacts) and statistical analysis (timing distributions)
+    6) Error handling and fallback mechanisms for maximum reliability
+    All checks are performed asynchronously with proper error handling and fallback mechanisms.
   abuse_indication:
-    bot: Multiple indicators including browser lies, stealth techniques, and inconsistent component behavior reveal sophisticated automation attempts
-  category: fingerprinting
+    bot: |
+      Automated environments typically exhibit specific patterns that differ from legitimate browsers.
+      A lie score above 0.7 combined with detected lies (lies.detected = true) indicates sophisticated automation.
+      The presence of stealth techniques (stealth = true) alongside bot detection (bot = true) suggests automated environment.
+      Inconsistent component behavior across tests, such as canvas rendering anomalies or audio processing inconsistencies, indicates potential automation.
+      Missing or modified WebGL capabilities, particularly hardware acceleration markers, suggest virtualized environment.
+      Limited font sets (fewer than 20 system fonts) with perfect rendering consistency indicate automated browser.
   dependency: creepjs
   outputs:
     fingerprint:
-      name: Fingerprint Hash
+      name: Fingerprint Analysis
       type: string
-      description: Unique identifier based on browser characteristics
+      description: |
+        Sophisticated fingerprint generation system creating unique identifiers from multiple browser characteristics.
+        Combines component-specific fingerprints (canvas, WebGL, audio, fonts), system capabilities, browser configuration, and hardware information.
+        Expected to show natural variation patterns across different browsers and devices (changes every 24-48 hours).
       abuse_indication:
-        bot: Patterns in fingerprint generation or rapid changes can indicate bot rotation
+        bot: |
+          Fingerprint changing more frequently than every 5 minutes indicates automated browser.
+          Fingerprint pattern matching known automation tools (e.g., 'puppeteer', 'selenium') suggests automated environment.
+          Inconsistent fingerprint generation across components indicates potential automation.
+      outputs:
+        hashStability:
+          name: Hash Stability Analysis
+          type: boolean
+          description: |
+            Indicates if fingerprint hash remains stable across sessions.
+            Expected: natural variation for legitimate browsers (changes every 24-48 hours).
+            Virtual machines often show perfect stability or frequent changes.
+          abuse_indication:
+            bot: |
+              Perfect hash stability across different browsers indicates automated browser.
+              Unnatural variation patterns suggest automated environment.
+        componentMatch:
+          name: Component Pattern Matching
+          type: string
+          description: |
+            Matches fingerprint patterns against known automation tools.
+            Expected: no matches for legitimate browsers.
+            Common patterns include 'puppeteer', 'selenium', 'playwright', and 'cypress'.
+          abuse_indication:
+            bot: |
+              Pattern matching 'puppeteer' or 'selenium' indicates automated browser.
+              Generic pattern matching suggests automated environment.
     lies:
-      name: Browser Lies
+      name: Browser Lie Detection
       type: object
-      description: Detected browser lie patterns and trustworthiness score
+      description: |
+        Advanced lie detection system analyzing browser property consistency and behavioral patterns.
+        Verifies feature support claims (API availability), API behavior (timing, response), and configuration consistency across multiple browser components.
+        Combines multiple detection methods (navigator properties, window features, document capabilities) for maximum reliability.
+      abuse_indication:
+        bot: |
+          Multiple property inconsistencies across browser APIs indicate automated browser.
+          Feature support claims inconsistent with browser version suggest automated environment.
+          API behavior patterns matching known automation frameworks indicate potential automation.
       outputs:
         detected:
-          name: Lies Detected
+          name: Lie Detection Analysis
           type: boolean
-          description: Whether any browser lies were detected
+          description: |
+            Sophisticated detection of browser property inconsistencies and behavioral anomalies.
+            Analyzes user agent claims (navigator.userAgent), feature support verification (API availability), and API behavior patterns (timing, response).
+            Expected: false for legitimate browsers with natural variations.
           abuse_indication:
-            bot: Direct indicator of browser spoofing or manipulation attempts
+            bot: |
+              Detection of property value inconsistencies indicates automated browser.
+              Feature support mismatches with browser version suggest automated environment.
+              API behavior anomalies matching automation patterns indicate potential automation.
         score:
-          name: Lie Score
+          name: Trust Score Analysis
           type: number
-          description: Trustworthiness score based on detected lies
+          description: |
+            Advanced trustworthiness scoring system based on lie detection and behavioral analysis.
+            Scores range from 0.0 to 1.0, with higher values indicating more suspicious behavior.
+            Combines multiple factors including lie count, severity, and pattern recognition.
           abuse_indication:
-            bot: Lower scores indicate higher likelihood of browser spoofing
+            bot: |
+              Trust score above 0.7 (high automation likelihood) indicates automated browser.
+              Score between 0.5-0.7 (suspicious) suggests browser manipulation.
+              Score between 0.3-0.5 (low trust) indicates potential spoofing.
+          outputs:
+            propertyScore:
+              name: Property Consistency Score
+              type: number
+              description: |
+                Score based on browser property consistency.
+                Expected: >0.8 for legitimate browsers.
+                Checks navigator properties, window features, and document capabilities.
+              abuse_indication:
+                bot: |
+                  Score below 0.5 indicates automated browser.
+                  Perfect consistency (1.0) suggests automated environment.
+            behaviorScore:
+              name: Behavioral Pattern Score
+              type: number
+              description: |
+                Score based on behavioral pattern analysis.
+                Expected: >0.7 for legitimate browsers.
+                Analyzes timing patterns, event handling, and API interaction.
+              abuse_indication:
+                bot: |
+                  Score below 0.4 indicates automated browser.
+                  Unnatural pattern recognition suggests automated environment.
     bot:
-      name: Bot Detection
+      name: Bot Detection Analysis
       type: boolean
-      description: Whether the client is likely an automated bot
+      description: |
+        Sophisticated bot detection system analyzing browser behavior and characteristics.
+        Combines behavioral analysis (event timing, API response), property consistency checks (navigator properties), and timing-based detection (performance.now).
+        Verifies automation framework markers (navigator.webdriver) and browser control patterns.
       abuse_indication:
-        bot: Direct bot detection based on multiple fingerprinting factors
+        bot: |
+          Detection of known automation framework patterns indicates automated browser.
+          Behavioral anomalies in browser interaction suggest automated environment.
+          Timing inconsistencies in API responses indicate potential automation.
+      outputs:
+        frameworkDetected:
+          name: Framework Detection
+          type: string
+          description: |
+            Identifies specific automation frameworks.
+            Expected: null for legitimate browsers.
+            Common frameworks: Selenium, Puppeteer, Playwright, Cypress.
+          abuse_indication:
+            bot: |
+              Detection of 'puppeteer' or 'selenium' indicates automated browser.
+              Generic framework detection suggests automated environment.
+        timingAnalysis:
+          name: Timing Pattern Analysis
+          type: boolean
+          description: |
+            Analyzes API response timing patterns.
+            Expected: natural variation for legitimate browsers.
+            Uses performance.now() for high-resolution timing.
+          abuse_indication:
+            bot: |
+              Unnaturally consistent timing indicates automated browser.
+              Perfect timing patterns suggest automated environment.
     stealth:
-      name: Stealth Techniques
+      name: Stealth Technique Analysis
       type: boolean
-      description: Detection of privacy tools or stealth techniques
+      description: |
+        Advanced detection of privacy tools and stealth techniques.
+        Identifies anti-fingerprinting measures (canvas blocking, WebGL spoofing), privacy-focused modifications (user agent masking), and browser hardening.
+        Analyzes extension interference and privacy-focused browser configurations.
       abuse_indication:
-        bot: Use of stealth techniques often indicates attempts to hide automation
+        bot: |
+          Detection of anti-fingerprinting measures indicates automated browser.
+          Privacy-focused modifications inconsistent with browser type suggest automated environment.
+          Browser hardening techniques matching known automation patterns indicate potential automation.
+      outputs:
+        privacyTools:
+          name: Privacy Tool Detection
+          type: string
+          description: |
+            Identifies specific privacy tools and modifications.
+            Expected: null for legitimate browsers.
+            Common tools: CanvasBlocker, Privacy Badger, uBlock Origin.
+          abuse_indication:
+            bot: |
+              Detection of 'canvasblocker' or 'privacybadger' indicates automated browser.
+              Generic privacy tool detection suggests automated environment.
+        hardeningLevel:
+          name: Browser Hardening Analysis
+          type: number
+          description: |
+            Analyzes level of browser hardening.
+            Expected: 0 for legitimate browsers.
+            Checks for anti-fingerprinting measures and privacy modifications.
+          abuse_indication:
+            bot: |
+              Hardening level > 0.5 indicates automated browser.
+              Unnatural hardening patterns suggest automated environment.
     components:
-      name: Browser Components
+      name: Component Analysis
       type: object
-      description: Detailed component analysis
+      description: |
+        Comprehensive analysis of browser components and capabilities.
+        Verifies rendering consistency (canvas, WebGL), processing capabilities (audio), and hardware acceleration.
+        Detects anomalies in component behavior and performance characteristics.
+      abuse_indication:
+        bot: |
+          Inconsistent rendering behavior across components indicates automated browser.
+          Limited processing capabilities inconsistent with device type suggest automated environment.
+          Missing advanced features in capable browsers indicate potential automation.
       outputs:
         canvas:
-          name: Canvas Analysis
+          name: Canvas Rendering Analysis
           type: object
-          description: Canvas rendering and modification detection
+          description: |
+            Advanced canvas fingerprinting and rendering analysis.
+            Verifies rendering capabilities (2D/WebGL), anti-aliasing implementation, and color space support.
+            Analyzes performance characteristics and hardware acceleration status.
           abuse_indication:
-            bot: Inconsistent or modified canvas behavior indicates tampering
+            bot: |
+              Modified rendering behavior with perfect consistency indicates automated browser.
+              Limited color support inconsistent with device capabilities suggests automated environment.
+              Performance characteristics showing unnatural patterns indicate potential automation.
+          outputs:
+            rendering:
+              name: Rendering Capabilities
+              type: object
+              description: |
+                Analyzes canvas rendering capabilities.
+                Expected: device-specific capabilities for legitimate browsers.
+                Checks 2D context, WebGL, and hardware acceleration.
+              abuse_indication:
+                bot: |
+                  Perfect rendering consistency indicates automated browser.
+                  Unnatural rendering patterns suggest automated environment.
+            performance:
+              name: Performance Analysis
+              type: number
+              description: |
+                Measures rendering performance characteristics.
+                Expected: natural variation for legitimate browsers.
+                Uses performance.now() for high-resolution timing.
+              abuse_indication:
+                bot: |
+                  Unnaturally consistent performance indicates automated browser.
+                  Perfect timing patterns suggest automated environment.
         audio:
-          name: Audio Context
+          name: Audio Processing Analysis
           type: object
-          description: Audio processing capabilities analysis
+          description: |
+            Sophisticated audio context and processing analysis.
+            Verifies context creation capabilities (AudioContext), processing node support (AnalyserNode), and hardware acceleration.
+            Analyzes performance characteristics and audio processing patterns.
           abuse_indication:
-            bot: Unusual audio context behavior can reveal headless browsers
+            bot: |
+              Missing audio processing nodes indicates automated browser.
+              Limited context support inconsistent with browser version suggest automated environment.
+              Performance characteristics showing unnatural patterns indicate potential automation.
+          outputs:
+            context:
+              name: Audio Context Analysis
+              type: object
+              description: |
+                Analyzes audio context creation and capabilities.
+                Expected: full context support for legitimate browsers.
+                Checks AudioContext, OfflineAudioContext, and hardware acceleration.
+              abuse_indication:
+                bot: |
+                  Limited context support indicates automated browser.
+                  Inconsistent context creation suggests automated environment.
+            processing:
+              name: Processing Capabilities
+              type: object
+              description: |
+                Verifies audio processing capabilities.
+                Expected: full processing support for legitimate browsers.
+                Checks AnalyserNode, GainNode, and other audio nodes.
+              abuse_indication:
+                bot: |
+                  Missing processing nodes indicates automated browser.
+                  Limited processing capabilities suggest automated environment.
         fonts:
-          name: Font Detection
+          name: Font Rendering Analysis
           type: object
-          description: System and browser font analysis
+          description: |
+            Advanced font rendering and system analysis.
+            Verifies system font detection (FontFace API), web font support, and rendering consistency.
+            Analyzes anti-aliasing implementation and font rendering patterns.
           abuse_indication:
-            bot: Limited or inconsistent font sets often indicate virtual environments
+            bot: |
+              Limited font set (fewer than 20 system fonts) indicates automated browser.
+              Inconsistent font rendering across browsers suggest automated environment.
+              Missing system fonts in capable browsers indicate potential automation.
+          outputs:
+            systemFonts:
+              name: System Font Analysis
+              type: number
+              description: |
+                Counts detected system fonts.
+                Expected: >20 for legitimate desktop browsers.
+                Uses FontFace API and system font enumeration.
+              abuse_indication:
+                bot: |
+                  Fewer than 20 system fonts indicates automated browser.
+                  Unnatural font count suggests automated environment.
+            rendering:
+              name: Rendering Consistency
+              type: boolean
+              description: |
+                Verifies font rendering consistency.
+                Expected: natural variation for legitimate browsers.
+                Checks anti-aliasing and rendering patterns.
+              abuse_indication:
+                bot: |
+                  Perfect rendering consistency indicates automated browser.
+                  Unnatural rendering patterns suggest automated environment.
         webGL:
-          name: WebGL Analysis
+          name: WebGL Capability Analysis
           type: object
-          description: Advanced graphics capabilities detection
+          description: |
+            Sophisticated WebGL capabilities and performance analysis.
+            Verifies context creation (WebGLRenderingContext), extension support, and hardware acceleration.
+            Analyzes performance characteristics and rendering capabilities.
           abuse_indication:
-            bot: Software rendering or missing capabilities suggest virtualized environment
+            bot: |
+              Software-based WebGL rendering indicates automated browser.
+              Missing WebGL extensions in capable browsers suggest automated environment.
+              Performance limitations inconsistent with device capabilities indicate potential automation.
+          outputs:
+            renderer:
+              name: Renderer Analysis
+              type: string
+              description: |
+                Identifies WebGL renderer and capabilities.
+                Expected: hardware-accelerated renderer for capable devices.
+                Checks WEBGL_debug_renderer_info extension.
+              abuse_indication:
+                bot: |
+                  Software renderer (llvmpipe, swiftshader) indicates automated browser.
+                  Generic renderer name suggests automated environment.
+            extensions:
+              name: Extension Support
+              type: object
+              description: |
+                Analyzes WebGL extension support.
+                Expected: full extension support for capable devices.
+                Checks WEBGL_debug_renderer_info and other critical extensions.
+              abuse_indication:
+                bot: |
+                  Missing critical extensions indicates automated browser.
+                  Limited extension support suggests automated environment.
     error:
-      name: Error Message
+      name: Error Analysis
       type: string
-      description: Error message if CreepJS couldn't be loaded or executed
+      description: |
+        Comprehensive error analysis and reporting system.
+        Identifies library loading failures, execution errors, and security-related blocks.
+        Analyzes component-specific failures and error patterns.
       abuse_indication:
-        bot: Consistent errors may indicate browser security features blocking fingerprinting
+        bot: |
+          Consistent loading failures across components indicate automated browser.
+          Security feature blocks inconsistent with browser type suggest automated environment.
+          Component-specific errors matching automation patterns indicate potential automation.
+      outputs:
+        errorType:
+          name: Error Type Analysis
+          type: string
+          description: |
+            Categorizes and analyzes error types.
+            Expected: no errors for legitimate browsers.
+            Checks for security blocks, API restrictions, and execution errors.
+          abuse_indication:
+            bot: |
+              Security-related errors indicate automated browser.
+              Consistent error patterns suggest automated environment.
+        errorPattern:
+          name: Error Pattern Analysis
+          type: string
+          description: |
+            Analyzes error patterns and consistency.
+            Expected: no patterns for legitimate browsers.
+            Checks for automation-specific error signatures.
+          abuse_indication:
+            bot: |
+              Pattern matching automation tools indicates automated browser.
+              Consistent error types suggest automated environment.

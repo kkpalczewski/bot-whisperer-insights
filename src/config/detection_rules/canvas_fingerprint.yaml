@@ -1,4 +1,3 @@
-
 - id: canvas_fingerprint
   name: Canvas Fingerprint
   codeName: canvas_fingerprint
@@ -81,33 +80,185 @@
         };
       }
     })()
-  description: Advanced canvas fingerprinting with multiple rendering tests
+  description: |
+    Advanced canvas fingerprinting implementation using multiple rendering tests to detect automation and browser manipulation.
+    The system performs comprehensive analysis of canvas rendering capabilities (2D/WebGL), WebGL support (WebGLRenderingContext),
+    and display characteristics (screen.colorDepth, screen.pixelDepth).
+    Key detection methods include:
+    1) Sophisticated text rendering analysis with custom font settings (font, textBaseline) and baseline configurations
+    2) Complex shape rendering verification with transparency (rgba) and stroke operations (beginPath, arc, stroke)
+    3) Gradient creation (createLinearGradient) and application testing with color stop analysis (addColorStop)
+    4) WebGL context detection with vendor (gl.VENDOR) and renderer (gl.RENDERER) information extraction
+    5) Font rendering comparison between Arial and Times with precise width measurement (measureText)
+    6) Color depth analysis (screen.colorDepth) and gamut support verification (matchMedia)
+    All operations are performed synchronously in the main thread to prevent timing-based evasion and ensure reliable detection.
   abuse_indication:
-    bot: Headless browsers and automation tools often have distinctive canvas rendering patterns.
-  category: fingerprinting
+    bot: |
+      Automated environments typically exhibit specific rendering patterns that differ from legitimate browsers.
+      Identical output from different rendering operations (perfectRendering = true) indicates emulated canvas environment.
+      Missing or empty gradient output (missingGradients = true) suggests limited rendering capabilities.
+      Zero difference in font rendering (consistentFonts = true) indicates perfect font rendering, common in headless browsers.
+      Color depth below 24 bits (colorDepth < 24) suggests virtualized environment with limited color support.
+      Missing WebGL support or generic renderer strings (e.g., 'llvmpipe', 'swiftshader') indicate software-based rendering.
   outputs:
     tests:
-      name: Rendering Tests
+      name: Canvas Rendering Analysis
       type: object
-      description: Results from various canvas rendering operations
+      description: |
+        Comprehensive canvas rendering analysis system combining multiple test operations.
+        Verifies rendering consistency (toDataURL), anti-aliasing implementation, and hardware acceleration.
+        Analyzes output patterns and rendering capabilities across different operations.
       abuse_indication:
-        bot: Identical or missing outputs across different tests suggest emulated rendering.
+        bot: |
+          Identical output from different rendering operations indicates emulated canvas environment.
+          Missing or empty gradient output suggests limited rendering capabilities.
+          Generic or missing WebGL renderer information indicates software-based rendering.
+      outputs:
+        basicText:
+          name: Text Rendering Analysis
+          type: string
+          description: |
+            Advanced text rendering analysis with custom font (font, textBaseline) and color settings (fillStyle).
+            Verifies anti-aliasing implementation and font rendering consistency.
+            Expected to show natural variations in rendering output (toDataURL).
+          abuse_indication:
+            bot: |
+              Identical output across different fonts indicates emulated rendering environment.
+              Missing or empty output suggests limited text rendering capabilities.
+        complexShapes:
+          name: Shape Rendering Analysis
+          type: string
+          description: |
+            Sophisticated shape rendering verification with transparency (rgba) and stroke operations (beginPath, arc, stroke).
+            Analyzes anti-aliasing implementation and rendering consistency.
+            Expected to show natural variations in shape rendering (toDataURL).
+          abuse_indication:
+            bot: |
+              Missing or identical output suggests headless browser environment.
+              Inconsistent stroke rendering indicates potential automation.
+        gradients:
+          name: Gradient Analysis
+          type: string
+          description: |
+            Advanced gradient rendering verification with color stop analysis (createLinearGradient, addColorStop).
+            Verifies gradient creation and application capabilities.
+            Expected to show natural variations in gradient rendering (toDataURL).
+          abuse_indication:
+            bot: |
+              Empty or missing gradient output indicates limited rendering capabilities.
+              Identical gradient patterns suggest emulated environment.
+        webGL:
+          name: WebGL Capability Analysis
+          type: string
+          description: |
+            Sophisticated WebGL context and hardware information analysis.
+            Verifies vendor (gl.VENDOR) and renderer (gl.RENDERER) information, hardware acceleration status.
+            Expected to show specific hardware information for capable devices.
+          abuse_indication:
+            bot: |
+              Generic renderer (e.g., 'llvmpipe', 'swiftshader') indicates software-based rendering.
+              Missing WebGL support in capable browsers suggests headless mode.
     fontTest:
-      name: Font Rendering Difference
+      name: Font Rendering Analysis
       type: string
-      description: Font width comparison test result
+      description: |
+        Advanced font rendering comparison system analyzing width differences between fonts (measureText).
+        Measures rendering consistency, anti-aliasing implementation, and font handling.
+        Expected to show natural variations in font rendering (typically 0.5-2.0 pixels).
       abuse_indication:
-        bot: Perfect or missing font rendering differences can indicate headless browsers.
+        bot: |
+          Zero difference (0.00) indicates perfect font rendering, common in headless browsers.
+          Unnaturally consistent differences suggest emulated environment.
     imageRendering:
-      name: Image Rendering Capabilities
+      name: Display Capability Analysis
       type: object
-      description: Screen and color rendering capabilities
+      description: |
+        Comprehensive display and color capability analysis system.
+        Verifies color depth (screen.colorDepth), pixel depth (screen.pixelDepth), and gamut support (matchMedia).
+        Analyzes hardware capabilities and display characteristics.
       abuse_indication:
-        bot: Limited color depth or missing advanced color features can indicate virtualized environments.
+        bot: |
+          Color depth below 24 bits indicates virtualized environment with limited color support.
+          Pixel depth below 24 bits suggests software-based rendering.
+          Missing P3 gamut support in modern displays indicates emulated environment.
+      outputs:
+        colorDepth:
+          name: Color Depth Analysis
+          type: number
+          description: |
+            Advanced color depth analysis measuring bits per pixel (screen.colorDepth).
+            Verifies color representation capabilities and hardware support.
+            Expected: 24-32 bits for modern displays.
+          abuse_indication:
+            bot: |
+              Values below 24 indicate limited color support in virtualized environment.
+              Unnatural color depth values suggest emulated display.
+        pixelDepth:
+          name: Pixel Depth Analysis
+          type: number
+          description: |
+            Sophisticated pixel depth analysis measuring bits per pixel (screen.pixelDepth).
+            Verifies display capabilities and hardware acceleration.
+            Expected: 24-32 bits for modern displays.
+          abuse_indication:
+            bot: |
+              Values below 24 suggest virtualized environment with limited capabilities.
+              Inconsistent pixel depth indicates potential automation.
+        gamut:
+          name: Color Gamut Analysis
+          type: string
+          description: |
+            Advanced color gamut support analysis (matchMedia).
+            Verifies display capabilities and color space support.
+            Expected: 'p3' for modern displays, 'srgb' for older ones.
+          abuse_indication:
+            bot: |
+              Missing P3 support in modern displays indicates emulated environment.
+              Inconsistent gamut support suggests potential automation.
     anomalies:
-      name: Rendering Anomalies
+      name: Rendering Anomaly Analysis
       type: object
-      description: Detected rendering inconsistencies
+      description: |
+        Sophisticated rendering anomaly detection system.
+        Analyzes consistency patterns (toDataURL), capability limitations, and rendering behavior.
+        Combines multiple detection methods for maximum reliability.
       abuse_indication:
-        bot: Multiple anomalies strongly indicate automated or headless browsers.
+        bot: |
+          Perfect rendering across different operations (perfectRendering = true) indicates emulated environment.
+          Missing gradient support (missingGradients = true) suggests limited rendering capabilities.
+          Consistent font rendering (consistentFonts = true) shows perfect font handling, common in automation.
+      outputs:
+        perfectRendering:
+          name: Rendering Consistency Analysis
+          type: boolean
+          description: |
+            Advanced rendering consistency verification (toDataURL).
+            Analyzes output patterns across different operations.
+            Expected: false for legitimate browsers with natural variations.
+          abuse_indication:
+            bot: |
+              True value indicates emulated rendering environment with perfect consistency.
+              Unnatural rendering patterns suggest automated browser.
+        missingGradients:
+          name: Gradient Capability Analysis
+          type: boolean
+          description: |
+            Sophisticated gradient support verification (createLinearGradient).
+            Analyzes gradient creation and application capabilities.
+            Expected: false for browsers with full rendering support.
+          abuse_indication:
+            bot: |
+              True value suggests limited rendering capabilities in automated environment.
+              Missing gradient support indicates potential automation.
+        consistentFonts:
+          name: Font Consistency Analysis
+          type: boolean
+          description: |
+            Advanced font rendering consistency verification (measureText).
+            Analyzes font handling and rendering patterns.
+            Expected: false for legitimate browsers with natural variations.
+          abuse_indication:
+            bot: |
+              True value indicates perfect font rendering, common in headless browsers.
+              Unnatural font consistency suggests automated environment.
 

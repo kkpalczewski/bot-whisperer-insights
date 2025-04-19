@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useSession } from '@supabase/auth-helpers-react';
-import { getBrowserFingerprint, getCanvasFingerprint } from '@/utils/fingerprint-helpers';
 import { SaveIcon, ShieldIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -22,12 +21,7 @@ export const FingerprintData = () => {
     setLoading(true);
     
     try {
-      // Gather fingerprint data
-      const fingerprintData = {
-        browserData: getBrowserFingerprint(),
-        canvasFingerprint: getCanvasFingerprint(),
-        timestamp: new Date().toISOString()
-      };
+ 
 
       // Supabase would be used here to submit data
       // const { data, error } = await supabase
