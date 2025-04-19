@@ -1,76 +1,57 @@
-import { getClientJS } from './clientjs-manager';
-import { getFingerprintJS } from './fingerprintjs-manager';
-import { getCreepJS } from './creepjs-manager';
+import { toast } from 'sonner';
+import { libraryInstances } from './types';
 import { getDeviceDetector } from './device-detector-manager';
-import { getNetworkInfo } from './network-info-manager';
 
-export type LibraryDependency = 'clientjs' | 'fingerprintjs' | 'creepjs' | 'devicedetector' | 'networkinfo';
+export type LibraryDependency = 'clientjs' | 'fingerprintjs' | 'creepjs' | 'devicedetector';
 
-/**
- * Checks if a required library dependency is available
- */
-export const checkDependency = async (dependency: LibraryDependency): Promise<{ 
+export async function checkDependency(dependency: LibraryDependency): Promise<{ 
   available: boolean; 
   error?: string;
-}> => {
-  try {
-    switch (dependency) {
-      case 'clientjs': {
-        const client = await getClientJS();
-        return {
-          available: !!client,
-          error: !client ? `Dependency '${dependency}' not available` : undefined
-        };
-      }
-      case 'fingerprintjs': {
-        const fp = await getFingerprintJS();
-        return {
-          available: !!fp,
-          error: !fp ? `Dependency '${dependency}' not available` : undefined
-        };
-      }
-      case 'creepjs': {
-        const creep = await getCreepJS();
-        return {
-          available: !!creep,
-          error: !creep ? `Dependency '${dependency}' not available` : undefined
-        };
-      }
-      case 'devicedetector': {
-        const detector = await getDeviceDetector();
-        return {
-          available: !!detector,
-          error: !detector ? `Dependency '${dependency}' not available` : undefined
-        };
-      }
-      case 'networkinfo': {
-        const info = await getNetworkInfo();
-        return {
-          available: !!info,
-          error: !info ? `Dependency '${dependency}' not available` : undefined
-        };
-      }
-      default:
+}> {
+  let detector;
+  switch (dependency) {
+    case 'clientjs':
+      if (!libraryInstances.clientjs) {
         return {
           available: false,
-          error: `Unknown dependency '${dependency}'`
+          error: 'ClientJS library is not available'
         };
-    }
-  } catch (error) {
-    return {
-      available: false,
-      error: error instanceof Error ? error.message : 'Unknown error checking dependency'
-    };
+      }
+      break;
+    case 'fingerprintjs':
+      if (!libraryInstances.fingerprintjs) {
+        return {
+          available: false,
+          error: 'FingerprintJS library is not available'
+        };
+      }
+      break;
+    case 'creepjs':
+      if (!libraryInstances.creepjs) {
+        return {
+          available: false,
+          error: 'CreepJS library is not available'
+        };
+      }
+      break;
+    case 'devicedetector':
+      detector = await getDeviceDetector();
+      if (!detector) {
+        return {
+          available: false,
+          error: 'Device detector is not available'
+        };
+      }
+      break;
   }
-};
+  return { available: true };
+}
 
-/**
- * Gets functions for accessing library dependencies
- */
-export const getDependencyFunctions = () => ({
-  getClientJS: async () => await getClientJS(),
-  getFingerprintJS: async () => await getFingerprintJS(),
-  getCreepJS: async () => await getCreepJS(),
-  getDeviceDetector: async () => await getDeviceDetector(),
-  getNetworkInfo: async () => await getNetworkInfo()
-}); 
+export function getDependencyFunctions() {
+  return {
+    getClientJS: async () => (await import('./clientjs-manager')).getClientJS(),
+    getFingerprintJS: async () => (await import('./fingerprintjs-manager')).getFingerprintJS(),
+    getCreepJS: async () => (await import('./creepjs-manager')).getCreepJS(),
+    getDeviceDetector: async () => getDeviceDetector()
+  };
+} 

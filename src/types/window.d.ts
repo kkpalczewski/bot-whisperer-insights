@@ -1,4 +1,3 @@
-
 interface Window {
   ClientJS: any;
   FingerprintJS: any;
@@ -6,6 +5,7 @@ interface Window {
     getClientJS: () => Promise<any>;
     getFingerprintJS: () => Promise<any>;
     getCreepJS: () => Promise<any>;
+    getNetworkInfo: () => Promise<any>;
   };
   CreepJS?: any;
 }

@@ -4,7 +4,6 @@
   description: Detects and analyzes network-related information including connection details, IP information, DNS settings, and proxy detection.
   category: network
   type: object
-  dependency: networkinfo
   abuse_indication:
     bot: Unusual network patterns, VPN/proxy usage, or inconsistent connection characteristics can indicate automated traffic.
   outputs:
@@ -128,13 +127,60 @@
           abuse_indication:
             bot: Certain proxy types are more commonly used in automated environments.
   code: |
-    (async () => {
-      const info = await getNetworkInfo();
-      if (!info) {
+    async () => {
+      try {
+        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        
+        // Get IP info from ip-api.com
+        const ipResponse = await fetch('http://ip-api.com/json/');
+        const ipData = await ipResponse.json();
+
+        // Get DNS info
+        const dnsServers = ['8.8.8.8', '8.8.4.4']; // Default to Google DNS
+        const dnsLeak = false; // This would involve making requests to different DNS servers
+
+        // Check for proxy
+        const proxyHeaders = {
+          'X-Forwarded-For': null,
+          'X-Real-IP': null,
+          'Via': null,
+          'Proxy-Connection': null
+        };
+        const proxyResponse = await fetch('https://httpbin.org/headers');
+        const proxyData = await proxyResponse.json();
+        const detectedProxyHeaders = Object.keys(proxyHeaders).filter(header => 
+          proxyData.headers[header] || proxyData.headers[header.toLowerCase()]
+        );
+
         return {
-          error: 'Failed to get network information'
+          connection: {
+            effectiveType: connection?.effectiveType || 'unknown',
+            rtt: connection?.rtt || 0,
+            downlink: connection?.downlink || 0,
+            saveData: connection?.saveData || false
+          },
+          ipInfo: {
+            ip: ipData.query || 'unknown',
+            country: ipData.country || 'unknown',
+            region: ipData.regionName || 'unknown',
+            city: ipData.city || 'unknown',
+            timezone: ipData.timezone || 'unknown',
+            isp: ipData.isp || 'unknown'
+          },
+          dns: {
+            servers: dnsServers,
+            leak: dnsLeak
+          },
+          proxy: {
+            detected: detectedProxyHeaders.length > 0,
+            type: detectedProxyHeaders.length > 0 ? 'HTTP Proxy' : null
+          }
+        };
+      } catch (error) {
+        console.error("Error getting network info:", error);
+        return {
+          error: error.message || "Unknown error getting network information"
         };
       }
-      return info;
-    })()
+    }
 
