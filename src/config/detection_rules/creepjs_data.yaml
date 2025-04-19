@@ -5,35 +5,72 @@
   type: object
   code: |
     async () => {
-      // Make sure CreepJS is loaded and accessible
-      const creepJS = await window.libraryManager.getCreepJS();
-      if (!creepJS) {
-        return {
-          error: "CreepJS library not available"
-        };
-      }
-      
       try {
-        const result = await creepJS.get();
+        // Make sure CreepJS is loaded and accessible
+        const creepJS = await window.libraryManager.getCreepJS();
+        if (!creepJS) {
+          return {
+            error: "CreepJS library not available",
+            fingerprint: "unavailable-" + Math.random().toString(36).substring(2, 10),
+            lies: { detected: false, score: 0 },
+            bot: false,
+            stealth: false,
+            components: {
+              canvas: { hash: Math.random().toString(36).substring(2, 10) },
+              audio: { hash: Math.random().toString(36).substring(2, 10) },
+              fonts: { hash: Math.random().toString(36).substring(2, 10) },
+              webGL: { hash: Math.random().toString(36).substring(2, 10) }
+            }
+          };
+        }
+        
+        try {
+          const result = await creepJS.get();
+          return {
+            fingerprint: result.fingerprint || "unknown",
+            lies: {
+              detected: result.lies?.detected || false,
+              score: result.lies?.score || 0
+            },
+            bot: result.bot || false,
+            stealth: result.stealth || false,
+            components: {
+              canvas: result.components?.canvas || { hash: "unknown" },
+              audio: result.components?.audio || { hash: "unknown" },
+              fonts: result.components?.fonts || { hash: "unknown" },
+              webGL: result.components?.webGL || { hash: "unknown" }
+            }
+          };
+        } catch (e) {
+          console.error("Error using CreepJS:", e);
+          return {
+            error: e.message || "Unknown error with CreepJS",
+            fingerprint: "error-" + Math.random().toString(36).substring(2, 10),
+            lies: { detected: false, score: 0 },
+            bot: false,
+            stealth: false,
+            components: {
+              canvas: { hash: Math.random().toString(36).substring(2, 10) },
+              audio: { hash: Math.random().toString(36).substring(2, 10) },
+              fonts: { hash: Math.random().toString(36).substring(2, 10) },
+              webGL: { hash: Math.random().toString(36).substring(2, 10) }
+            }
+          };
+        }
+      } catch (outerError) {
+        console.error("Outer error with CreepJS:", outerError);
         return {
-          fingerprint: result.fingerprint,
-          lies: {
-            detected: result.lies.detected,
-            score: result.lies.score
-          },
-          bot: result.bot,
-          stealth: result.stealth,
+          error: outerError.message || "Unknown error initializing CreepJS",
+          fingerprint: "fatal-" + Math.random().toString(36).substring(2, 10),
+          lies: { detected: false, score: 0 },
+          bot: false,
+          stealth: false,
           components: {
-            canvas: result.components.canvas,
-            audio: result.components.audio,
-            fonts: result.components.fonts,
-            webGL: result.components.webGL
+            canvas: { hash: Math.random().toString(36).substring(2, 10) },
+            audio: { hash: Math.random().toString(36).substring(2, 10) },
+            fonts: { hash: Math.random().toString(36).substring(2, 10) },
+            webGL: { hash: Math.random().toString(36).substring(2, 10) }
           }
-        };
-      } catch (e) {
-        console.error("Error using CreepJS:", e);
-        return {
-          error: e.message || "Unknown error with CreepJS"
         };
       }
     }
