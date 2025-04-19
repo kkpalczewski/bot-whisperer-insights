@@ -1,4 +1,5 @@
 
+
 - id: headless_detection
   name: Headless Browser Detection
   codeName: headless_detection
@@ -8,8 +9,8 @@
       const indicators = {
         // Core automation flags
         webdriver: !!navigator.webdriver,
-        automationEnabled: !!(window.document as any).documentElement.getAttribute('webdriver'),
-        chromeDriver: !!(window as any).chrome && !!(window as any).chrome.webstore,
+        automationEnabled: !!window.document.documentElement.getAttribute('webdriver'),
+        chromeDriver: !!(window.chrome && window.chrome.webstore),
         
         // Headless browser indicators
         languages: {
@@ -40,10 +41,10 @@
         // Browser-specific automation flags
         automation: {
           selenium: !!window.navigator.webdriver,
-          phantom: !!(window as any)._phantom || !!(window as any).callPhantom,
-          nightmare: !!(window as any).__nightmare,
-          puppeteer: !!navigator.webdriver || !!(window as any)._TESTCAFE_DRIVER,
-          chromedp: !!(window as any).chrome?.app?.isInstalled && !(window as any).chrome?.runtime
+          phantom: !!(window._phantom || window.callPhantom),
+          nightmare: !!window.__nightmare,
+          puppeteer: !!navigator.webdriver || !!window._TESTCAFE_DRIVER,
+          chromedp: !!(window.chrome?.app?.isInstalled && !window.chrome?.runtime)
         },
 
         // Feature consistency checks
