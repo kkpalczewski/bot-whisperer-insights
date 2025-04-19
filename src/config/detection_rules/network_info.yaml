@@ -6,34 +6,82 @@
   code: |
     (() => {
       try {
-        return navigator.connection
-          ? {
-              effectiveType: navigator.connection.effectiveType,
-              rtt: navigator.connection.rtt,
-            }
-          : {
-              effectiveType: 'unknown',
-              rtt: 0,
-            };
+        const connection = navigator.connection || {};
+        const vpnPatterns = /datacenter|cloud|proxy|vpn|hosting/i;
+        
+        // Get IP info via WebRTC (if available)
+        const hasWebRTC = !!(window.RTCPeerConnection || window.webkitRTCPeerConnection);
+        
+        return {
+          connection: {
+            effectiveType: connection.effectiveType || 'unknown',
+            rtt: connection.rtt || 0,
+            downlink: connection.downlink || 0,
+            saveData: connection.saveData || false
+          },
+          webRTC: {
+            available: hasWebRTC,
+            protocol: window.location.protocol,
+          },
+          timing: {
+            // Navigation timing data
+            navigationStart: performance?.timing?.navigationStart || 0,
+            loadEventEnd: performance?.timing?.loadEventEnd || 0,
+            loadTime: performance?.timing?.loadEventEnd - performance?.timing?.navigationStart || 0
+          }
+        };
       } catch (e) {
         return {
-          effectiveType: 'unknown',
-          rtt: 0,
+          error: 'Failed to get network information',
+          connection: {
+            effectiveType: 'unknown',
+            rtt: 0,
+            downlink: 0,
+            saveData: false
+          }
         };
       }
     })()
-  description: Information about the network connection type and quality
+  description: Enhanced network connection information including timing and WebRTC detection
   category: network
   outputs:
-    effectiveType:
-      name: Connection Type
-      type: string
-      description: The effective connection type (4g, 3g, 2g, slow-2g)
+    connection:
+      name: Connection Details
+      type: object
+      description: Network connection characteristics
+      outputs:
+        effectiveType:
+          name: Connection Type
+          type: string
+          description: Network connection type (4g, 3g, 2g, slow-2g)
+          abuse_indication:
+            bot: Datacenter connections often show stable, high-bandwidth patterns unlike real users.
+        rtt:
+          name: Round Trip Time
+          type: number
+          description: Network round-trip time in milliseconds
+          abuse_indication:
+            bot: Extremely low or consistent RTT values can indicate datacenter proxies.
+        downlink:
+          name: Downlink Speed
+          type: number
+          description: Connection downlink speed in Mbps
+          abuse_indication:
+            bot: Unusually high or perfectly stable bandwidth can indicate automated environments.
+        saveData:
+          name: Data Saver
+          type: boolean
+          description: Whether data saver is enabled
+    webRTC:
+      name: WebRTC Information
+      type: object
+      description: WebRTC availability and protocol information
       abuse_indication:
-        bot: Consistently poor connection types or those associated with data centers can indicate bot activity.
-    rtt:
-      name: Round Trip Time
-      type: number
-      description: The estimated round-trip time of the current connection
+        bot: Bots often disable WebRTC to prevent IP detection.
+    timing:
+      name: Navigation Timing
+      type: object
+      description: Page load timing metrics
       abuse_indication:
-        bot: Extremely low or stable RTT values can indicate connections within a data center, common for bots.
+        bot: Bots often have unnaturally fast or consistent load times.
+

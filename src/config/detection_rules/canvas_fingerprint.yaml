@@ -2,21 +2,112 @@
 - id: canvas_fingerprint
   name: Canvas Fingerprint
   codeName: canvas_fingerprint
-  type: string
+  type: object
   code: |
     (() => {
-      const canvas = document.createElement('canvas');
-      canvas.width = 240;
-      canvas.height = 60;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.fillText('BotWhisperer', 10, 50);
-        return canvas.toDataURL();
+      try {
+        // Create main canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = 240;
+        canvas.height = 60;
+        
+        // Get 2D context
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return { error: 'Canvas 2D context not supported' };
+        
+        // Test various drawing operations
+        const tests = {
+          basicText: (() => {
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#F98';
+            ctx.fillText('BotWhisperer', 2, 15);
+            return canvas.toDataURL().slice(-32);
+          })(),
+          
+          complexShapes: (() => {
+            ctx.beginPath();
+            ctx.arc(50, 50, 20, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(100, 200, 255, 0.5)';
+            ctx.fill();
+            ctx.stroke();
+            return canvas.toDataURL().slice(-32);
+          })(),
+          
+          gradients: (() => {
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, 'blue');
+            gradient.addColorStop(1, 'green');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL().slice(-32);
+          })(),
+          
+          webGL: (() => {
+            const glCanvas = document.createElement('canvas');
+            const gl = glCanvas.getContext('webgl');
+            if (!gl) return 'not_supported';
+            return gl.getParameter(gl.VENDOR) + '_' + gl.getParameter(gl.RENDERER);
+          })()
+        };
+        
+        // Font rendering test
+        const fontTest = (() => {
+          ctx.font = '14px Arial';
+          let width1 = ctx.measureText('BotWhisperer').width;
+          ctx.font = '14px Times';
+          let width2 = ctx.measureText('BotWhisperer').width;
+          return Math.abs(width1 - width2).toFixed(2);
+        })();
+        
+        return {
+          tests,
+          fontTest,
+          imageRendering: {
+            colorDepth: screen.colorDepth,
+            pixelDepth: screen.pixelDepth,
+            gamut: matchMedia('(color-gamut: p3)').matches ? 'p3' : 'srgb'
+          },
+          anomalies: {
+            perfectRendering: tests.basicText === tests.complexShapes,
+            missingGradients: tests.gradients === 'data:,',
+            consistentFonts: fontTest === '0.00'
+          }
+        };
+      } catch (e) {
+        return {
+          error: 'Canvas operations failed',
+          errorMessage: e.message
+        };
       }
-      return null;
     })()
-  description: Unique identifier based on canvas rendering differences
+  description: Advanced canvas fingerprinting with multiple rendering tests
   abuse_indication:
-    bot: Automated browsers often produce identical canvas fingerprints or fail to render properly. Variations in anti-aliasing and font rendering can expose headless browsers.
+    bot: Headless browsers and automation tools often have distinctive canvas rendering patterns.
   category: fingerprinting
+  outputs:
+    tests:
+      name: Rendering Tests
+      type: object
+      description: Results from various canvas rendering operations
+      abuse_indication:
+        bot: Identical or missing outputs across different tests suggest emulated rendering.
+    fontTest:
+      name: Font Rendering Difference
+      type: string
+      description: Font width comparison test result
+      abuse_indication:
+        bot: Perfect or missing font rendering differences can indicate headless browsers.
+    imageRendering:
+      name: Image Rendering Capabilities
+      type: object
+      description: Screen and color rendering capabilities
+      abuse_indication:
+        bot: Limited color depth or missing advanced color features can indicate virtualized environments.
+    anomalies:
+      name: Rendering Anomalies
+      type: object
+      description: Detected rendering inconsistencies
+      abuse_indication:
+        bot: Multiple anomalies strongly indicate automated or headless browsers.
 
