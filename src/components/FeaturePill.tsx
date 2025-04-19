@@ -1,11 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
-import { DetectionFeature } from '@/config/detectionFeatures';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { useFeatureTree } from '@/hooks/useFeatureTree';
-import { FeatureHeader } from './FeatureHeader';
-import { FeatureTable } from './FeatureTable';
-import { CodePreview } from './CodePreview';
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { DetectionFeature } from "@/config/detectionFeatures";
+import { useFeatureTree } from "@/hooks/useFeatureTree";
+import React, { useEffect, useRef, useState } from "react";
+import { CodePreview } from "./CodePreview";
+import { FeatureHeader } from "./FeatureHeader";
+import { FeatureTable } from "./FeatureTable";
 
 interface FeaturePillProps {
   feature: DetectionFeature;
@@ -13,11 +12,22 @@ interface FeaturePillProps {
 
 export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const [codeVisible, setCodeVisible] = useState(false);
-  const { isLoading, hasError, flattenedNodes, toggleNode, evaluateCode } = useFeatureTree(feature);
+  const { isLoading, hasError, flattenedNodes, toggleNode, evaluateCode } =
+    useFeatureTree(feature);
+  const codeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     evaluateCode();
   }, []);
+
+  useEffect(() => {
+    if (codeVisible && codeRef.current) {
+      // Small delay to ensure the code section is rendered
+      setTimeout(() => {
+        codeRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, [codeVisible]);
 
   return (
     <Card className="border-b border-gray-800 rounded-none first:rounded-t-lg last:rounded-b-lg">
@@ -31,7 +41,7 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
           codeVisible={codeVisible}
         />
       </CardHeader>
-      
+
       <CardContent className="px-2 pb-2 pt-0 space-y-2">
         <FeatureTable
           nodes={flattenedNodes}
@@ -40,7 +50,9 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
         />
 
         {codeVisible && (
-          <CodePreview code={feature.code} hasError={hasError} />
+          <div ref={codeRef}>
+            <CodePreview code={feature.code} hasError={hasError} />
+          </div>
         )}
       </CardContent>
     </Card>
