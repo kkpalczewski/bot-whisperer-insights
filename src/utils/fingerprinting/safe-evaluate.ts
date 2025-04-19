@@ -48,19 +48,19 @@ export const safeEvaluate = async <T>(
     if (dependency === 'clientjs') {
       modifiedCode = modifiedCode.replace(
         /new ClientJS\(\)/g, 
-        'await window.libraryManager.getClientJS()'
+        'await getClientJS()'
       );
     }
     if (dependency === 'fingerprintjs') {
       modifiedCode = modifiedCode.replace(
         /FingerprintJS\.load\(\)/g, 
-        'await window.libraryManager.getFingerprintJS()'
+        'await getFingerprintJS()'
       );
     }
     if (dependency === 'creepjs') {
       modifiedCode = modifiedCode.replace(
         /CreepJS/g, 
-        'await window.libraryManager.getCreepJS()'
+        'await getCreepJS()'
       );
     }
 
@@ -68,6 +68,18 @@ export const safeEvaluate = async <T>(
     const wrappedCode = `
       async function evaluateFeature() {
         try {
+          // Make library functions available within the evaluated code
+          const getClientJS = ${getClientJS.toString()};
+          const getFingerprintJS = ${getFingerprintJS.toString()};
+          const getCreepJS = ${getCreepJS.toString()};
+          
+          // Define libraryManager so it's available within the code
+          const libraryManager = {
+            getClientJS,
+            getFingerprintJS,
+            getCreepJS
+          };
+          
           const fn = ${modifiedCode};
           return typeof fn === 'function' ? await fn() : fn;
         } catch (e) {
