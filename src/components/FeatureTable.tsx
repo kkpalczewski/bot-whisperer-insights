@@ -19,10 +19,9 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
     <Table>
       <TableHeader>
         <TableRow className="border-b border-gray-800">
-          <TableHead className="w-[35%] font-medium text-xs py-2">Feature</TableHead>
+          <TableHead className="w-[40%] font-medium text-xs py-2">Feature</TableHead>
           <TableHead className="w-[5%] py-2"></TableHead>
-          <TableHead className="w-[25%] font-medium text-xs py-2">Value</TableHead>
-          <TableHead className="w-[25%] font-medium text-xs py-2">Parent</TableHead>
+          <TableHead className="w-[55%] font-medium text-xs py-2">Value</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -32,10 +31,9 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
             feature={node.feature}
             value={node.value}
             type={node.type}
-            parent={node.parent}
+            onToggle={() => onToggleNode(node.id)}
             isExpanded={node.isExpanded}
             hasChildren={node.children.length > 0}
-            onToggle={() => onToggleNode(node.id)}
             level={node.level}
             error={node.error}
             description={node.description}
@@ -44,7 +42,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
         ))}
         {nodes.length === 0 && (
           <TableRow>
-            <TableCell colSpan={4} className="text-center py-4 text-gray-400">
+            <TableCell colSpan={3} className="text-center py-4 text-gray-400">
               {isLoading ? 'Loading features...' : 'No features found'}
             </TableCell>
           </TableRow>
@@ -53,4 +51,3 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
     </Table>
   );
 };
-
