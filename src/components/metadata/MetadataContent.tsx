@@ -20,11 +20,6 @@ interface MetadataContentProps {
    */
   value: string | boolean | undefined;
 
-  /** The parent feature that contains this feature (empty for root-level features)
-   * Example: For 'browser.version', the parent would be 'browser'
-   */
-  parent: string;
-
   /** Optional description of what this feature represents and how it's detected
    * Can be overridden by feature-specific descriptions from the detection rules
    */
@@ -40,11 +35,6 @@ interface MetadataContentProps {
    * - 1+: Nested features (e.g., 'browser.version')
    */
   level: number;
-
-  /** Unique identifier for the feature
-   * Typically constructed as `${parent}.${feature}` or just `${feature}` for root level
-   */
-  id: string;
 
   /** Indicates whether this feature has nested child features
    * Used for UI expansion/collapse functionality
@@ -69,8 +59,8 @@ interface MetadataContentProps {
 export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   const value = props.value === undefined ? 'undefined' : String(props.value);
   
-  // Find feature info using the full path ID
-  const { description, abuseIndication } = findFeatureInfo(features, props.id);
+  // Find feature info using the feature name
+  const { description, abuseIndication } = findFeatureInfo(features, props.feature);
   
   return (
     <div className="space-y-3">
@@ -78,16 +68,8 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
         <h3 className="text-lg font-mono mb-2">{props.feature}</h3>
       </MetadataSection>
 
-      <MetadataSection title="ID">
-        <p className="text-sm font-mono text-gray-400">{props.id}</p>
-      </MetadataSection>
-
       <MetadataSection title="Value">
         <ExpandableValue value={value} />
-      </MetadataSection>
-
-      <MetadataSection title="Parent">
-        <p className="text-sm font-mono text-gray-400">{props.parent || "—"}</p>
       </MetadataSection>
 
       {(description || props.description) && (
