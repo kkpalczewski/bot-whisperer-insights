@@ -1,22 +1,38 @@
+
 - id: fingerprintjs_data
   name: FingerprintJS Data
   codeName: fingerprintjs_data
   type: object
   code: |
     async () => {
-      const fp = await FingerprintJS.load();
-      const result = await fp.get();
-      
-      return {
-        visitorId: result.visitorId,
-        confidence: result.confidence.score,
-        userAgent: result.components.userAgent,
-        webDriver: result.components.webDriver,
-        language: result.components.language,
-        platform: result.components.platform,
-        touchSupport: result.components.touchSupport,
-        consistentId: result.visitorId
-      };
+      try {
+        // Get FingerprintJS instance
+        const fp = await getFingerprintJS();
+        if (!fp) {
+          return {
+            error: "FingerprintJS library not available"
+          };
+        }
+        
+        // Use the API to get fingerprint data
+        const result = await fp.get();
+        
+        return {
+          visitorId: result.visitorId,
+          confidence: result.confidence.score,
+          userAgent: result.components.userAgent,
+          webDriver: result.components.webDriver,
+          language: result.components.language,
+          platform: result.components.platform,
+          touchSupport: result.components.touchSupport,
+          consistentId: result.visitorId
+        };
+      } catch (error) {
+        console.error("Error getting FingerprintJS data:", error);
+        return {
+          error: error.message || "Unknown error with FingerprintJS"
+        };
+      }
     }
   description: Comprehensive browser identification data collected using FingerprintJS
   abuse_indication:
