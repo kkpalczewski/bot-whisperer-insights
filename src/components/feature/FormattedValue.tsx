@@ -20,7 +20,7 @@ export const FormattedValue: React.FC<{
   // Check if the value is an array (it will be a string but formatted as [item1, item2])
   if (typeof value === 'string') {
     // Handle arrays
-    if (value.startsWith('[') && value.endsWith(']')) {
+    if (value.startsWith('[') && (value.endsWith(']') || value.endsWith('...'))) {
       try {
         // Try to parse and pretty format arrays
         const parsed = JSON.parse(value);
@@ -34,7 +34,7 @@ export const FormattedValue: React.FC<{
     }
     
     // Handle objects
-    if (value.startsWith('{') && value.endsWith('}')) {
+    if (value.startsWith('{') && (value.endsWith('}') || value.endsWith('...'))) {
       try {
         // Try to pretty print the JSON
         const parsed = JSON.parse(value);
