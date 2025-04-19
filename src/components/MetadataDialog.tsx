@@ -22,15 +22,17 @@ import { useGlobalDrawer } from '@/hooks/useGlobalDrawer';
 interface MetadataDialogProps {
   feature: string;
   value: string | boolean | undefined;
+  parent: string;
   description?: string;
   error?: string;
   level: number;
+  id: string;
   hasChildren: boolean;
   isExpanded: boolean;
 }
 
 export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
-  const drawerId = `drawer-${props.feature}-${props.level}`;
+  const drawerId = `drawer-${props.id}`;
   const { isOpen, setIsOpen, handleOpen } = useGlobalDrawer(drawerId);
   
   // Handle ESC key press to close drawer

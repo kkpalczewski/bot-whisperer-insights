@@ -5,7 +5,6 @@ import { FormattedValue } from '../feature/FormattedValue';
 import { MetadataSection } from './MetadataSection';
 import { ExpandableValue } from './ExpandableValue';
 import { findFeatureInfo } from '@/utils/featureLookup';
-import { ParentCell } from '../feature/ParentCell';
 
 /**
  * Props for the MetadataContent component
@@ -20,6 +19,11 @@ interface MetadataContentProps {
    * - Undefined: When the feature couldn't be detected
    */
   value: string | boolean | undefined;
+
+  /** The parent feature that contains this feature (empty for root-level features)
+   * Example: For 'browser.version', the parent would be 'browser'
+   */
+  parent: string;
 
   /** Optional description of what this feature represents and how it's detected
    * Can be overridden by feature-specific descriptions from the detection rules
@@ -36,6 +40,11 @@ interface MetadataContentProps {
    * - 1+: Nested features (e.g., 'browser.version')
    */
   level: number;
+
+  /** Unique identifier for the feature
+   * Typically constructed as `${parent}.${feature}` or just `${feature}` for root level
+   */
+  id: string;
 
   /** Indicates whether this feature has nested child features
    * Used for UI expansion/collapse functionality
@@ -60,25 +69,17 @@ interface MetadataContentProps {
 export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   const value = props.value === undefined ? 'undefined' : String(props.value);
   
-  // Find feature info using the feature name
-  const { description, abuseIndication } = findFeatureInfo(features, props.feature);
-  
-  // Extract parent from feature name (everything before the last dot)
-  const parts = props.feature.split('.');
-  const featureName = parts.pop() || props.feature; // Last part is the feature name
-  const parent = parts.join('.'); // Everything else is the parent path
-  
-  // Construct ID (which is typically the full feature path)
-  const id = props.feature;
+  // Find feature info using the full path ID
+  const { description, abuseIndication } = findFeatureInfo(features, props.id);
   
   return (
     <div className="space-y-3">
       <MetadataSection title="Feature">
-        <h3 className="text-lg font-mono mb-2">{featureName}</h3>
+        <h3 className="text-lg font-mono mb-2">{props.feature}</h3>
       </MetadataSection>
 
       <MetadataSection title="ID">
-        <p className="text-sm font-mono text-gray-400">{id}</p>
+        <p className="text-sm font-mono text-gray-400">{props.id}</p>
       </MetadataSection>
 
       <MetadataSection title="Value">
@@ -86,7 +87,7 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
       </MetadataSection>
 
       <MetadataSection title="Parent">
-        <ParentCell parent={parent} />
+        <p className="text-sm font-mono text-gray-400">{props.parent || "—"}</p>
       </MetadataSection>
 
       {(description || props.description) && (
