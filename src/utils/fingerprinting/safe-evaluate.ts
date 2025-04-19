@@ -78,8 +78,9 @@ export const safeEvaluate = async <T>(
       return evaluateFeature();
     `;
 
-    // Execute the wrapped code
-    const result = await Function('window', wrappedCode)(window);
+    // Fix: Don't pass window as a parameter to Function constructor
+    const evalFunction = new Function(wrappedCode);
+    const result = await evalFunction();
     
     // Type validation based on expected type
     if (result !== null && result !== undefined) {

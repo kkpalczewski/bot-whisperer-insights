@@ -1,4 +1,3 @@
-
 - id: creepjs_data
   name: CreepJS Data
   codeName: creepjs_data
@@ -7,7 +6,7 @@
     async () => {
       try {
         // Make sure CreepJS is loaded and accessible
-        const creepJS = await window.libraryManager.getCreepJS();
+        const creepJS = await libraryManager.getCreepJS();
         if (!creepJS) {
           return {
             error: "CreepJS library not available",
