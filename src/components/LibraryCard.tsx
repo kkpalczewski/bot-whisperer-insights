@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ExternalLink, Fingerprint } from 'lucide-react';
 import { LibraryInfo } from '@/config/fingerprintingLibraries';
@@ -6,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { getBrowserFingerprint, getCanvasFingerprint } from '@/utils/fingerprint-helpers';
 import { toast } from 'sonner';
-import { getClientJS, getFingerprintJS } from '@/utils/library-manager';
+import { getClientJS, getFingerprintJS, getCreepJS } from '@/utils/library-manager';
 
 interface LibraryCardProps {
   library: LibraryInfo;
@@ -26,7 +25,8 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
       let result: any;
       
       switch (library.id) {
-        case 'fingerprint-js': {
+        case 'fingerprint-js':
+        case 'fingerprintjs': {
           const fpJs = await getFingerprintJS();
           if (fpJs) {
             const fpResult = await fpJs.get();
@@ -46,19 +46,57 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
         }
         
         case 'creep-js':
-          result = {
-            fingerprint: Math.random().toString(36).substring(2, 10),
-            lies: {
-              detected: false,
-              score: Math.random()
-            },
-            bot: Math.random() > 0.9,
-            components: {
-              ...getBrowserFingerprint(),
-              canvas: getCanvasFingerprint()
+        case 'creepjs': {
+          const creepJs = await getCreepJS();
+          if (creepJs) {
+            try {
+              const creepResult = await creepJs.get();
+              result = {
+                fingerprint: creepResult.fingerprint || Math.random().toString(36).substring(2, 10),
+                lies: creepResult.lies || {
+                  detected: false,
+                  score: Math.random()
+                },
+                bot: creepResult.bot !== undefined ? creepResult.bot : Math.random() > 0.9,
+                components: creepResult.components || {
+                  ...getBrowserFingerprint(),
+                  canvas: getCanvasFingerprint()
+                }
+              };
+            } catch (e) {
+              console.error("Error with CreepJS:", e);
+              result = {
+                fingerprint: Math.random().toString(36).substring(2, 10),
+                lies: {
+                  detected: false,
+                  score: Math.random()
+                },
+                bot: Math.random() > 0.9,
+                components: {
+                  ...getBrowserFingerprint(),
+                  canvas: getCanvasFingerprint()
+                },
+                error: (e as Error).message
+              };
             }
-          };
+          } else {
+            toast.error("CreepJS library failed to load");
+            result = {
+              fingerprint: "Error: CreepJS not available",
+              lies: {
+                detected: false,
+                score: 0
+              },
+              bot: false,
+              components: {
+                ...getBrowserFingerprint(),
+                canvas: getCanvasFingerprint()
+              },
+              error: "CreepJS library not available"
+            };
+          }
           break;
+        }
         
         case 'clientjs': {
           const clientJs = await getClientJS();

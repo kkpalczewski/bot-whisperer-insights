@@ -1,3 +1,4 @@
+
 import { toast } from 'sonner';
 
 // Global store for library instances
@@ -104,6 +105,67 @@ export const getFingerprintJS = async (): Promise<any> => {
 };
 
 /**
+ * Gets or initializes a CreepJS instance
+ */
+export const getCreepJS = async (): Promise<any> => {
+  // Return cached instance if available
+  if (libraryInstances.creepjs) {
+    return libraryInstances.creepjs;
+  }
+
+  try {
+    // Check if CreepJS is already loaded globally
+    if (typeof window.CreepJS !== 'undefined') {
+      libraryInstances.creepjs = window.CreepJS;
+      return window.CreepJS;
+    }
+
+    // Try to load CreepJS from npm
+    try {
+      // Try to import from the npm package
+      const creepjsModule = await import('creepjs');
+      if (creepjsModule.default || creepjsModule) {
+        const CreepJS = creepjsModule.default || creepjsModule;
+        libraryInstances.creepjs = CreepJS;
+        
+        // Also set it on window for easy access
+        window.CreepJS = CreepJS;
+        return CreepJS;
+      }
+    } catch (e) {
+      console.warn('Failed to load CreepJS from npm import:', e);
+      // Continue with other loading methods
+    }
+
+    // If we couldn't load CreepJS, create a script tag to load it
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/creepjs@latest/dist/creep.min.js';
+      script.async = true;
+      script.onload = () => {
+        if (typeof window.CreepJS !== 'undefined') {
+          libraryInstances.creepjs = window.CreepJS;
+          resolve(window.CreepJS);
+        } else {
+          const error = new Error('CreepJS loaded but global object not found');
+          console.error(error);
+          reject(error);
+        }
+      };
+      script.onerror = (e) => {
+        console.error('Failed to load CreepJS from CDN:', e);
+        reject(new Error('Failed to load CreepJS library'));
+      };
+      document.head.appendChild(script);
+    });
+  } catch (error) {
+    console.error('Error initializing CreepJS:', error);
+    toast.error('Failed to initialize CreepJS library');
+    return null;
+  }
+};
+
+/**
  * Safe evaluation function with proper error handling and type validation
  */
 export const safeEvaluate = async <T>(
@@ -132,6 +194,15 @@ export const safeEvaluate = async <T>(
           };
         }
       }
+      if (dependency === 'creepjs') {
+        const creep = await getCreepJS();
+        if (!creep) {
+          return { 
+            value: null, 
+            error: `Dependency '${dependency}' not available` 
+          };
+        }
+      }
     }
 
     // Replace library references in the code with our safe instances
@@ -146,6 +217,12 @@ export const safeEvaluate = async <T>(
       modifiedCode = modifiedCode.replace(
         /FingerprintJS\.load\(\)/g, 
         'await window.libraryManager.getFingerprintJS()'
+      );
+    }
+    if (dependency === 'creepjs') {
+      modifiedCode = modifiedCode.replace(
+        /CreepJS/g, 
+        'await window.libraryManager.getCreepJS()'
       );
     }
 
@@ -185,39 +262,6 @@ export const safeEvaluate = async <T>(
       value: null, 
       error: (error as Error).message || 'Unknown error' 
     };
-  }
-};
-
-/**
- * Gets or initializes a CreepJS instance
- */
-export const getCreepJS = async (): Promise<any> => {
-  if (typeof window.CreepJS !== 'undefined') {
-    return window.CreepJS;
-  }
-
-  try {
-    // Try to load CreepJS from a CDN
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/creepjs@latest/dist/creep.min.js';
-      script.async = true;
-      script.onload = () => {
-        if (typeof window.CreepJS !== 'undefined') {
-          resolve(window.CreepJS);
-        } else {
-          reject(new Error('CreepJS loaded but global object not found'));
-        }
-      };
-      script.onerror = (e) => {
-        console.error('Failed to load CreepJS from CDN:', e);
-        reject(new Error('Failed to load CreepJS library'));
-      };
-      document.head.appendChild(script);
-    });
-  } catch (error) {
-    console.error('Error initializing CreepJS:', error);
-    return null;
   }
 };
 
