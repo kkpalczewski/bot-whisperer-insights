@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { features } from '@/config/detectionFeatures';
 import { FormattedValue } from '../feature/FormattedValue';
@@ -54,6 +55,15 @@ interface MetadataContentProps {
    * Controls whether child features are visible
    */
   isExpanded: boolean;
+
+  /** Bot abuse detection information
+   * Provides insights into how this feature might indicate automated or bot-like behavior
+   * Sourced from detection rules to help identify potential bot activities
+   */
+  abuse_detection?: {
+    /** Specific bot-related abuse indication for this feature */
+    bot?: string;
+  };
 }
 
 export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
