@@ -171,7 +171,7 @@ export const safeEvaluate = async <T>(
     }
 
     // Get functions for library access
-    const { getClientJS, getFingerprintJS, getCreepJS } = getDependencyFunctions();
+    const { getClientJS, getFingerprintJS, getCreepJS, getDeviceDetector, getNetworkInfo } = getDependencyFunctions();
 
     // Create a safe async wrapper function to evaluate the code
     const wrappedCode = `
@@ -188,10 +188,12 @@ export const safeEvaluate = async <T>(
     `;
 
     // Execute the wrapped code with access to the library functions
-    const result = await new Function('getClientJS', 'getFingerprintJS', 'getCreepJS', wrappedCode)(
+    const result = await new Function('getClientJS', 'getFingerprintJS', 'getCreepJS', 'getDeviceDetector', 'getNetworkInfo', wrappedCode)(
       getClientJS,
       getFingerprintJS,
-      getCreepJS
+      getCreepJS,
+      getDeviceDetector,
+      getNetworkInfo
     );
     
     // Validate and parse the result

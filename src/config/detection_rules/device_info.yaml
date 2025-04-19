@@ -1,0 +1,178 @@
+- id: device_info
+  name: Device Information
+  codeName: device_info
+  type: object
+  code: |
+    (async () => {
+      const detector = await getDeviceDetector();
+      
+      if (!detector) {
+        return {
+          error: 'Failed to initialize device detector'
+        };
+      }
+
+      try {
+        const result = detector.parse(navigator.userAgent);
+        
+        return {
+          device: {
+            type: result.device?.type || 'unknown',
+            brand: result.device?.brand || 'unknown',
+            model: result.device?.model || 'unknown'
+          },
+          os: {
+            name: result.os?.name || 'unknown',
+            version: result.os?.version || 'unknown',
+            platform: result.os?.platform || 'unknown'
+          },
+          client: {
+            type: result.client?.type || 'unknown',
+            name: result.client?.name || 'unknown',
+            version: result.client?.version || 'unknown',
+            engine: result.client?.engine || 'unknown',
+            engineVersion: result.client?.engineVersion || 'unknown'
+          },
+          bot: {
+            name: result.bot?.name || null,
+            category: result.bot?.category || null,
+            url: result.bot?.url || null,
+            producer: {
+              name: result.bot?.producer?.name || null,
+              url: result.bot?.producer?.url || null
+            }
+          }
+        };
+      } catch (error) {
+        return {
+          error: 'Failed to parse device information'
+        };
+      }
+    })()
+  description: Detailed device, OS, browser, and bot information using device-detector-js
+  abuse_indication:
+    bot: Inconsistencies in device information, unusual browser/OS combinations, or known bot signatures can reveal automated traffic.
+  category: device
+  dependency: devicedetector
+  outputs:
+    device:
+      name: Device Information
+      type: object
+      description: Physical device characteristics
+      outputs:
+        type:
+          name: Device Type
+          type: string
+          description: Type of device (desktop, mobile, tablet, etc.)
+          abuse_indication:
+            bot: Mismatches between device type and other characteristics can indicate spoofed environments.
+        brand:
+          name: Device Brand
+          type: string
+          description: Manufacturer of the device
+          abuse_indication:
+            bot: Generic or missing brand information often indicates virtualized environments.
+        model:
+          name: Device Model
+          type: string
+          description: Specific model of the device
+          abuse_indication:
+            bot: Generic model names or those commonly used in virtual machines can indicate automation.
+    os:
+      name: Operating System
+      type: object
+      description: Operating system information
+      outputs:
+        name:
+          name: OS Name
+          type: string
+          description: Name of the operating system
+          abuse_indication:
+            bot: Server operating systems or unusual combinations with browser versions can indicate automated environments.
+        version:
+          name: OS Version
+          type: string
+          description: Version of the operating system
+          abuse_indication:
+            bot: Outdated or unusual OS versions, especially with modern browsers, can indicate virtualized environments.
+        platform:
+          name: Platform
+          type: string
+          description: Platform architecture
+          abuse_indication:
+            bot: Inconsistent platform information compared to other system characteristics can reveal automation.
+    client:
+      name: Browser Information
+      type: object
+      description: Browser and rendering engine details
+      outputs:
+        type:
+          name: Client Type
+          type: string
+          description: Type of client (browser, bot, etc.)
+          abuse_indication:
+            bot: Known bot client types or unusual combinations can directly indicate automation.
+        name:
+          name: Browser Name
+          type: string
+          description: Name of the browser
+          abuse_indication:
+            bot: Unusual browser names or known automation tools can indicate bot activity.
+        version:
+          name: Browser Version
+          type: string
+          description: Version of the browser
+          abuse_indication:
+            bot: Outdated or inconsistent versions compared to other features can reveal spoofed browsers.
+        engine:
+          name: Browser Engine
+          type: string
+          description: Rendering engine used by the browser
+          abuse_indication:
+            bot: Mismatches between engine and browser version can indicate spoofed browsers.
+        engineVersion:
+          name: Engine Version
+          type: string
+          description: Version of the rendering engine
+          abuse_indication:
+            bot: Inconsistent engine versions compared to browser version can reveal automation.
+    bot:
+      name: Bot Detection
+      type: object
+      description: Bot identification information
+      outputs:
+        name:
+          name: Bot Name
+          type: string
+          description: Name of detected bot
+          abuse_indication:
+            bot: Direct identification of known bot signatures.
+        category:
+          name: Bot Category
+          type: string
+          description: Category of detected bot
+          abuse_indication:
+            bot: Classification of bot type and purpose.
+        url:
+          name: Bot URL
+          type: string
+          description: URL associated with the bot
+          abuse_indication:
+            bot: Source or documentation of the bot.
+        producer:
+          name: Bot Producer
+          type: object
+          description: Information about the bot's creator
+          outputs:
+            name:
+              name: Producer Name
+              type: string
+              description: Name of the bot's creator
+              abuse_indication:
+                bot: Identification of bot framework or tool provider.
+            url:
+              name: Producer URL
+              type: string
+              description: URL of the bot's creator
+              abuse_indication:
+                bot: Source of the bot framework or tool. 

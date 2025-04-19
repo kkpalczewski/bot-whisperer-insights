@@ -1,87 +1,140 @@
-
 - id: network_info
   name: Network Information
   codeName: network_info
-  type: object
-  code: |
-    (() => {
-      try {
-        const connection = navigator.connection || {};
-        const vpnPatterns = /datacenter|cloud|proxy|vpn|hosting/i;
-        
-        // Get IP info via WebRTC (if available)
-        const hasWebRTC = !!(window.RTCPeerConnection || window.webkitRTCPeerConnection);
-        
-        return {
-          connection: {
-            effectiveType: connection.effectiveType || 'unknown',
-            rtt: connection.rtt || 0,
-            downlink: connection.downlink || 0,
-            saveData: connection.saveData || false
-          },
-          webRTC: {
-            available: hasWebRTC,
-            protocol: window.location.protocol,
-          },
-          timing: {
-            // Navigation timing data
-            navigationStart: performance?.timing?.navigationStart || 0,
-            loadEventEnd: performance?.timing?.loadEventEnd || 0,
-            loadTime: performance?.timing?.loadEventEnd - performance?.timing?.navigationStart || 0
-          }
-        };
-      } catch (e) {
-        return {
-          error: 'Failed to get network information',
-          connection: {
-            effectiveType: 'unknown',
-            rtt: 0,
-            downlink: 0,
-            saveData: false
-          }
-        };
-      }
-    })()
-  description: Enhanced network connection information including timing and WebRTC detection
+  description: Detects and analyzes network-related information including connection details, IP information, DNS settings, and proxy detection.
   category: network
+  type: object
+  dependency: networkinfo
+  abuse_indication:
+    bot: Unusual network patterns, VPN/proxy usage, or inconsistent connection characteristics can indicate automated traffic.
   outputs:
     connection:
       name: Connection Details
       type: object
-      description: Network connection characteristics
+      description: Network connection information
+      abuse_indication:
+        bot: Datacenter connections often show stable, high-bandwidth patterns unlike real users.
       outputs:
         effectiveType:
           name: Connection Type
           type: string
-          description: Network connection type (4g, 3g, 2g, slow-2g)
+          description: Effective connection type (e.g., '4g', 'wifi')
           abuse_indication:
-            bot: Datacenter connections often show stable, high-bandwidth patterns unlike real users.
+            bot: Datacenter connections often report unusual or inconsistent connection types.
         rtt:
           name: Round Trip Time
           type: number
-          description: Network round-trip time in milliseconds
+          description: Round-trip time in milliseconds
           abuse_indication:
             bot: Extremely low or consistent RTT values can indicate datacenter proxies.
         downlink:
           name: Downlink Speed
           type: number
-          description: Connection downlink speed in Mbps
+          description: Effective bandwidth estimate in megabits per second
           abuse_indication:
             bot: Unusually high or perfectly stable bandwidth can indicate automated environments.
         saveData:
           name: Data Saver
           type: boolean
-          description: Whether data saver is enabled
-    webRTC:
-      name: WebRTC Information
+          description: Whether the user has requested reduced data usage
+          abuse_indication:
+            bot: Bots often don't use data saver settings like real users.
+    ipInfo:
+      name: IP Information
       type: object
-      description: WebRTC availability and protocol information
+      description: IP address and location information
       abuse_indication:
-        bot: Bots often disable WebRTC to prevent IP detection.
-    timing:
-      name: Navigation Timing
+        bot: IPs from datacenters, VPNs, or known proxy services often indicate automated traffic.
+      outputs:
+        ip:
+          name: IP Address
+          type: string
+          description: Public IP address
+          abuse_indication:
+            bot: IPs from datacenters or known proxy services are common in automated traffic.
+        country:
+          name: Country
+          type: string
+          description: Country name
+          abuse_indication:
+            bot: Mismatches between IP location and other location indicators can reveal VPN/proxy usage.
+        region:
+          name: Region
+          type: string
+          description: Region/state name
+          abuse_indication:
+            bot: Inconsistent region information across different detection methods can indicate spoofing.
+        city:
+          name: City
+          type: string
+          description: City name
+          abuse_indication:
+            bot: City information that doesn't match other location data can indicate proxy usage.
+        timezone:
+          name: Timezone
+          type: string
+          description: Timezone
+          abuse_indication:
+            bot: Timezone mismatches with IP location can indicate automated traffic.
+        isp:
+          name: ISP
+          type: string
+          description: Internet Service Provider name
+          abuse_indication:
+            bot: ISPs known for hosting or proxy services often indicate automated traffic.
+    dns:
+      name: DNS Configuration
       type: object
-      description: Page load timing metrics
+      description: DNS configuration information
       abuse_indication:
-        bot: Bots often have unnaturally fast or consistent load times.
+        bot: Unusual DNS configurations or leaks can indicate proxy/VPN usage.
+      outputs:
+        servers:
+          name: DNS Servers
+          type: array
+          description: List of DNS servers being used
+          abuse_indication:
+            bot: Use of public DNS servers or known proxy DNS can indicate automated traffic.
+          outputs:
+            server:
+              name: DNS Server
+              type: string
+              description: DNS server IP address
+              abuse_indication:
+                bot: Public or known proxy DNS servers are common in automated environments.
+        leak:
+          name: DNS Leak
+          type: boolean
+          description: Whether DNS leak is detected
+          abuse_indication:
+            bot: DNS leaks often occur in poorly configured proxy/VPN setups used by bots.
+    proxy:
+      name: Proxy Detection
+      type: object
+      description: Proxy detection information
+      abuse_indication:
+        bot: Proxy usage is common in automated traffic to mask origin and rotate IPs.
+      outputs:
+        detected:
+          name: Proxy Detected
+          type: boolean
+          description: Whether a proxy is detected
+          abuse_indication:
+            bot: Proxy usage is a strong indicator of automated traffic.
+        type:
+          name: Proxy Type
+          type: string
+          description: Type of proxy if detected (e.g., 'http', 'socks', 'vpn')
+          abuse_indication:
+            bot: Certain proxy types are more commonly used in automated environments.
+  code: |
+    (async () => {
+      const info = await getNetworkInfo();
+      if (!info) {
+        return {
+          error: 'Failed to get network information'
+        };
+      }
+      return info;
+    })()
 
