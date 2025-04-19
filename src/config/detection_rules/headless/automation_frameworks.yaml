@@ -1,0 +1,48 @@
+
+- id: headless_automation_frameworks
+  name: Automation Frameworks Detection
+  codeName: headless_automation_frameworks
+  type: object
+  code: |
+    (() => {
+      return {
+        selenium: !!window.navigator.webdriver,
+        phantom: !!(window._phantom || window.callPhantom),
+        nightmare: !!window.__nightmare,
+        puppeteer: !!navigator.webdriver || !!window._TESTCAFE_DRIVER,
+        chromedp: !!(window.chrome?.app?.isInstalled && !window.chrome?.runtime)
+      };
+    })()
+  description: Detection of known automation frameworks
+  category: browser
+  outputs:
+    selenium:
+      name: Selenium
+      type: boolean
+      description: Selenium automation detected
+      abuse_indication:
+        bot: Direct indicator of Selenium automation
+    phantom:
+      name: PhantomJS
+      type: boolean
+      description: PhantomJS detected
+      abuse_indication:
+        bot: Direct indicator of PhantomJS headless browser
+    nightmare:
+      name: Nightmare
+      type: boolean
+      description: Nightmare.js detected
+      abuse_indication:
+        bot: Direct indicator of Nightmare.js automation
+    puppeteer:
+      name: Puppeteer
+      type: boolean
+      description: Puppeteer detected
+      abuse_indication:
+        bot: Direct indicator of Puppeteer automation
+    chromedp:
+      name: ChromeDP
+      type: boolean
+      description: ChromeDP detected
+      abuse_indication:
+        bot: Direct indicator of ChromeDP automation

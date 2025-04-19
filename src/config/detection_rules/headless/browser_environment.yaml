@@ -1,0 +1,54 @@
+
+- id: headless_browser_environment
+  name: Browser Environment Detection
+  codeName: headless_browser_environment
+  type: object
+  code: |
+    (() => {
+      return {
+        languages: {
+          noLanguages: !navigator.languages || navigator.languages.length === 0,
+          mismatchedLanguage: navigator.language !== navigator.languages?.[0]
+        },
+        permissions: {
+          notifications: 'Notification' in window ? Notification.permission === 'denied' : true,
+          plugins: navigator.plugins.length === 0,
+          mimeTypes: navigator.mimeTypes.length === 0
+        }
+      };
+    })()
+  description: Language and permission-based headless detection
+  category: browser
+  outputs:
+    languages:
+      name: Language Anomalies
+      type: object
+      description: Language configuration checks
+      outputs:
+        noLanguages:
+          name: Missing Languages
+          type: boolean
+          description: No language preferences set
+          abuse_indication:
+            bot: Headless browsers often have no language preferences
+        mismatchedLanguage:
+          name: Language Mismatch
+          type: boolean
+          description: Mismatch between primary and preferred languages
+    permissions:
+      name: Permission States
+      type: object
+      description: Browser permission indicators
+      outputs:
+        notifications:
+          name: Notifications Denied
+          type: boolean
+          description: Notifications permanently denied
+        plugins:
+          name: No Plugins
+          type: boolean
+          description: Browser has no plugins
+        mimeTypes:
+          name: No MIME Types
+          type: boolean
+          description: Browser has no MIME types

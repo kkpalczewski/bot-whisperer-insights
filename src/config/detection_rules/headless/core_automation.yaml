@@ -1,0 +1,34 @@
+
+- id: headless_core_automation
+  name: Core Automation Detection
+  codeName: headless_core_automation
+  type: object
+  code: |
+    (() => {
+      return {
+        webdriver: !!navigator.webdriver,
+        automationEnabled: !!window.document.documentElement.getAttribute('webdriver'),
+        chromeDriver: !!(window.chrome && window.chrome.webstore)
+      };
+    })()
+  description: Basic automation and webdriver detection
+  category: browser
+  outputs:
+    webdriver:
+      name: WebDriver
+      type: boolean
+      description: Direct webdriver detection
+      abuse_indication:
+        bot: Presence of webdriver is a strong indicator of automation
+    automationEnabled:
+      name: Automation Attribute
+      type: boolean
+      description: Webdriver attribute detection
+      abuse_indication:
+        bot: Automation attribute indicates browser automation
+    chromeDriver:
+      name: Chrome Driver
+      type: boolean
+      description: Chrome webstore automation detection
+      abuse_indication:
+        bot: Chrome automation indicators suggest automated browsing
