@@ -21,5 +21,10 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+  },
+  define: {
+    // Define environment variables that will be replaced at build time
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.SUPABASE_URL || 'https://ssqhxvxdxghrxthxdojc.supabase.co'),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzcWh4dnhkeGdocnh0aHhkb2pjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5ODg0OTksImV4cCI6MjA2MDU2NDQ5OX0.CPwNQXenUwDqC9qpAAeGiE6WzdQxneX6dTVNDLAPszg')
   }
 }))

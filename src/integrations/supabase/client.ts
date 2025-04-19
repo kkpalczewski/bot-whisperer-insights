@@ -5,8 +5,8 @@ import type { Database } from './types';
 
 // Using Supabase secrets for secure configuration
 const supabaseClient = createClient<Database>(
-  process.env.SUPABASE_URL || '',
-  process.env.SUPABASE_ANON_KEY || ''
+  import.meta.env.VITE_SUPABASE_URL || '',
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 );
 
 // Import the supabase client like this:
