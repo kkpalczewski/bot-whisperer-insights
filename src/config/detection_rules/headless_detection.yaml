@@ -1,0 +1,270 @@
+
+- id: headless_detection
+  name: Headless Browser Detection
+  codeName: headless_detection
+  type: object
+  code: |
+    (() => {
+      const indicators = {
+        // Core automation flags
+        webdriver: !!navigator.webdriver,
+        automationEnabled: !!(window.document as any).documentElement.getAttribute('webdriver'),
+        chromeDriver: !!(window as any).chrome && !!(window as any).chrome.webstore,
+        
+        // Headless browser indicators
+        languages: {
+          noLanguages: !navigator.languages || navigator.languages.length === 0,
+          mismatchedLanguage: navigator.language !== navigator.languages?.[0],
+        },
+        
+        // Permission and feature indicators
+        permissions: {
+          notifications: 'Notification' in window ? Notification.permission === 'denied' : true,
+          plugins: navigator.plugins.length === 0,
+          mimeTypes: navigator.mimeTypes.length === 0
+        },
+        
+        // Hardware/OS indicators
+        hardware: {
+          noGPU: (() => {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!gl) return true;
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            return !debugInfo || !gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+          })(),
+          noMedia: !('mediaDevices' in navigator),
+          noGamepads: !('getGamepads' in navigator),
+        },
+        
+        // Browser-specific automation flags
+        automation: {
+          selenium: !!window.navigator.webdriver,
+          phantom: !!(window as any)._phantom || !!(window as any).callPhantom,
+          nightmare: !!(window as any).__nightmare,
+          puppeteer: !!navigator.webdriver || !!(window as any)._TESTCAFE_DRIVER,
+          chromedp: !!(window as any).chrome?.app?.isInstalled && !(window as any).chrome?.runtime
+        },
+
+        // Feature consistency checks
+        consistency: {
+          noWebGL: (() => {
+            try {
+              const canvas = document.createElement('canvas');
+              return !canvas.getContext('webgl') && !canvas.getContext('experimental-webgl');
+            } catch (e) {
+              return true;
+            }
+          })(),
+          noWebRTC: !('RTCPeerConnection' in window),
+          noCanvas: (() => {
+            try {
+              document.createElement('canvas').getContext('2d');
+              return false;
+            } catch (e) {
+              return true;
+            }
+          })(),
+        }
+      };
+
+      // Calculate probability score (0-1) based on indicators
+      const calculateHeadlessScore = () => {
+        let score = 0;
+        let totalChecks = 0;
+        
+        // Core automation flags (high weight)
+        if (indicators.webdriver) score += 2;
+        if (indicators.automationEnabled) score += 2;
+        if (indicators.chromeDriver) score += 2;
+        totalChecks += 6;
+        
+        // Language checks
+        if (indicators.languages.noLanguages) score += 1;
+        if (indicators.languages.mismatchedLanguage) score += 0.5;
+        totalChecks += 1.5;
+        
+        // Permissions and plugins
+        if (indicators.permissions.notifications) score += 0.5;
+        if (indicators.permissions.plugins) score += 1;
+        if (indicators.permissions.mimeTypes) score += 1;
+        totalChecks += 2.5;
+        
+        // Hardware indicators
+        if (indicators.hardware.noGPU) score += 1;
+        if (indicators.hardware.noMedia) score += 1;
+        if (indicators.hardware.noGamepads) score += 0.5;
+        totalChecks += 2.5;
+        
+        // Automation framework checks (high weight)
+        if (indicators.automation.selenium) score += 2;
+        if (indicators.automation.phantom) score += 2;
+        if (indicators.automation.nightmare) score += 2;
+        if (indicators.automation.puppeteer) score += 2;
+        if (indicators.automation.chromedp) score += 2;
+        totalChecks += 10;
+        
+        // Feature consistency
+        if (indicators.consistency.noWebGL) score += 1;
+        if (indicators.consistency.noWebRTC) score += 1;
+        if (indicators.consistency.noCanvas) score += 1;
+        totalChecks += 3;
+        
+        return {
+          score: Math.min(score / totalChecks, 1),
+          total_checks: totalChecks,
+          points_scored: score
+        };
+      };
+
+      return {
+        ...indicators,
+        analysis: calculateHeadlessScore()
+      };
+    })()
+  description: Comprehensive detection of headless browsers and automation tools
+  category: browser
+  outputs:
+    webdriver:
+      name: WebDriver
+      type: boolean
+      description: Direct webdriver detection
+      abuse_indication:
+        bot: Presence of webdriver is a strong indicator of automation
+    automationEnabled:
+      name: Automation Attribute
+      type: boolean
+      description: Webdriver attribute detection
+      abuse_indication:
+        bot: Automation attribute indicates browser automation
+    languages:
+      name: Language Anomalies
+      type: object
+      description: Suspicious language configuration
+      outputs:
+        noLanguages:
+          name: Missing Languages
+          type: boolean
+          description: No language preferences set
+          abuse_indication:
+            bot: Headless browsers often have no language preferences
+        mismatchedLanguage:
+          name: Language Mismatch
+          type: boolean
+          description: Mismatch between primary and preferred languages
+    permissions:
+      name: Permission States
+      type: object
+      description: Browser permission indicators
+      outputs:
+        notifications:
+          name: Notifications Denied
+          type: boolean
+          description: Notifications permanently denied
+          abuse_indication:
+            bot: Headless browsers often have notifications permanently denied
+        plugins:
+          name: No Plugins
+          type: boolean
+          description: Browser has no plugins
+        mimeTypes:
+          name: No MIME Types
+          type: boolean
+          description: Browser has no MIME types
+    hardware:
+      name: Hardware Indicators
+      type: object
+      description: Hardware-related detection
+      outputs:
+        noGPU:
+          name: No GPU Info
+          type: boolean
+          description: Missing GPU information
+          abuse_indication:
+            bot: Headless browsers often lack GPU information
+        noMedia:
+          name: No Media Devices
+          type: boolean
+          description: No media devices available
+        noGamepads:
+          name: No Gamepad Support
+          type: boolean
+          description: No gamepad API support
+    automation:
+      name: Automation Frameworks
+      type: object
+      description: Known automation framework detection
+      outputs:
+        selenium:
+          name: Selenium
+          type: boolean
+          description: Selenium automation detected
+          abuse_indication:
+            bot: Direct indicator of Selenium automation
+        phantom:
+          name: PhantomJS
+          type: boolean
+          description: PhantomJS detected
+          abuse_indication:
+            bot: Direct indicator of PhantomJS headless browser
+        nightmare:
+          name: Nightmare
+          type: boolean
+          description: Nightmare.js detected
+          abuse_indication:
+            bot: Direct indicator of Nightmare.js automation
+        puppeteer:
+          name: Puppeteer
+          type: boolean
+          description: Puppeteer detected
+          abuse_indication:
+            bot: Direct indicator of Puppeteer automation
+        chromedp:
+          name: ChromeDP
+          type: boolean
+          description: ChromeDP detected
+          abuse_indication:
+            bot: Direct indicator of ChromeDP automation
+    consistency:
+      name: Feature Consistency
+      type: object
+      description: Browser feature consistency checks
+      outputs:
+        noWebGL:
+          name: WebGL Missing
+          type: boolean
+          description: WebGL context unavailable
+          abuse_indication:
+            bot: Headless browsers often lack WebGL support
+        noWebRTC:
+          name: WebRTC Missing
+          type: boolean
+          description: WebRTC support missing
+          abuse_indication:
+            bot: Headless browsers often lack WebRTC support
+        noCanvas:
+          name: Canvas Missing
+          type: boolean
+          description: Canvas context unavailable
+          abuse_indication:
+            bot: Headless browsers often have limited canvas support
+    analysis:
+      name: Headless Analysis
+      type: object
+      description: Overall headless browser probability analysis
+      outputs:
+        score:
+          name: Headless Score
+          type: number
+          description: Probability score (0-1) of being a headless browser
+          abuse_indication:
+            bot: High scores strongly indicate automated/headless browsers
+        total_checks:
+          name: Total Checks
+          type: number
+          description: Total number of checks performed
+        points_scored:
+          name: Points Scored
+          type: number
+          description: Total points from failed checks
+
