@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { features } from '@/config/detectionFeatures';
 import { FormattedValue } from '../feature/FormattedValue';
@@ -70,7 +69,29 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   const value = props.value === undefined ? 'undefined' : String(props.value);
   
   // Find feature info using the full path ID
-  const { description, abuseIndication } = findFeatureInfo(features, props.id);
+  const { description: featureDescription, abuseIndication: featureAbuseIndication } = findFeatureInfo(features, props.id);
+  
+  // If no specific feature metadata found, try to get parent metadata
+  let description = featureDescription;
+  let abuseIndication = featureAbuseIndication;
+  let isUsingParentDescription = false;
+  let isUsingParentAbuseIndication = false;
+  
+  if (!description && props.parent) {
+    const { description: parentDescription } = findFeatureInfo(features, props.parent);
+    if (parentDescription) {
+      description = parentDescription;
+      isUsingParentDescription = true;
+    }
+  }
+  
+  if (!abuseIndication && props.parent) {
+    const { abuseIndication: parentAbuseIndication } = findFeatureInfo(features, props.parent);
+    if (parentAbuseIndication) {
+      abuseIndication = parentAbuseIndication;
+      isUsingParentAbuseIndication = true;
+    }
+  }
   
   return (
     <div className="space-y-3">
@@ -91,14 +112,24 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
       </MetadataSection>
 
       {(description || props.description) && (
-        <MetadataSection title="Description">
-          <p className="text-sm text-gray-400">{description || props.description}</p>
+        <MetadataSection title={isUsingParentDescription ? "Parent Description" : "Description"}>
+          <p className="text-sm text-gray-400">
+            {description || props.description}
+            {isUsingParentDescription && (
+              <span className="ml-2 text-xs text-gray-500">(inherited from parent)</span>
+            )}
+          </p>
         </MetadataSection>
       )}
 
       {abuseIndication && (
-        <MetadataSection title="Bot Abuse Indication">
-          <p className="text-sm text-yellow-400">{abuseIndication}</p>
+        <MetadataSection title={isUsingParentAbuseIndication ? "Parent Bot Abuse Indication" : "Bot Abuse Indication"}>
+          <p className="text-sm text-yellow-400">
+            {abuseIndication}
+            {isUsingParentAbuseIndication && (
+              <span className="ml-2 text-xs text-gray-500">(inherited from parent)</span>
+            )}
+          </p>
         </MetadataSection>
       )}
 
