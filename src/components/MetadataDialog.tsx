@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import {
   HoverCard,
@@ -11,6 +12,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
   DrawerClose,
+  DrawerOverlay,
 } from "@/components/ui/drawer";
 import { Info, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -64,7 +66,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
       variant="ghost" 
       size="icon" 
       className="h-5 w-5 p-0"
-      onClick={handleOpen}
+      onClick={isMobile ? undefined : handleOpen}
     >
       <Info className="h-4 w-4 text-gray-400" />
     </Button>
@@ -75,7 +77,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
       {isMobile ? (
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
+            <TooltipTrigger asChild onClick={handleOpen}>
               <InfoButton />
             </TooltipTrigger>
             <TooltipContent>
