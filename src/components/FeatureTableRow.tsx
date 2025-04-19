@@ -65,15 +65,10 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
       </TableCell>
       
       <TableCell className="py-2 align-top">
-        <ValueCell value={value} error={error} />
-      </TableCell>
-
-      <TableCell className="py-2 align-top">
         <ValueCell 
           value={value} 
           type={type} 
           error={error}
-          parseValue={true} 
         />
       </TableCell>
       
@@ -83,3 +78,4 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
     </TableRow>
   );
 };
+

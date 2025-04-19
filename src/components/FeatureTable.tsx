@@ -21,9 +21,8 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
         <TableRow className="border-b border-gray-800">
           <TableHead className="w-[35%] font-medium text-xs py-2">Feature</TableHead>
           <TableHead className="w-[5%] py-2"></TableHead>
-          <TableHead className="w-[25%] font-medium text-xs py-2">Raw Value</TableHead>
-          <TableHead className="w-[25%] font-medium text-xs py-2">Parsed Value</TableHead>
-          <TableHead className="w-[10%] font-medium text-xs py-2">Parent</TableHead>
+          <TableHead className="w-[25%] font-medium text-xs py-2">Value</TableHead>
+          <TableHead className="w-[25%] font-medium text-xs py-2">Parent</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -45,7 +44,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
         ))}
         {nodes.length === 0 && (
           <TableRow>
-            <TableCell colSpan={5} className="text-center py-4 text-gray-400">
+            <TableCell colSpan={4} className="text-center py-4 text-gray-400">
               {isLoading ? 'Loading features...' : 'No features found'}
             </TableCell>
           </TableRow>
@@ -54,3 +53,4 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
     </Table>
   );
 };
+
