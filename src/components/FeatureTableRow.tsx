@@ -4,7 +4,6 @@ import { TableRow, TableCell } from '@/components/ui/table';
 import { MetadataDialog } from './MetadataDialog';
 import { FeatureCell } from './feature/FeatureCell';
 import { ValueCell } from './feature/ValueCell';
-import { ParentCell } from './feature/ParentCell';
 
 interface FeatureTableRowProps {
   feature: string;
@@ -33,9 +32,6 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   error,
   isTruncated
 }) => {
-  // Create the full ID path appropriately
-  // If parent exists, the ID is parent.feature (like "clientjs.device" or "clientjs.device.os")
-  // If no parent, the ID is just the feature (like "clientjs")
   const id = parent ? `${parent}.${feature}` : feature;
   
   return (
@@ -71,11 +67,6 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
           error={error}
         />
       </TableCell>
-      
-      <TableCell className="py-2 align-top">
-        <ParentCell parent={parent} />
-      </TableCell>
     </TableRow>
   );
 };
-
