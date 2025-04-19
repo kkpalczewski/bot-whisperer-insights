@@ -1,4 +1,3 @@
-
 - id: hardware_info
   name: Hardware Information
   codeName: hardware_info
@@ -22,33 +21,179 @@
           : null;
       })()
     }
-  description: Comprehensive hardware feature detection including CPU, memory, and graphics capabilities
+  description: |
+    Advanced hardware capability detection system implementing sophisticated fingerprinting and virtualization detection.
+    The system performs synchronous analysis of CPU architecture through hardwareConcurrency API (detecting logical processors and hyper-threading),
+    memory configuration using deviceMemory API (identifying RAM allocation patterns), power management through Battery Status API,
+    and graphics capabilities via WebGL renderer information extraction.
+    Virtualization detection is performed through comprehensive hardware characteristic analysis and timing patterns.
   abuse_indication:
-    bot: Inconsistent hardware capabilities or unusual combinations can indicate virtualized environments. Virtual machines and containers often report unusual hardware configurations.
-  category: hardware
+    bot: |
+      Virtualized environments typically exhibit specific hardware patterns that differ from physical devices.
+      Standardized CPU core counts (2, 4, 8) with zero variation across requests indicate automated environments.
+      Memory values matching common VM configurations (2GB, 4GB, 8GB) suggest virtualization.
+      Missing or generic battery API implementation on mobile devices indicates automation.
+      Software-based WebGL renderers (llvmpipe, swiftshader) are typical in virtualized environments.
+      Inconsistent hardware capability combinations across different APIs reveal automated browsers.
   outputs:
     cpuCores:
-      name: CPU Cores
+      name: CPU Core Analysis
       type: number
-      description: Number of logical processors available to the browser
+      description: |
+        Advanced CPU architecture analysis through hardwareConcurrency API.
+        Detects logical processor count, hyper-threading capabilities, and virtualization indicators.
+        Typical values range from 2-32 cores for physical devices, with natural variation in core counts.
+        Virtualized environments often show standardized core counts (2, 4, 8) with no variation.
       abuse_indication:
-        bot: Virtual environments and containers often have unusual core counts. Low core counts or inconsistencies with other hardware info can indicate virtualized environments.
+        bot: |
+          CPU core count consistently at 2, 4, or 8 (typical VM configurations) indicates automated browser.
+          Core count inconsistent with device type (e.g., 32 cores on mobile) suggests automated environment.
+          Zero variation in core count across multiple requests indicates virtualization.
+          Hyper-threading ratio inconsistent with CPU architecture suggests automated environment.
+      outputs:
+        logicalCores:
+          name: Logical Processor Count
+          type: number
+          description: |
+            Number of logical processors reported by hardwareConcurrency API.
+            Expected range: 2-32 cores for physical devices, with natural variation.
+            Virtual machines often report standardized core counts (2, 4, 8) with perfect consistency.
+          abuse_indication:
+            bot: |
+              Consistent value of 2, 4, or 8 (VM standard) indicates automated browser.
+              Zero variation across requests suggests automated environment.
+        hyperThreading:
+          name: Hyper-Threading Analysis
+          type: boolean
+          description: |
+            Indicates if hyper-threading is detected based on core count patterns.
+            Expected: true for modern Intel/AMD processors (2x logical cores), false for mobile/ARM.
+            Virtual machines often report inconsistent hyper-threading states.
+          abuse_indication:
+            bot: |
+              Hyper-threading enabled on mobile device indicates automated browser.
+              Inconsistent hyper-threading state suggests automated environment.
     deviceMemory:
-      name: Device Memory
+      name: Memory Analysis
       type: number
-      description: Amount of RAM memory available to the browser
+      description: |
+        Comprehensive memory capacity analysis using deviceMemory API.
+        Detects RAM size, allocation patterns, and virtualization indicators.
+        Physical devices show natural memory configurations (4GB, 8GB, 16GB, etc.).
+        Virtual machines often exhibit standardized memory values (2GB, 4GB, 8GB) with perfect alignment.
       abuse_indication:
-        bot: Automated environments often report standard or limited memory values. Inconsistencies between memory and other hardware indicators can reveal virtualization.
+        bot: |
+          Memory consistently at 2GB, 4GB, or 8GB (common VM values) indicates automated browser.
+          Memory value inconsistent with device type (e.g., 32GB on mobile) suggests automated environment.
+          Zero variation in memory reports across requests indicates virtualization.
+          Memory allocation patterns showing perfect alignment suggest automated environment.
+      outputs:
+        totalMemory:
+          name: Total Memory Capacity
+          type: number
+          description: |
+            Total system memory in gigabytes reported by deviceMemory API.
+            Expected range: 2-64GB for physical devices, with natural variation.
+            Virtual machines often report standardized values (2GB, 4GB, 8GB) with perfect consistency.
+          abuse_indication:
+            bot: |
+              Consistent value of 2, 4, or 8GB (VM standard) indicates automated browser.
+              Zero variation across requests suggests automated environment.
+        memoryPattern:
+          name: Memory Allocation Pattern
+          type: string
+          description: |
+            Pattern of memory allocation and usage.
+            Expected: natural variation in allocation patterns for physical devices.
+            Virtual machines often show perfectly aligned memory blocks and consistent patterns.
+          abuse_indication:
+            bot: |
+              Perfectly aligned memory blocks indicate automated browser.
+              Consistent allocation patterns suggest automated environment.
     batteryApi:
-      name: Battery API Available
+      name: Battery API Analysis
       type: boolean
-      description: Whether battery status API is available
+      description: |
+        Advanced battery status API analysis for power management and device verification.
+        Detects API availability, state consistency, and device type indicators.
+        Mobile devices typically have battery API enabled with natural state variations.
+        Desktop devices may or may not have battery API depending on hardware.
+        Virtual machines often report inconsistent or missing battery states.
       abuse_indication:
-        bot: Many virtualized environments lack battery API support or report suspicious battery states.
+        bot: |
+          Missing battery API on mobile device (should be present) indicates automated browser.
+          Battery API present on desktop with no battery (should be absent) suggests automated environment.
+          Battery state showing perfect consistency across requests indicates automation.
+          Charging state changing in unnatural patterns suggests automated environment.
+      outputs:
+        apiAvailable:
+          name: API Availability
+          type: boolean
+          description: |
+            Indicates if battery API is available and accessible.
+            Expected: true for mobile devices, variable for desktop.
+            Virtual machines often report inconsistent API availability.
+          abuse_indication:
+            bot: |
+              Missing API on mobile device indicates automated browser.
+              API present on desktop without battery suggests automated environment.
+        stateConsistency:
+          name: State Consistency
+          type: boolean
+          description: |
+            Indicates if battery state shows natural variation.
+            Expected: true for physical devices, false for virtualized.
+            Virtual machines often report unnaturally consistent battery states.
+          abuse_indication:
+            bot: |
+              Perfect state consistency indicates automated browser.
+              Unnatural state changes suggest automated environment.
     webglRenderer:
-      name: WebGL Renderer
+      name: WebGL Renderer Analysis
       type: string
-      description: Graphics hardware information
+      description: |
+        Sophisticated graphics hardware analysis through WebGL API.
+        Extracts renderer information, driver versions, and acceleration status.
+        Physical devices show specific GPU models and driver versions.
+        Virtual machines often use software-based renderers (llvmpipe, swiftshader) or generic drivers.
       abuse_indication:
-        bot: Virtual machines often use generic graphics drivers or software rendering, which can be detected through WebGL.
+        bot: |
+          Renderer name containing 'llvmpipe' or 'swiftshader' (software renderers) indicates automated browser.
+          Generic driver names (e.g., 'Generic Renderer') suggest automated environment.
+          Missing hardware acceleration on capable device indicates virtualization.
+          Inconsistent renderer capabilities across requests suggest automated environment.
+      outputs:
+        rendererName:
+          name: Renderer Identification
+          type: string
+          description: |
+            Name of the graphics renderer reported by WebGL.
+            Expected: specific GPU model names for physical devices.
+            Virtual machines often report software-based or generic renderer names.
+          abuse_indication:
+            bot: |
+              Software renderer names (llvmpipe, swiftshader) indicate automated browser.
+              Generic renderer names suggest automated environment.
+        driverVersion:
+          name: Driver Version
+          type: string
+          description: |
+            Version of the graphics driver reported by WebGL.
+            Expected: specific version numbers for physical devices.
+            Virtual machines often report missing or generic driver versions.
+          abuse_indication:
+            bot: |
+              Missing or generic driver version indicates automated browser.
+              Inconsistent version numbers suggest automated environment.
+        hardwareAccel:
+          name: Hardware Acceleration
+          type: boolean
+          description: |
+            Indicates if hardware acceleration is enabled and working.
+            Expected: true for capable physical devices.
+            Virtual machines often report disabled or inconsistent acceleration states.
+          abuse_indication:
+            bot: |
+              Hardware acceleration disabled on capable device indicates automated browser.
+              Inconsistent acceleration state suggests automated environment.
 

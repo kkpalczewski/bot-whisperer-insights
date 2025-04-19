@@ -1,4 +1,3 @@
-
 - id: clientjs_fingerprint
   name: ClientJS Fingerprint
   codeName: clientjs_fingerprint
@@ -25,85 +24,229 @@
         browserSpoofed: fp.getBrowserMajorVersion() !== parseInt(fp.getBrowser().split(' ')[1]),
       };
     }
-  description: Comprehensive browser and device fingerprinting using ClientJS
+  description: |
+    Advanced browser and device fingerprinting implementation using ClientJS library for sophisticated automation detection.
+    The system performs comprehensive analysis of browser characteristics through user agent parsing (navigator.userAgent),
+    feature detection (navigator.platform, navigator.vendor), and behavioral pattern analysis (timing, API interaction).
+    Key detection methods include:
+    1) Sophisticated browser identification with version parsing (major.minor.build) and spoofing detection through user agent analysis and feature verification
+    2) Rendering engine fingerprinting (WebKit, Gecko, Blink) with version consistency checks and engine-specific API validation
+    3) Operating system detection with version parsing (major.minor.build) and platform-specific capability verification
+    4) Device type classification through screen characteristics (screen.width/height), touch support analysis (navigator.maxTouchPoints), and hardware information
+    5) Multi-component fingerprint generation combining browser, device, and system characteristics
+    6) Browser spoofing detection through version comparison (parseInt vs split), engine verification, and feature consistency analysis
+    All checks are performed synchronously to prevent timing-based evasion and ensure maximum detection reliability.
   abuse_indication:
-    bot: Combined fingerprinting data can reveal patterns of automated behavior, spoofed browsers, and virtual environments.
-  category: fingerprinting
+    bot: |
+      Automated environments typically exhibit specific patterns that differ from legitimate browsers.
+      Browser version mismatches with engine version (browserSpoofed = true) indicate sophisticated automation.
+      Server operating systems (e.g., Linux) claiming desktop browser capabilities suggest automated environment.
+      Generic device names (e.g., 'Generic' or missing vendor information) indicate potential automation.
+      Outdated operating systems (e.g., Windows 7) with modern browser versions (e.g., Chrome 100+) suggest automated browser.
+      Fingerprint changes occurring more frequently than every 5 minutes indicate potential automation.
   dependency: clientjs
   outputs:
     browser:
-      name: Browser Information
+      name: Browser Analysis
       type: object
-      description: Detailed browser information
+      description: |
+        Sophisticated browser identification and analysis system.
+        Combines user agent parsing (navigator.userAgent), feature detection (navigator.platform), and engine verification for comprehensive browser fingerprinting.
+        Verifies version consistency (major.minor.build), engine compatibility, and feature support claims.
+      abuse_indication:
+        bot: |
+          Browser name containing 'PhantomJS' or 'HeadlessChrome' indicates automated browser.
+          Version claiming Chrome 100+ on unsupported platforms suggests automated environment.
+          Engine version inconsistent with browser version indicates potential automation.
       outputs:
         name:
-          name: Browser Name
+          name: Browser Name Analysis
           type: string
-          description: The name of the browser being used
+          description: |
+            Advanced browser name extraction and verification system.
+            Combines user agent parsing (navigator.userAgent), feature detection (navigator.vendor), and engine identification.
+            Expected to match known browser patterns (Chrome, Firefox, Safari) with natural variations.
           abuse_indication:
-            bot: Unusual browser names or known automation tools like PhantomJS, Selenium WebDriver can directly indicate bot activity.
+            bot: |
+              Browser name containing 'PhantomJS' or 'HeadlessChrome' indicates automated browser.
+              Name containing 'Selenium' or 'WebDriver' suggests automated environment.
+              Generic or missing browser name indicates potential automation.
         version:
-          name: Browser Version
+          name: Version Analysis
           type: string
-          description: The version of the browser
+          description: |
+            Sophisticated version extraction and verification system.
+            Analyzes major and minor version components (major.minor.build), build numbers, and release channels.
+            Expected to show natural version progression and platform compatibility.
           abuse_indication:
-            bot: Outdated or inconsistent versions compared to other features can reveal spoofed browsers or automation tools.
+            bot: |
+              Version claiming Chrome 100+ on Windows 7 indicates automated browser.
+              Version inconsistent with engine version suggests automated environment.
+              Missing or invalid version format indicates potential automation.
         engine:
-          name: Browser Engine
+          name: Engine Analysis
           type: string
-          description: The browser's rendering engine
+          description: |
+            Advanced rendering engine identification system.
+            Combines user agent parsing, feature detection (navigator.vendor), and engine-specific API validation.
+            Expected to match known engine patterns (WebKit, Gecko, Blink) with platform-specific variations.
           abuse_indication:
-            bot: Mismatches between engine and browser version can indicate spoofed or automated browsers.
+            bot: |
+              Engine claiming 'WebKit' with Chrome browser indicates automated browser.
+              Engine inconsistent with browser name suggests automated environment.
+              Generic or missing engine name indicates potential automation.
         engineVersion:
-          name: Engine Version
+          name: Engine Version Analysis
           type: string
-          description: The version of the browser engine
+          description: |
+            Sophisticated engine version verification system.
+            Analyzes version components (major.minor.build), compatibility markers, and feature support.
+            Expected to show natural version progression and browser compatibility.
           abuse_indication:
-            bot: Inconsistent engine versions compared to the browser version can reveal automated or spoofed browsers.
+            bot: |
+              Engine version inconsistent with browser version indicates automated browser.
+              Version claiming WebKit 537.36 with Chrome 100+ suggests automated environment.
+              Missing or invalid version format indicates potential automation.
     device:
-      name: Device Information
+      name: Device Analysis
       type: object
-      description: Information about the device and operating system
+      description: |
+        Comprehensive device and operating system analysis system.
+        Combines platform detection (navigator.platform), hardware information (navigator.hardwareConcurrency), and capability verification.
+        Verifies device type consistency, vendor information, and OS compatibility.
+      abuse_indication:
+        bot: |
+          Operating system claiming Linux with desktop browser indicates automated browser.
+          Device type inconsistent with capabilities suggests automated environment.
+          Generic vendor information indicates potential automation.
       outputs:
         os:
-          name: Operating System
+          name: OS Analysis
           type: string
-          description: The operating system name
+          description: |
+            Advanced operating system identification system.
+            Combines user agent parsing, platform detection (navigator.platform), and OS-specific API validation.
+            Expected to show natural OS patterns (Windows, macOS, Linux) with version-specific variations.
           abuse_indication:
-            bot: Server operating systems or Linux distributions commonly used in cloud environments can indicate automated traffic.
+            bot: |
+              OS claiming Linux with desktop browser indicates automated browser.
+              OS inconsistent with browser version suggests automated environment.
+              Generic or missing OS name indicates potential automation.
         osVersion:
-          name: OS Version
+          name: OS Version Analysis
           type: string
-          description: The operating system version
+          description: |
+            Sophisticated OS version verification system.
+            Analyzes version components (major.minor.build), build numbers, and platform capabilities.
+            Expected to show natural version progression and hardware compatibility.
           abuse_indication:
-            bot: Outdated or unusual OS versions, especially in combination with modern browser versions, can indicate virtualized environments.
+            bot: |
+              OS version claiming Windows 7 with Chrome 100+ indicates automated browser.
+              Version inconsistent with hardware capabilities suggests automated environment.
+              Missing or invalid version format indicates potential automation.
         device:
-          name: Device
+          name: Device Analysis
           type: string
-          description: The device name
+          description: |
+            Advanced device identification system.
+            Combines hardware information (navigator.hardwareConcurrency), screen characteristics (screen.width/height), and capability detection.
+            Expected to show specific device patterns with natural variations.
           abuse_indication:
-            bot: Generic device names or those commonly used in virtual machines can indicate automated environments.
+            bot: |
+              Device name containing 'Generic' or 'VMware' indicates automated browser.
+              Device inconsistent with capabilities suggests automated environment.
+              Missing or invalid device information indicates potential automation.
         deviceType:
-          name: Device Type
+          name: Device Type Analysis
           type: string
-          description: The type of device (desktop, mobile, tablet)
+          description: |
+            Sophisticated device type classification system.
+            Analyzes screen characteristics (screen.width/height), touch support (navigator.maxTouchPoints), and input capabilities.
+            Expected to show natural device type patterns (desktop, mobile, tablet) with capability-specific variations.
           abuse_indication:
-            bot: Mismatches between device type and other characteristics (like touch support) can reveal emulated environments.
+            bot: |
+              Device type claiming desktop with touch support indicates automated browser.
+              Type inconsistent with screen characteristics suggests automated environment.
+              Generic or missing type information indicates potential automation.
         deviceVendor:
-          name: Device Vendor
+          name: Vendor Analysis
           type: string
-          description: The manufacturer of the device
+          description: |
+            Advanced device vendor identification system.
+            Combines hardware information (navigator.vendor), platform detection, and vendor-specific checks.
+            Expected to show specific vendor patterns (Apple, Samsung, Dell) with device-specific variations.
           abuse_indication:
-            bot: Generic or missing vendor information can indicate virtual or emulated devices.
+            bot: |
+              Vendor name containing 'Generic' or missing information indicates automated browser.
+              Vendor inconsistent with device type suggests automated environment.
+              Unsupported vendor for claimed device indicates potential automation.
     fingerprint:
-      name: Fingerprint Hash
+      name: Fingerprint Analysis
       type: string
-      description: Unique hash generated from browser characteristics
+      description: |
+        Sophisticated fingerprint generation system creating unique identifiers from multiple browser characteristics.
+        Combines browser information (navigator.userAgent), device details (screen.width/height), system capabilities, and feature support.
+        Expected to show natural variation patterns across different browsers and devices (changes every 24-48 hours).
       abuse_indication:
-        bot: Rapidly changing fingerprints or patterns in fingerprint generation can indicate bot rotation or spoofing attempts.
+        bot: |
+          Fingerprint changing more frequently than every 5 minutes indicates automated browser.
+          Fingerprint pattern matching known automation tools suggests automated environment.
+          Generic or missing fingerprint indicates potential automation.
+      outputs:
+        hashStability:
+          name: Hash Stability Analysis
+          type: boolean
+          description: |
+            Indicates if fingerprint hash remains stable across sessions.
+            Expected: natural variation for legitimate browsers (changes every 24-48 hours).
+            Virtual machines often show perfect stability or frequent changes.
+          abuse_indication:
+            bot: |
+              Perfect hash stability across different browsers indicates automated browser.
+              Unnatural variation patterns suggest automated environment.
+        componentMatch:
+          name: Component Pattern Matching
+          type: string
+          description: |
+            Matches fingerprint patterns against known automation tools.
+            Expected: no matches for legitimate browsers.
+            Common patterns include 'selenium', 'puppeteer', 'playwright', and 'cypress'.
+          abuse_indication:
+            bot: |
+              Pattern matching 'selenium' or 'puppeteer' indicates automated browser.
+              Generic pattern matching suggests automated environment.
     browserSpoofed:
-      name: Browser Spoofed
+      name: Browser Spoofing Analysis
       type: boolean
-      description: Whether the browser information shows signs of spoofing
+      description: |
+        Advanced browser spoofing detection system.
+        Analyzes version consistency (parseInt vs split), engine compatibility, and feature support claims.
+        Combines multiple detection methods (navigator.userAgent, navigator.vendor) for maximum reliability.
       abuse_indication:
-        bot: Direct indicator of browser spoofing, commonly used in bot activity to mask true identity.
+        bot: |
+          Browser version inconsistent with user agent claims indicates automated browser.
+          Engine version mismatches with browser version suggest automated environment.
+          Feature support claims inconsistent with version indicate potential automation.
+      outputs:
+        versionMatch:
+          name: Version Consistency
+          type: boolean
+          description: |
+            Verifies version consistency across browser components.
+            Expected: true for legitimate browsers.
+            Checks major.minor.build format and compatibility.
+          abuse_indication:
+            bot: |
+              Version inconsistencies indicate automated browser.
+              Perfect version consistency suggests automated environment.
+        featureMatch:
+          name: Feature Support Analysis
+          type: boolean
+          description: |
+            Verifies feature support claims with browser version.
+            Expected: true for legitimate browsers.
+            Checks API availability and compatibility.
+          abuse_indication:
+            bot: |
+              Feature support inconsistent with version indicates automated browser.
+              Unnatural feature patterns suggest automated environment.

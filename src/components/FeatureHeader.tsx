@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AlertTriangle, Package, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,18 @@ export const FeatureHeader: React.FC<FeatureHeaderProps> = ({
         {hasError && <AlertTriangle size={16} className="text-yellow-500" />}
         <h3 className="text-sm font-medium">
           {name}
-          {dependency && <Package size={14} className="inline text-blue-400 ml-1" />}
+          {dependency && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Package size={14} className="inline text-blue-400 ml-1 cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Dependencies: {dependency}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </h3>
       </div>
       <div className="flex items-center gap-2">

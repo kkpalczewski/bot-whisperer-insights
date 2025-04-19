@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const FormattedValue: React.FC<{
@@ -25,7 +24,18 @@ export const FormattedValue: React.FC<{
         // Try to parse and pretty format arrays
         const parsed = JSON.parse(value);
         if (Array.isArray(parsed)) {
-          return <span className="text-[#8B5CF6]">{value}</span>;
+          return (
+            <div className="text-[#8B5CF6]">
+              [
+              {parsed.map((item, index) => (
+                <div key={index} className="ml-4">
+                  {JSON.stringify(item)}
+                  {index < parsed.length - 1 ? ',' : ''}
+                </div>
+              ))}
+              ]
+            </div>
+          );
         }
       } catch {
         // If parsing fails, still format it as an array

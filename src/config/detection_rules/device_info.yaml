@@ -1,0 +1,316 @@
+- id: device_info
+  name: Device Information
+  codeName: device_info
+  type: object
+  code: |
+    (async () => {
+      const detector = await window.libraryManager.getDeviceDetector();
+      
+      if (!detector) {
+        return {
+          error: 'Failed to initialize device detector'
+        };
+      }
+
+      try {
+        const result = detector.parse(navigator.userAgent);
+        
+        return {
+          device: {
+            type: result.device?.type || 'unknown',
+            brand: result.device?.brand || 'unknown',
+            model: result.device?.model || 'unknown'
+          },
+          os: {
+            name: result.os?.name || 'unknown',
+            version: result.os?.version || 'unknown',
+            platform: result.os?.platform || 'unknown'
+          },
+          client: {
+            type: result.client?.type || 'unknown',
+            name: result.client?.name || 'unknown',
+            version: result.client?.version || 'unknown',
+            engine: result.client?.engine || 'unknown',
+            engineVersion: result.client?.engineVersion || 'unknown'
+          },
+          bot: {
+            name: result.bot?.name || null,
+            category: result.bot?.category || null,
+            url: result.bot?.url || null,
+            producer: {
+              name: result.bot?.producer?.name || null,
+              url: result.bot?.producer?.url || null
+            }
+          }
+        };
+      } catch (error) {
+        return {
+          error: 'Failed to parse device information'
+        };
+      }
+    })()
+  description: |
+    Advanced device and browser fingerprinting implementation using device-detector-js library for sophisticated automation detection.
+    The system performs comprehensive analysis of device characteristics through user agent parsing (navigator.userAgent),
+    platform detection (navigator.platform), and hardware information (navigator.hardwareConcurrency).
+    Key detection methods include:
+    1) Sophisticated device type classification through screen characteristics (screen.width/height) and touch support analysis
+    2) Operating system detection with version parsing (major.minor.build) and platform-specific capability verification
+    3) Browser identification with engine fingerprinting (WebKit, Gecko, Blink) and version consistency checks
+    4) Bot detection through known automation signatures and behavioral pattern analysis
+    5) Multi-component fingerprint generation combining device, OS, and browser characteristics
+    All checks are performed synchronously to prevent timing-based evasion and ensure maximum detection reliability.
+  abuse_indication:
+    bot: |
+      Inconsistencies in device information patterns reveal sophisticated automation attempts. Virtualized environments typically
+      exhibit specific hardware patterns that differ from physical devices. Standardized CPU core counts (2, 4, 8) with zero
+      variation across requests indicate automated environments. Memory values matching common VM configurations (2GB, 4GB, 8GB)
+      suggest virtualization. Missing or generic battery API implementation on mobile devices indicates automation. Software-based
+      WebGL renderers (llvmpipe, swiftshader) are typical in virtualized environments. Inconsistent hardware capability combinations
+      across different APIs reveal automated browsers.
+  dependency: devicedetector
+  outputs:
+    device:
+      name: Device Information
+      type: object
+      description: |
+        Comprehensive physical device characteristic analysis system. Combines hardware information (navigator.hardwareConcurrency),
+        screen characteristics (screen.width/height), and touch support analysis (navigator.maxTouchPoints). Verifies device type
+        consistency, vendor information, and hardware capabilities. Expected to show specific device patterns with natural variations.
+      abuse_indication:
+        bot: |
+          Device information showing perfect consistency across requests indicates automated environment. Generic device names
+          (e.g., 'Generic PC', 'VMware Virtual Platform') suggest virtualization. Inconsistent touch support with claimed device
+          type reveals automation. Hardware capabilities exceeding typical device specifications indicate virtualized environment.
+      outputs:
+        type:
+          name: Device Type Analysis
+          type: string
+          description: |
+            Sophisticated device type classification system. Analyzes screen characteristics (screen.width/height), touch support
+            (navigator.maxTouchPoints), and input capabilities. Expected to show natural device type patterns (desktop, mobile,
+            tablet) with capability-specific variations.
+          abuse_indication:
+            bot: |
+              Device type claiming desktop with touch support indicates automated browser. Type inconsistent with screen
+              characteristics suggests automated environment. Generic or missing type information indicates potential automation.
+              Perfect consistency in device type across sessions reveals virtualized environment.
+        brand:
+          name: Device Brand Analysis
+          type: string
+          description: |
+            Advanced device vendor identification system. Combines hardware information (navigator.vendor), platform detection,
+            and vendor-specific checks. Expected to show specific vendor patterns (Apple, Samsung, Dell) with device-specific
+            variations.
+          abuse_indication:
+            bot: |
+              Vendor name containing 'Generic' or missing information indicates automated browser. Vendor inconsistent with
+              device type suggests automated environment. Unsupported vendor for claimed device indicates potential automation.
+              Perfect consistency in vendor information across requests reveals virtualized environment.
+        model:
+          name: Device Model Analysis
+          type: string
+          description: |
+            Sophisticated device model verification system. Analyzes hardware configuration, capabilities, and model-specific
+            characteristics. Expected to show specific model patterns with natural variations in capabilities and features.
+          abuse_indication:
+            bot: |
+              Model name containing 'Virtual' or 'VM' indicates automated environment. Generic model names (e.g., 'Standard PC',
+              'Virtual Machine') suggest virtualization. Model inconsistent with hardware capabilities reveals automation.
+              Perfect consistency in model information across sessions indicates virtualized environment.
+    os:
+      name: Operating System Analysis
+      type: object
+      description: |
+        Comprehensive operating system analysis system. Combines user agent parsing, platform detection (navigator.platform),
+        and OS-specific API validation. Verifies OS version consistency, platform capabilities, and feature support.
+        Expected to show natural OS patterns with version-specific variations.
+      abuse_indication:
+        bot: |
+          Operating system claiming Linux with desktop browser indicates automated browser. OS inconsistent with browser version
+          suggests automated environment. Generic or missing OS name indicates potential automation. Perfect consistency in OS
+          information across requests reveals virtualized environment.
+      outputs:
+        name:
+          name: OS Name Analysis
+          type: string
+          description: |
+            Advanced operating system identification system. Combines user agent parsing, platform detection, and OS-specific
+            API validation. Expected to show natural OS patterns (Windows, macOS, Linux) with version-specific variations.
+          abuse_indication:
+            bot: |
+              OS name containing 'Server' or 'Virtual' indicates automated environment. Generic OS names (e.g., 'Generic OS',
+              'Unknown') suggest virtualization. OS inconsistent with hardware capabilities reveals automation. Perfect
+              consistency in OS name across sessions indicates virtualized environment.
+        version:
+          name: OS Version Analysis
+          type: string
+          description: |
+            Sophisticated OS version verification system. Analyzes version components (major.minor.build), build numbers, and
+            platform capabilities. Expected to show natural version progression and hardware compatibility.
+          abuse_indication:
+            bot: |
+              OS version claiming Windows 7 with Chrome 100+ indicates automated browser. Version inconsistent with hardware
+              capabilities suggests automated environment. Missing or invalid version format indicates potential automation.
+              Perfect consistency in OS version across requests reveals virtualized environment.
+        platform:
+          name: Platform Architecture Analysis
+          type: string
+          description: |
+            Advanced platform architecture analysis system. Verifies CPU architecture, instruction set support, and platform
+            capabilities. Expected to show specific platform patterns (x86, x64, arm) with architecture-specific variations.
+          abuse_indication:
+            bot: |
+              Platform claiming x86 with 64-bit browser indicates automated environment. Platform inconsistent with OS version
+              suggests automated browser. Generic or missing platform information indicates potential automation. Perfect
+              consistency in platform information across sessions reveals virtualized environment.
+    client:
+      name: Browser Information Analysis
+      type: object
+      description: |
+        Comprehensive browser and rendering engine analysis system. Combines user agent parsing, feature detection, and
+        engine-specific API validation. Verifies browser version consistency, engine capabilities, and feature support.
+        Expected to show specific browser patterns with version-specific variations.
+      abuse_indication:
+        bot: |
+          Browser claiming Chrome 100+ with WebKit 537.36 indicates automated environment. Browser inconsistent with OS version
+          suggests automated browser. Generic or missing browser information indicates potential automation. Perfect consistency
+          in browser information across requests reveals virtualized environment.
+      outputs:
+        type:
+          name: Client Type Analysis
+          type: string
+          description: |
+            Advanced client type classification system. Analyzes user agent patterns, feature support, and capability detection.
+            Expected to show specific client types (browser, bot, crawler) with type-specific variations.
+          abuse_indication:
+            bot: |
+              Client type containing 'Bot' or 'Crawler' indicates automated environment. Type inconsistent with capabilities
+              suggests automated browser. Generic or missing type information indicates potential automation. Perfect
+              consistency in client type across sessions reveals virtualized environment.
+        name:
+          name: Browser Name Analysis
+          type: string
+          description: |
+            Sophisticated browser identification system. Combines user agent parsing, feature detection, and browser-specific
+            API validation. Expected to show specific browser patterns (Chrome, Firefox, Safari) with version-specific variations.
+          abuse_indication:
+            bot: |
+              Browser name containing 'Headless' or 'Automated' indicates automated environment. Name inconsistent with engine
+              suggests automated browser. Generic or missing browser name indicates potential automation. Perfect consistency
+              in browser name across requests reveals virtualized environment.
+        version:
+          name: Browser Version Analysis
+          type: string
+          description: |
+            Advanced browser version verification system. Analyzes version components (major.minor.build), build numbers, and
+            feature support. Expected to show natural version progression and capability compatibility.
+          abuse_indication:
+            bot: |
+              Browser version claiming Chrome 100+ with WebKit 537.36 indicates automated environment. Version inconsistent
+              with engine suggests automated browser. Missing or invalid version format indicates potential automation.
+              Perfect consistency in browser version across sessions reveals virtualized environment.
+        engine:
+          name: Browser Engine Analysis
+          type: string
+          description: |
+            Sophisticated rendering engine identification system. Combines user agent parsing, feature detection, and
+            engine-specific API validation. Expected to show specific engine patterns (WebKit, Gecko, Blink) with
+            version-specific variations.
+          abuse_indication:
+            bot: |
+              Engine claiming 'WebKit' with Chrome browser indicates automated environment. Engine inconsistent with browser
+              name suggests automated browser. Generic or missing engine name indicates potential automation. Perfect
+              consistency in engine information across requests reveals virtualized environment.
+        engineVersion:
+          name: Engine Version Analysis
+          type: string
+          description: |
+            Advanced engine version verification system. Analyzes version components, compatibility markers, and feature support.
+            Expected to show natural version progression and browser compatibility.
+          abuse_indication:
+            bot: |
+              Engine version inconsistent with browser version indicates automated environment. Version claiming WebKit 537.36
+              with Chrome 100+ suggests automated browser. Missing or invalid version format indicates potential automation.
+              Perfect consistency in engine version across sessions reveals virtualized environment.
+    bot:
+      name: Bot Detection Analysis
+      type: object
+      description: |
+        Comprehensive bot identification and classification system. Combines signature detection, behavioral analysis, and
+        capability verification. Verifies bot type consistency, category classification, and producer information.
+        Expected to show specific bot patterns with category-specific variations.
+      abuse_indication:
+        bot: |
+          Bot detection revealing known automation frameworks (Selenium, Puppeteer, Playwright) indicates automated environment.
+          Category inconsistent with capabilities suggests sophisticated automation. Missing or generic producer information
+          indicates potential automation. Perfect consistency in bot information across requests reveals virtualized environment.
+      outputs:
+        name:
+          name: Bot Name Analysis
+          type: string
+          description: |
+            Advanced bot identification system. Combines signature detection, behavioral analysis, and capability verification.
+            Expected to show specific bot patterns with name-specific variations.
+          abuse_indication:
+            bot: |
+              Bot name matching known automation frameworks (Selenium, Puppeteer, Playwright) indicates automated environment.
+              Name inconsistent with capabilities suggests sophisticated automation. Generic or missing bot name indicates
+              potential automation. Perfect consistency in bot name across sessions reveals virtualized environment.
+        category:
+          name: Bot Category Analysis
+          type: string
+          description: |
+            Sophisticated bot classification system. Analyzes behavior patterns, capability sets, and interaction methods.
+            Expected to show specific category patterns with type-specific variations.
+          abuse_indication:
+            bot: |
+              Category indicating 'Headless Browser' or 'Web Automation' suggests automated environment. Category inconsistent
+              with capabilities indicates sophisticated automation. Generic or missing category information suggests potential
+              automation. Perfect consistency in bot category across requests reveals virtualized environment.
+        url:
+          name: Bot URL Analysis
+          type: string
+          description: |
+            Advanced bot source verification system. Combines URL pattern analysis, domain validation, and documentation checks.
+            Expected to show specific URL patterns with source-specific variations.
+          abuse_indication:
+            bot: |
+              URL matching known automation framework documentation indicates automated environment. URL inconsistent with
+              capabilities suggests sophisticated automation. Generic or missing URL information indicates potential automation.
+              Perfect consistency in bot URL across sessions reveals virtualized environment.
+        producer:
+          name: Bot Producer Analysis
+          type: object
+          description: |
+            Comprehensive bot creator identification system. Combines producer information, framework detection, and capability
+            verification. Verifies producer consistency, framework support, and documentation availability.
+            Expected to show specific producer patterns with framework-specific variations.
+          abuse_indication:
+            bot: |
+              Producer matching known automation framework developers indicates automated environment. Producer inconsistent
+              with capabilities suggests sophisticated automation. Generic or missing producer information indicates potential
+              automation. Perfect consistency in producer information across requests reveals virtualized environment.
+          outputs:
+            name:
+              name: Producer Name Analysis
+              type: string
+              description: |
+                Advanced producer identification system. Combines name pattern analysis, framework detection, and capability
+                verification. Expected to show specific producer patterns with name-specific variations.
+              abuse_indication:
+                bot: |
+                  Producer name matching known automation framework developers indicates automated environment. Name inconsistent
+                  with capabilities suggests sophisticated automation. Generic or missing producer name indicates potential
+                  automation. Perfect consistency in producer name across sessions reveals virtualized environment.
+            url:
+              name: Producer URL Analysis
+              type: string
+              description: |
+                Sophisticated producer source verification system. Combines URL pattern analysis, domain validation, and
+                documentation checks. Expected to show specific URL patterns with source-specific variations.
+              abuse_indication:
+                bot: |
+                  URL matching known automation framework documentation indicates automated environment. URL inconsistent with
+                  capabilities suggests sophisticated automation. Generic or missing URL information indicates potential
+                  automation. Perfect consistency in producer URL across requests reveals virtualized environment. 

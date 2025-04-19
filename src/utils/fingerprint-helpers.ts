@@ -73,7 +73,6 @@ export const getCanvasFingerprint = () => {
 export const prepareFeatureDataForStorage = (feature: any) => {
   return {
     name: feature.name,
-    category: feature.category,
     value: feature.value?.raw || feature.value,
     timestamp: new Date().toISOString(),
     error: feature.value?.error || null
