@@ -16,25 +16,59 @@
         
         // Use the API to get fingerprint data
         const result = await creepJS.get();
+        
+        // Check if there's an error field
+        if (result.error) {
+          return {
+            fingerprint: "Error detected",
+            lies: {
+              detected: false,
+              score: 0
+            },
+            bot: false,
+            stealth: false,
+            components: {
+              canvas: {},
+              audio: {},
+              fonts: {},
+              webGL: {}
+            },
+            error: result.error
+          };
+        }
+        
         return {
           fingerprint: result.fingerprint,
           lies: {
-            detected: result.lies.detected,
-            score: result.lies.score
+            detected: result.lies?.detected || false,
+            score: result.lies?.score || 0
           },
-          bot: result.bot,
-          stealth: result.stealth,
+          bot: result.bot || false,
+          stealth: result.stealth || false,
           components: {
-            canvas: result.components.canvas,
-            audio: result.components.audio,
-            fonts: result.components.fonts,
-            webGL: result.components.webGL
+            canvas: result.components?.canvas || {},
+            audio: result.components?.audio || {},
+            fonts: result.components?.fonts || {},
+            webGL: result.components?.webGL || {}
           }
         };
       } catch (e) {
         console.error("Error using CreepJS:", e);
         return {
-          error: e.message || "Unknown error with CreepJS"
+          error: e.message || "Unknown error with CreepJS",
+          fingerprint: "Error detected",
+          lies: {
+            detected: false,
+            score: 0
+          },
+          bot: false,
+          stealth: false,
+          components: {
+            canvas: {},
+            audio: {},
+            fonts: {},
+            webGL: {}
+          }
         };
       }
     }
