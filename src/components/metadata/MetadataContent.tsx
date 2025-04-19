@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { features } from '@/config/detectionFeatures';
 import { FormattedValue } from '../feature/FormattedValue';
@@ -6,15 +5,54 @@ import { MetadataSection } from './MetadataSection';
 import { ExpandableValue } from './ExpandableValue';
 import { findFeatureInfo } from '@/utils/featureLookup';
 
+/**
+ * Props for the MetadataContent component
+ */
 interface MetadataContentProps {
+  /** The name of the feature being displayed */
   feature: string;
+
+  /** The value of the feature, which can be a string, boolean, or undefined
+   * - String: Raw value from the feature detection
+   * - Boolean: True/false for binary features
+   * - Undefined: When the feature couldn't be detected
+   */
   value: string | boolean | undefined;
+
+  /** The parent feature that contains this feature (empty for root-level features)
+   * Example: For 'browser.version', the parent would be 'browser'
+   */
   parent: string;
+
+  /** Optional description of what this feature represents and how it's detected
+   * Can be overridden by feature-specific descriptions from the detection rules
+   */
   description?: string;
+
+  /** Error message if the feature detection failed
+   * Helps identify issues with feature detection or browser compatibility
+   */
   error?: string;
+
+  /** Nesting level in the feature hierarchy
+   * - 0: Root level features (e.g., 'browser')
+   * - 1+: Nested features (e.g., 'browser.version')
+   */
   level: number;
+
+  /** Unique identifier for the feature
+   * Typically constructed as `${parent}.${feature}` or just `${feature}` for root level
+   */
   id: string;
+
+  /** Indicates whether this feature has nested child features
+   * Used for UI expansion/collapse functionality
+   */
   hasChildren: boolean;
+
+  /** Current expansion state of the feature in the UI
+   * Controls whether child features are visible
+   */
   isExpanded: boolean;
 }
 
