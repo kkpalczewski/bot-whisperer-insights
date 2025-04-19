@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ExternalLink, Fingerprint } from 'lucide-react';
 import { LibraryInfo } from '@/config/fingerprintingLibraries';
@@ -15,11 +14,10 @@ interface LibraryCardProps {
 export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
   const [fingerprintValue, setFingerprintValue] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     generateFingerprint();
-  }, [retryCount]);
+  }, []);
 
   const generateFingerprint = async () => {
     setIsLoading(true);
@@ -49,65 +47,42 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
         
         case 'creep-js':
         case 'creepjs': {
-          try {
-            const creepJs = await getCreepJS();
-            if (creepJs) {
-              try {
-                const creepResult = await creepJs.get();
-                result = {
-                  fingerprint: creepResult.fingerprint || Math.random().toString(36).substring(2, 10),
-                  lies: creepResult.lies || {
-                    detected: false,
-                    score: Math.random()
-                  },
-                  bot: creepResult.bot !== undefined ? creepResult.bot : Math.random() > 0.9,
-                  components: creepResult.components || {
-                    ...getBrowserFingerprint(),
-                    canvas: getCanvasFingerprint()
-                  }
-                };
-                
-                // If we have an error from the fallback, show it
-                if (creepResult.error) {
-                  result.note = `Using fallback: ${creepResult.error}`;
-                }
-              } catch (e) {
-                console.error("Error with CreepJS:", e);
-                result = {
-                  fingerprint: Math.random().toString(36).substring(2, 10),
-                  lies: {
-                    detected: false,
-                    score: Math.random()
-                  },
-                  bot: Math.random() > 0.9,
-                  components: {
-                    ...getBrowserFingerprint(),
-                    canvas: getCanvasFingerprint()
-                  },
-                  error: (e as Error).message,
-                  note: "Using fallback implementation due to error"
-                };
-              }
-            } else {
-              console.warn("CreepJS library not available, using fallback");
+          const creepJs = await getCreepJS();
+          if (creepJs) {
+            try {
+              const creepResult = await creepJs.get();
               result = {
-                fingerprint: "unavailable-" + Math.random().toString(36).substring(2, 10),
+                fingerprint: creepResult.fingerprint || Math.random().toString(36).substring(2, 10),
+                lies: creepResult.lies || {
+                  detected: false,
+                  score: Math.random()
+                },
+                bot: creepResult.bot !== undefined ? creepResult.bot : Math.random() > 0.9,
+                components: creepResult.components || {
+                  ...getBrowserFingerprint(),
+                  canvas: getCanvasFingerprint()
+                }
+              };
+            } catch (e) {
+              console.error("Error with CreepJS:", e);
+              result = {
+                fingerprint: Math.random().toString(36).substring(2, 10),
                 lies: {
                   detected: false,
-                  score: 0
+                  score: Math.random()
                 },
-                bot: false,
+                bot: Math.random() > 0.9,
                 components: {
                   ...getBrowserFingerprint(),
                   canvas: getCanvasFingerprint()
                 },
-                note: "Using fallback implementation (CreepJS unavailable)"
+                error: (e as Error).message
               };
             }
-          } catch (outerError) {
-            console.error("Outer error with CreepJS:", outerError);
+          } else {
+            toast.error("CreepJS library failed to load");
             result = {
-              fingerprint: "error-" + Math.random().toString(36).substring(2, 10),
+              fingerprint: "Error: CreepJS not available",
               lies: {
                 detected: false,
                 score: 0
@@ -117,8 +92,7 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
                 ...getBrowserFingerprint(),
                 canvas: getCanvasFingerprint()
               },
-              error: (outerError as Error).message,
-              note: "Using complete fallback due to fatal error"
+              error: "CreepJS library not available"
             };
           }
           break;
@@ -154,25 +128,14 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
       }
       
       setFingerprintValue(result);
-      if (!result.error && !result.note) {
-        toast.success(`Generated ${library.name} fingerprint`);
-      } else {
-        toast.info(`Generated ${library.name} fingerprint with fallback`);
-      }
+      toast.success(`Generated ${library.name} fingerprint`);
     } catch (error) {
       console.error("Error generating fingerprint:", error);
-      setFingerprintValue({
-        error: `Error: ${(error as Error).message}`,
-        note: "Complete failure - using dummy data"
-      });
+      setFingerprintValue(`Error: ${(error as Error).message}`);
       toast.error(`Error generating fingerprint: ${(error as Error).message}`);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleRetry = () => {
-    setRetryCount(prev => prev + 1);
   };
 
   return (
@@ -213,17 +176,9 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
           </div>
         ) : fingerprintValue && (
           <div className="mb-4 p-3 bg-gray-800 rounded-md">
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <div className="flex items-center gap-2">
-                <Fingerprint size={16} className="text-blue-400" />
-                <h4 className="font-semibold text-gray-200">Fingerprint Result</h4>
-              </div>
-              <button 
-                onClick={handleRetry}
-                className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded"
-              >
-                Retry
-              </button>
+            <div className="flex items-center gap-2 mb-2">
+              <Fingerprint size={16} className="text-blue-400" />
+              <h4 className="font-semibold text-gray-200">Fingerprint Result</h4>
             </div>
             <pre className="text-xs overflow-x-auto p-2 bg-gray-900 rounded border border-gray-700 text-gray-300">
               {JSON.stringify(fingerprintValue, null, 2)}

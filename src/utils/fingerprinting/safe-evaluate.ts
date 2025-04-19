@@ -48,19 +48,19 @@ export const safeEvaluate = async <T>(
     if (dependency === 'clientjs') {
       modifiedCode = modifiedCode.replace(
         /new ClientJS\(\)/g, 
-        'await getClientJS()'
+        'await window.libraryManager.getClientJS()'
       );
     }
     if (dependency === 'fingerprintjs') {
       modifiedCode = modifiedCode.replace(
         /FingerprintJS\.load\(\)/g, 
-        'await getFingerprintJS()'
+        'await window.libraryManager.getFingerprintJS()'
       );
     }
     if (dependency === 'creepjs') {
       modifiedCode = modifiedCode.replace(
         /CreepJS/g, 
-        'await getCreepJS()'
+        'await window.libraryManager.getCreepJS()'
       );
     }
 
@@ -68,18 +68,6 @@ export const safeEvaluate = async <T>(
     const wrappedCode = `
       async function evaluateFeature() {
         try {
-          // Make library functions available within the evaluated code
-          const getClientJS = ${getClientJS.toString()};
-          const getFingerprintJS = ${getFingerprintJS.toString()};
-          const getCreepJS = ${getCreepJS.toString()};
-          
-          // Define libraryManager so it's available within the code
-          const libraryManager = {
-            getClientJS,
-            getFingerprintJS,
-            getCreepJS
-          };
-          
           const fn = ${modifiedCode};
           return typeof fn === 'function' ? await fn() : fn;
         } catch (e) {
@@ -90,9 +78,8 @@ export const safeEvaluate = async <T>(
       return evaluateFeature();
     `;
 
-    // Fix: Don't pass window as a parameter to Function constructor
-    const evalFunction = new Function(wrappedCode);
-    const result = await evalFunction();
+    // Execute the wrapped code
+    const result = await Function('window', wrappedCode)(window);
     
     // Type validation based on expected type
     if (result !== null && result !== undefined) {
