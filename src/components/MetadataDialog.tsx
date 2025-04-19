@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   HoverCard,
   HoverCardContent,
@@ -43,7 +43,6 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
   const drawerId = `drawer-${props.id}`;
   const { isOpen, setIsOpen, handleOpen } = useGlobalDrawer(drawerId);
   const isMobile = useIsMobile();
-  const [showMobileTooltip, setShowMobileTooltip] = useState(false);
   
   // Handle ESC key press to close drawer
   useEffect(() => {
@@ -59,10 +58,6 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
 
   const handleClose = () => {
     setIsOpen(false);
-  };
-
-  const handleMobileButtonClick = () => {
-    setShowMobileTooltip(!showMobileTooltip);
   };
 
   // InfoButton for different contexts
@@ -83,54 +78,45 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
 
   return (
     <div className="inline-block" style={{ position: 'relative', zIndex: 30 }}>
-      {isMobile ? (
-        <TooltipProvider>
-          <Tooltip open={showMobileTooltip} onOpenChange={setShowMobileTooltip}>
-            <TooltipTrigger asChild>
-              <InfoButton onClick={handleMobileButtonClick} />
-            </TooltipTrigger>
-            <TooltipContent side="right" align="start" className="w-72 max-w-[90vw]">
-              <MetadataContent {...props} />
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ) : (
-        <HoverCard>
-          <Drawer 
-            open={isOpen} 
-            onOpenChange={setIsOpen}
-            shouldScaleBackground={false}
-          >
-            <DrawerTrigger asChild>
+      <Drawer 
+        open={isOpen} 
+        onOpenChange={setIsOpen}
+        shouldScaleBackground={false}
+      >
+        <DrawerTrigger asChild>
+          {!isMobile ? (
+            <HoverCard>
               <HoverCardTrigger asChild>
                 <InfoButton onClick={handleOpen} />
               </HoverCardTrigger>
-            </DrawerTrigger>
-            
-            <DrawerContent className="fixed inset-y-0 right-0 left-auto h-full w-[400px] rounded-l-lg rounded-r-none max-w-full">
-              <DrawerHeader className="flex justify-between items-center text-left">
-                <DrawerTitle>Feature Metadata</DrawerTitle>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={handleClose}
-                  className="h-8 w-8"
-                >
-                  <X className="h-4 w-4" />
-                  <span className="sr-only">Close</span>
-                </Button>
-              </DrawerHeader>
-              <ScrollArea className="h-[calc(100vh-120px)] px-4">
+              
+              <HoverCardContent className="w-80" side="right" align="start">
                 <MetadataContent {...props} />
-              </ScrollArea>
-            </DrawerContent>
-          </Drawer>
-          
-          <HoverCardContent className="w-80" side="right" align="start">
+              </HoverCardContent>
+            </HoverCard>
+          ) : (
+            <InfoButton onClick={handleOpen} />
+          )}
+        </DrawerTrigger>
+        
+        <DrawerContent className="fixed inset-y-0 right-0 left-auto h-full w-[400px] rounded-l-lg rounded-r-none max-w-full">
+          <DrawerHeader className="flex justify-between items-center text-left">
+            <DrawerTitle>Feature Metadata</DrawerTitle>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleClose}
+              className="h-8 w-8"
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </Button>
+          </DrawerHeader>
+          <ScrollArea className="h-[calc(100vh-120px)] px-4">
             <MetadataContent {...props} />
-          </HoverCardContent>
-        </HoverCard>
-      )}
+          </ScrollArea>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
