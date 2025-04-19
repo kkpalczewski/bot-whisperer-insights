@@ -5,7 +5,7 @@
   type: object
   code: |
     async () => {
-      const result = await window.CreepJS.get();
+      const result = await new CreepJS.get();
       return {
         fingerprint: result.fingerprint,
         lies: {
