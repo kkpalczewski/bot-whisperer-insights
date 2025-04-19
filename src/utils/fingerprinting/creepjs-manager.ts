@@ -20,16 +20,25 @@ export const getCreepJS = async (): Promise<any> => {
     // Create a script tag to load CreepJS from CDN
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/creepjs@latest/dist/creep.min.js';
+      // Using unpkg instead of jsdelivr which might be more reliable
+      script.src = 'https://unpkg.com/creepjs@latest/creep.js';
       script.async = true;
       script.onload = () => {
         if (typeof window.CreepJS !== 'undefined') {
           libraryInstances.creepjs = window.CreepJS;
           resolve(window.CreepJS);
         } else {
-          const error = new Error('CreepJS loaded but global object not found');
-          console.error(error);
-          reject(error);
+          // Add a small delay to check if CreepJS becomes available
+          setTimeout(() => {
+            if (typeof window.CreepJS !== 'undefined') {
+              libraryInstances.creepjs = window.CreepJS;
+              resolve(window.CreepJS);
+            } else {
+              const error = new Error('CreepJS loaded but global object not found');
+              console.error(error);
+              reject(error);
+            }
+          }, 500);
         }
       };
       script.onerror = (e) => {

@@ -5,15 +5,16 @@
   type: object
   code: |
     async () => {
-      // Make sure CreepJS is loaded and accessible
-      const creepJS = await window.libraryManager.getCreepJS();
-      if (!creepJS) {
-        return {
-          error: "CreepJS library not available"
-        };
-      }
-      
       try {
+        // Get CreepJS instance
+        const creepJS = await getCreepJS();
+        if (!creepJS) {
+          return {
+            error: "CreepJS library not available"
+          };
+        }
+        
+        // Use the API to get fingerprint data
         const result = await creepJS.get();
         return {
           fingerprint: result.fingerprint,

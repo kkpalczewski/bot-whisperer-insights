@@ -43,32 +43,16 @@ export const safeEvaluate = async <T>(
       }
     }
 
-    // Replace library references in the code with our safe instances
-    let modifiedCode = code;
-    if (dependency === 'clientjs') {
-      modifiedCode = modifiedCode.replace(
-        /new ClientJS\(\)/g, 
-        'await window.libraryManager.getClientJS()'
-      );
-    }
-    if (dependency === 'fingerprintjs') {
-      modifiedCode = modifiedCode.replace(
-        /FingerprintJS\.load\(\)/g, 
-        'await window.libraryManager.getFingerprintJS()'
-      );
-    }
-    if (dependency === 'creepjs') {
-      modifiedCode = modifiedCode.replace(
-        /CreepJS/g, 
-        'await window.libraryManager.getCreepJS()'
-      );
-    }
+    // Create a function that will be available inside evaluation scope
+    const getClientJSFn = async () => await getClientJS();
+    const getFingerprintJSFn = async () => await getFingerprintJS();
+    const getCreepJSFn = async () => await getCreepJS();
 
     // Create a safe async wrapper function to evaluate the code
     const wrappedCode = `
       async function evaluateFeature() {
         try {
-          const fn = ${modifiedCode};
+          const fn = ${code};
           return typeof fn === 'function' ? await fn() : fn;
         } catch (e) {
           console.error("Error evaluating feature code:", e);
@@ -78,8 +62,12 @@ export const safeEvaluate = async <T>(
       return evaluateFeature();
     `;
 
-    // Execute the wrapped code
-    const result = await Function('window', wrappedCode)(window);
+    // Execute the wrapped code with access to the library functions
+    const result = await new Function('getClientJS', 'getFingerprintJS', 'getCreepJS', wrappedCode)(
+      getClientJSFn,
+      getFingerprintJSFn,
+      getCreepJSFn
+    );
     
     // Type validation based on expected type
     if (result !== null && result !== undefined) {
