@@ -5,6 +5,7 @@ import { FormattedValue } from '../feature/FormattedValue';
 import { MetadataSection } from './MetadataSection';
 import { ExpandableValue } from './ExpandableValue';
 import { findFeatureInfo } from '@/utils/featureLookup';
+import { ParentCell } from '../feature/ParentCell';
 
 /**
  * Props for the MetadataContent component
@@ -62,14 +63,30 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   // Find feature info using the feature name
   const { description, abuseIndication } = findFeatureInfo(features, props.feature);
   
+  // Extract parent from feature name (everything before the last dot)
+  const parts = props.feature.split('.');
+  const featureName = parts.pop() || props.feature; // Last part is the feature name
+  const parent = parts.join('.'); // Everything else is the parent path
+  
+  // Construct ID (which is typically the full feature path)
+  const id = props.feature;
+  
   return (
     <div className="space-y-3">
       <MetadataSection title="Feature">
-        <h3 className="text-lg font-mono mb-2">{props.feature}</h3>
+        <h3 className="text-lg font-mono mb-2">{featureName}</h3>
+      </MetadataSection>
+
+      <MetadataSection title="ID">
+        <p className="text-sm font-mono text-gray-400">{id}</p>
       </MetadataSection>
 
       <MetadataSection title="Value">
         <ExpandableValue value={value} />
+      </MetadataSection>
+
+      <MetadataSection title="Parent">
+        <ParentCell parent={parent} />
       </MetadataSection>
 
       {(description || props.description) && (
