@@ -8,7 +8,7 @@ import { ValueCell } from "./feature/ValueCell";
 interface FeatureTableRowProps {
   feature: string;
   value: string | boolean | undefined;
-  type?: string;
+  type: "string" | "boolean" | "array" | "object" | "number";
   parent: string;
   level: number;
   onToggle: () => void;
@@ -64,6 +64,7 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
           parent={parent}
           description={description}
           error={error}
+          type={type}
           level={level}
           id={id}
           hasChildren={hasChildren}

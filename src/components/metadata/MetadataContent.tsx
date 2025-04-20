@@ -149,12 +149,6 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
         </div>
       </MetadataSection>
 
-      <MetadataSection title="Type">
-        <p className="text-sm font-mono text-gray-400 capitalize">
-          {props.type}
-        </p>
-      </MetadataSection>
-
       <MetadataSection title="Parent">
         <p className="text-sm font-mono text-gray-400">{props.parent || "—"}</p>
       </MetadataSection>

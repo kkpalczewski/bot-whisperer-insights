@@ -9,7 +9,9 @@
         phantom: !!(window._phantom || window.callPhantom),
         nightmare: !!window.__nightmare,
         chromedp: !!window.chrome?.app?.isInstalled && !window.chrome?.runtime,
-        puppeteer: !!navigator.webdriver || !!window._TESTCAFE_DRIVER
+        puppeteer: !!navigator.webdriver || !!window._TESTCAFE_DRIVER,
+        webdriver: !!window.navigator.webdriver,
+        headless: !!(window.chrome && !window.chrome.runtime)
       },
       permissions: {
         notifications: 'Notification' in window ? Notification.permission : 'not_supported',
@@ -97,6 +99,8 @@
             nightmare: false,
             chromedp: false,
             puppeteer: false,
+            webdriver: false,
+            headless: false,
           }
         - {
             selenium: true,
@@ -104,6 +108,8 @@
             nightmare: false,
             chromedp: false,
             puppeteer: false,
+            webdriver: true,
+            headless: true,
           }
         - {
             selenium: false,
@@ -111,6 +117,8 @@
             nightmare: false,
             chromedp: false,
             puppeteer: false,
+            webdriver: false,
+            headless: false,
           }
       outputs:
         selenium:
@@ -172,6 +180,30 @@
             bot: |
               True value indicates Puppeteer or TestCafe automation with framework markers present.
               Global variable presence confirms automated environment.
+          exemplary_values: [false, true]
+        webdriver:
+          name: WebDriver Flag Analysis
+          type: boolean
+          description: |
+            Advanced WebDriver detection through navigator.webdriver analysis.
+            Verifies property existence and configuration state.
+            Expected: false for legitimate browsers.
+          abuse_indication:
+            bot: |
+              True value indicates automated browser with webdriver flag enabled.
+              Property presence confirms automated environment.
+          exemplary_values: [false, true]
+        headless:
+          name: Headless Browser Detection
+          type: boolean
+          description: |
+            Advanced headless browser detection through runtime configuration analysis.
+            Verifies chrome.runtime presence and consistency.
+            Expected: false for legitimate browsers.
+          abuse_indication:
+            bot: |
+              True value indicates headless browser automation.
+              Runtime configuration confirms automated environment.
           exemplary_values: [false, true]
     permissions:
       name: Browser Permission Analysis
