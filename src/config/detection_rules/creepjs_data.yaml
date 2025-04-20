@@ -2,6 +2,52 @@
   name: CreepJS Data
   codeName: creepjs_data
   type: object
+  exemplary_values:
+    - {
+        fingerprint: "a1b2c3d4e5f6g7h8i9j0",
+        lies: { detected: false, score: 0.1 },
+        bot: false,
+        stealth: false,
+        components:
+          {
+            canvas: { rendering: { capabilities: "full", performance: 0.95 } },
+            audio:
+              {
+                context: { supported: true, hardwareAccelerated: true },
+                processing:
+                  { nodes: ["AnalyserNode", "GainNode", "OscillatorNode"] },
+              },
+            fonts: { systemFonts: 35, rendering: false },
+            webGL:
+              {
+                renderer: "Google Inc. (NVIDIA) -- NVIDIA GeForce RTX 3080",
+                extensions:
+                  ["WEBGL_debug_renderer_info", "EXT_color_buffer_float"],
+              },
+          },
+      }
+    - {
+        fingerprint: "p0o9n8m7l6k5j4i3h2g1f0",
+        lies: { detected: true, score: 0.85 },
+        bot: true,
+        stealth: true,
+        components:
+          {
+            canvas:
+              { rendering: { capabilities: "limited", performance: 0.2 } },
+            audio:
+              {
+                context: { supported: false, hardwareAccelerated: false },
+                processing: { nodes: [] },
+              },
+            fonts: { systemFonts: 5, rendering: true },
+            webGL:
+              {
+                renderer: "Mozilla -- llvmpipe (LLVM 12.0.0, 256 bits)",
+                extensions: [],
+              },
+          },
+      }
   code: |
     async () => {
       try {
@@ -97,6 +143,11 @@
     fingerprint:
       name: Fingerprint Analysis
       type: string
+      exemplary_values:
+        - "a1b2c3d4e5f6g7h8i9j0"
+        - "p0o9n8m7l6k5j4i3h2g1f0"
+        - "selenium_fingerprint_123"
+        - "puppeteer_fingerprint_456"
       description: |
         Sophisticated fingerprint generation system creating unique identifiers from multiple browser characteristics.
         Combines component-specific fingerprints (canvas, WebGL, audio, fonts), system capabilities, browser configuration, and hardware information.
@@ -110,6 +161,9 @@
         hashStability:
           name: Hash Stability Analysis
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Indicates if fingerprint hash remains stable across sessions.
             Expected: natural variation for legitimate browsers (changes every 24-48 hours).
@@ -121,6 +175,11 @@
         componentMatch:
           name: Component Pattern Matching
           type: string
+          exemplary_values:
+            - "legitimate_browser"
+            - "selenium_automation"
+            - "puppeteer_automation"
+            - "playwright_automation"
           description: |
             Matches fingerprint patterns against known automation tools.
             Expected: no matches for legitimate browsers.
@@ -132,6 +191,9 @@
     lies:
       name: Browser Lie Detection
       type: object
+      exemplary_values:
+        - { detected: false, score: 0.1 }
+        - { detected: true, score: 0.85 }
       description: |
         Advanced lie detection system analyzing browser property consistency and behavioral patterns.
         Verifies feature support claims (API availability), API behavior (timing, response), and configuration consistency across multiple browser components.
@@ -145,6 +207,9 @@
         detected:
           name: Lie Detection Analysis
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Sophisticated detection of browser property inconsistencies and behavioral anomalies.
             Analyzes user agent claims (navigator.userAgent), feature support verification (API availability), and API behavior patterns (timing, response).
@@ -157,6 +222,12 @@
         score:
           name: Trust Score Analysis
           type: number
+          exemplary_values:
+            - 0.1
+            - 0.3
+            - 0.5
+            - 0.7
+            - 0.9
           description: |
             Advanced trustworthiness scoring system based on lie detection and behavioral analysis.
             Scores range from 0.0 to 1.0, with higher values indicating more suspicious behavior.
@@ -170,6 +241,10 @@
             propertyScore:
               name: Property Consistency Score
               type: number
+              exemplary_values:
+                - 0.9
+                - 0.5
+                - 0.2
               description: |
                 Score based on browser property consistency.
                 Expected: >0.8 for legitimate browsers.
@@ -181,6 +256,10 @@
             behaviorScore:
               name: Behavioral Pattern Score
               type: number
+              exemplary_values:
+                - 0.8
+                - 0.4
+                - 0.1
               description: |
                 Score based on behavioral pattern analysis.
                 Expected: >0.7 for legitimate browsers.
@@ -192,6 +271,9 @@
     bot:
       name: Bot Detection Analysis
       type: boolean
+      exemplary_values:
+        - false
+        - true
       description: |
         Sophisticated bot detection system analyzing browser behavior and characteristics.
         Combines behavioral analysis (event timing, API response), property consistency checks (navigator properties), and timing-based detection (performance.now).
@@ -205,6 +287,11 @@
         frameworkDetected:
           name: Framework Detection
           type: string
+          exemplary_values:
+            - null
+            - "selenium"
+            - "puppeteer"
+            - "playwright"
           description: |
             Identifies specific automation frameworks.
             Expected: null for legitimate browsers.
@@ -216,6 +303,9 @@
         timingAnalysis:
           name: Timing Pattern Analysis
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Analyzes API response timing patterns.
             Expected: natural variation for legitimate browsers.
@@ -227,6 +317,9 @@
     stealth:
       name: Stealth Technique Analysis
       type: boolean
+      exemplary_values:
+        - false
+        - true
       description: |
         Advanced detection of privacy tools and stealth techniques.
         Identifies anti-fingerprinting measures (canvas blocking, WebGL spoofing), privacy-focused modifications (user agent masking), and browser hardening.
@@ -240,6 +333,11 @@
         privacyTools:
           name: Privacy Tool Detection
           type: string
+          exemplary_values:
+            - null
+            - "canvasblocker"
+            - "privacybadger"
+            - "ublockorigin"
           description: |
             Identifies specific privacy tools and modifications.
             Expected: null for legitimate browsers.
@@ -251,6 +349,11 @@
         hardeningLevel:
           name: Browser Hardening Analysis
           type: number
+          exemplary_values:
+            - 0
+            - 0.3
+            - 0.7
+            - 1.0
           description: |
             Analyzes level of browser hardening.
             Expected: 0 for legitimate browsers.
@@ -262,6 +365,38 @@
     components:
       name: Component Analysis
       type: object
+      exemplary_values:
+        - {
+            canvas: { rendering: { capabilities: "full", performance: 0.95 } },
+            audio:
+              {
+                context: { supported: true, hardwareAccelerated: true },
+                processing:
+                  { nodes: ["AnalyserNode", "GainNode", "OscillatorNode"] },
+              },
+            fonts: { systemFonts: 35, rendering: false },
+            webGL:
+              {
+                renderer: "Google Inc. (NVIDIA) -- NVIDIA GeForce RTX 3080",
+                extensions:
+                  ["WEBGL_debug_renderer_info", "EXT_color_buffer_float"],
+              },
+          }
+        - {
+            canvas:
+              { rendering: { capabilities: "limited", performance: 0.2 } },
+            audio:
+              {
+                context: { supported: false, hardwareAccelerated: false },
+                processing: { nodes: [] },
+              },
+            fonts: { systemFonts: 5, rendering: true },
+            webGL:
+              {
+                renderer: "Mozilla -- llvmpipe (LLVM 12.0.0, 256 bits)",
+                extensions: [],
+              },
+          }
       description: |
         Comprehensive analysis of browser components and capabilities.
         Verifies rendering consistency (canvas, WebGL), processing capabilities (audio), and hardware acceleration.
@@ -275,6 +410,9 @@
         canvas:
           name: Canvas Rendering Analysis
           type: object
+          exemplary_values:
+            - { rendering: { capabilities: "full", performance: 0.95 } }
+            - { rendering: { capabilities: "limited", performance: 0.2 } }
           description: |
             Advanced canvas fingerprinting and rendering analysis.
             Verifies rendering capabilities (2D/WebGL), anti-aliasing implementation, and color space support.
@@ -288,6 +426,9 @@
             rendering:
               name: Rendering Capabilities
               type: object
+              exemplary_values:
+                - { capabilities: "full", hardwareAccelerated: true }
+                - { capabilities: "limited", hardwareAccelerated: false }
               description: |
                 Analyzes canvas rendering capabilities.
                 Expected: device-specific capabilities for legitimate browsers.
@@ -299,6 +440,10 @@
             performance:
               name: Performance Analysis
               type: number
+              exemplary_values:
+                - 0.95
+                - 0.5
+                - 0.2
               description: |
                 Measures rendering performance characteristics.
                 Expected: natural variation for legitimate browsers.
@@ -310,6 +455,16 @@
         audio:
           name: Audio Processing Analysis
           type: object
+          exemplary_values:
+            - {
+                context: { supported: true, hardwareAccelerated: true },
+                processing:
+                  { nodes: ["AnalyserNode", "GainNode", "OscillatorNode"] },
+              }
+            - {
+                context: { supported: false, hardwareAccelerated: false },
+                processing: { nodes: [] },
+              }
           description: |
             Sophisticated audio context and processing analysis.
             Verifies context creation capabilities (AudioContext), processing node support (AnalyserNode), and hardware acceleration.
@@ -323,6 +478,9 @@
             context:
               name: Audio Context Analysis
               type: object
+              exemplary_values:
+                - { supported: true, hardwareAccelerated: true }
+                - { supported: false, hardwareAccelerated: false }
               description: |
                 Analyzes audio context creation and capabilities.
                 Expected: full context support for legitimate browsers.
@@ -334,6 +492,9 @@
             processing:
               name: Processing Capabilities
               type: object
+              exemplary_values:
+                - { nodes: ["AnalyserNode", "GainNode", "OscillatorNode"] }
+                - { nodes: [] }
               description: |
                 Verifies audio processing capabilities.
                 Expected: full processing support for legitimate browsers.
@@ -345,6 +506,9 @@
         fonts:
           name: Font Rendering Analysis
           type: object
+          exemplary_values:
+            - { systemFonts: 35, rendering: false }
+            - { systemFonts: 5, rendering: true }
           description: |
             Advanced font rendering and system analysis.
             Verifies system font detection (FontFace API), web font support, and rendering consistency.
@@ -358,6 +522,10 @@
             systemFonts:
               name: System Font Analysis
               type: number
+              exemplary_values:
+                - 35
+                - 20
+                - 5
               description: |
                 Counts detected system fonts.
                 Expected: >20 for legitimate desktop browsers.
@@ -369,6 +537,9 @@
             rendering:
               name: Rendering Consistency
               type: boolean
+              exemplary_values:
+                - false
+                - true
               description: |
                 Verifies font rendering consistency.
                 Expected: natural variation for legitimate browsers.
@@ -380,6 +551,16 @@
         webGL:
           name: WebGL Capability Analysis
           type: object
+          exemplary_values:
+            - {
+                renderer: "Google Inc. (NVIDIA) -- NVIDIA GeForce RTX 3080",
+                extensions:
+                  ["WEBGL_debug_renderer_info", "EXT_color_buffer_float"],
+              }
+            - {
+                renderer: "Mozilla -- llvmpipe (LLVM 12.0.0, 256 bits)",
+                extensions: [],
+              }
           description: |
             Sophisticated WebGL capabilities and performance analysis.
             Verifies context creation (WebGLRenderingContext), extension support, and hardware acceleration.
@@ -393,6 +574,10 @@
             renderer:
               name: Renderer Analysis
               type: string
+              exemplary_values:
+                - "Google Inc. (NVIDIA) -- NVIDIA GeForce RTX 3080"
+                - "Mozilla -- llvmpipe (LLVM 12.0.0, 256 bits)"
+                - "not_supported"
               description: |
                 Identifies WebGL renderer and capabilities.
                 Expected: hardware-accelerated renderer for capable devices.
@@ -404,6 +589,12 @@
             extensions:
               name: Extension Support
               type: object
+              exemplary_values:
+                - {
+                    supported:
+                      ["WEBGL_debug_renderer_info", "EXT_color_buffer_float"],
+                  }
+                - { supported: [] }
               description: |
                 Analyzes WebGL extension support.
                 Expected: full extension support for capable devices.
@@ -415,6 +606,11 @@
     error:
       name: Error Analysis
       type: string
+      exemplary_values:
+        - null
+        - "Library not available"
+        - "Security feature blocked"
+        - "Execution failed"
       description: |
         Comprehensive error analysis and reporting system.
         Identifies library loading failures, execution errors, and security-related blocks.
@@ -428,6 +624,11 @@
         errorType:
           name: Error Type Analysis
           type: string
+          exemplary_values:
+            - null
+            - "security_block"
+            - "api_restriction"
+            - "execution_error"
           description: |
             Categorizes and analyzes error types.
             Expected: no errors for legitimate browsers.
@@ -439,6 +640,11 @@
         errorPattern:
           name: Error Pattern Analysis
           type: string
+          exemplary_values:
+            - null
+            - "selenium_error"
+            - "puppeteer_error"
+            - "playwright_error"
           description: |
             Analyzes error patterns and consistency.
             Expected: no patterns for legitimate browsers.

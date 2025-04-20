@@ -2,6 +2,41 @@
   name: Canvas Fingerprint
   codeName: canvas_fingerprint
   type: object
+  exemplary_values:
+    - {
+        tests:
+          {
+            basicText: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            complexShapes: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            gradients: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            webGL: "Google Inc. (NVIDIA) -- NVIDIA GeForce RTX 3080",
+          },
+        fontTest: "1.25",
+        imageRendering: { colorDepth: 24, pixelDepth: 24, gamut: "p3" },
+        anomalies:
+          {
+            perfectRendering: false,
+            missingGradients: false,
+            consistentFonts: false,
+          },
+      }
+    - {
+        tests:
+          {
+            basicText: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            complexShapes: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            gradients: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            webGL: "not_supported",
+          },
+        fontTest: "0.00",
+        imageRendering: { colorDepth: 16, pixelDepth: 16, gamut: "srgb" },
+        anomalies:
+          {
+            perfectRendering: true,
+            missingGradients: true,
+            consistentFonts: true,
+          },
+      }
   code: |
     (() => {
       try {
@@ -104,6 +139,19 @@
     tests:
       name: Canvas Rendering Analysis
       type: object
+      exemplary_values:
+        - {
+            basicText: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            complexShapes: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            gradients: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            webGL: "Google Inc. (NVIDIA) -- NVIDIA GeForce RTX 3080",
+          }
+        - {
+            basicText: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            complexShapes: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            gradients: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff",
+            webGL: "not_supported",
+          }
       description: |
         Comprehensive canvas rendering analysis system combining multiple test operations.
         Verifies rendering consistency (toDataURL), anti-aliasing implementation, and hardware acceleration.
@@ -117,6 +165,10 @@
         basicText:
           name: Text Rendering Analysis
           type: string
+          exemplary_values:
+            - "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff"
+            - "data:,"
+            - "invalid_data_url"
           description: |
             Advanced text rendering analysis with custom font (font, textBaseline) and color settings (fillStyle).
             Verifies anti-aliasing implementation and font rendering consistency.
@@ -128,6 +180,10 @@
         complexShapes:
           name: Shape Rendering Analysis
           type: string
+          exemplary_values:
+            - "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff"
+            - "data:,"
+            - "invalid_data_url"
           description: |
             Sophisticated shape rendering verification with transparency (rgba) and stroke operations (beginPath, arc, stroke).
             Analyzes anti-aliasing implementation and rendering consistency.
@@ -139,6 +195,10 @@
         gradients:
           name: Gradient Analysis
           type: string
+          exemplary_values:
+            - "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff"
+            - "data:,"
+            - "invalid_data_url"
           description: |
             Advanced gradient rendering verification with color stop analysis (createLinearGradient, addColorStop).
             Verifies gradient creation and application capabilities.
@@ -150,6 +210,11 @@
         webGL:
           name: WebGL Capability Analysis
           type: string
+          exemplary_values:
+            - "Google Inc. (NVIDIA) -- NVIDIA GeForce RTX 3080"
+            - "Mozilla -- llvmpipe (LLVM 12.0.0, 256 bits)"
+            - "not_supported"
+            - "unknown"
           description: |
             Sophisticated WebGL context and hardware information analysis.
             Verifies vendor (gl.VENDOR) and renderer (gl.RENDERER) information, hardware acceleration status.
@@ -161,6 +226,11 @@
     fontTest:
       name: Font Rendering Analysis
       type: string
+      exemplary_values:
+        - "1.25"
+        - "0.75"
+        - "0.00"
+        - "invalid"
       description: |
         Advanced font rendering comparison system analyzing width differences between fonts (measureText).
         Measures rendering consistency, anti-aliasing implementation, and font handling.
@@ -172,6 +242,10 @@
     imageRendering:
       name: Display Capability Analysis
       type: object
+      exemplary_values:
+        - { colorDepth: 24, pixelDepth: 24, gamut: "p3" }
+        - { colorDepth: 16, pixelDepth: 16, gamut: "srgb" }
+        - { colorDepth: 8, pixelDepth: 8, gamut: "unknown" }
       description: |
         Comprehensive display and color capability analysis system.
         Verifies color depth (screen.colorDepth), pixel depth (screen.pixelDepth), and gamut support (matchMedia).
@@ -185,6 +259,11 @@
         colorDepth:
           name: Color Depth Analysis
           type: number
+          exemplary_values:
+            - 24
+            - 16
+            - 8
+            - 0
           description: |
             Advanced color depth analysis measuring bits per pixel (screen.colorDepth).
             Verifies color representation capabilities and hardware support.
@@ -196,6 +275,11 @@
         pixelDepth:
           name: Pixel Depth Analysis
           type: number
+          exemplary_values:
+            - 24
+            - 16
+            - 8
+            - 0
           description: |
             Sophisticated pixel depth analysis measuring bits per pixel (screen.pixelDepth).
             Verifies display capabilities and hardware acceleration.
@@ -207,6 +291,11 @@
         gamut:
           name: Color Gamut Analysis
           type: string
+          exemplary_values:
+            - "p3"
+            - "srgb"
+            - "unknown"
+            - "invalid"
           description: |
             Advanced color gamut support analysis (matchMedia).
             Verifies display capabilities and color space support.
@@ -218,6 +307,17 @@
     anomalies:
       name: Rendering Anomaly Analysis
       type: object
+      exemplary_values:
+        - {
+            perfectRendering: false,
+            missingGradients: false,
+            consistentFonts: false,
+          }
+        - {
+            perfectRendering: true,
+            missingGradients: true,
+            consistentFonts: true,
+          }
       description: |
         Sophisticated rendering anomaly detection system.
         Analyzes consistency patterns (toDataURL), capability limitations, and rendering behavior.
@@ -231,6 +331,9 @@
         perfectRendering:
           name: Rendering Consistency Analysis
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Advanced rendering consistency verification (toDataURL).
             Analyzes output patterns across different operations.
@@ -242,6 +345,9 @@
         missingGradients:
           name: Gradient Capability Analysis
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Sophisticated gradient support verification (createLinearGradient).
             Analyzes gradient creation and application capabilities.
@@ -253,6 +359,9 @@
         consistentFonts:
           name: Font Consistency Analysis
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Advanced font rendering consistency verification (measureText).
             Analyzes font handling and rendering patterns.
@@ -261,4 +370,3 @@
             bot: |
               True value indicates perfect font rendering, common in headless browsers.
               Unnatural font consistency suggests automated environment.
-

@@ -2,24 +2,84 @@
   name: Hardware Information
   codeName: hardware_info
   type: object
+  exemplary_values:
+    - {
+        cpuCores: 8,
+        deviceMemory: 16,
+        batteryApi: true,
+        webglRenderer: "NVIDIA GeForce RTX 3080/PCIe/SSE2",
+      }
+    - {
+        cpuCores: 4,
+        deviceMemory: 4,
+        batteryApi: false,
+        webglRenderer: "llvmpipe (LLVM 15.0.6, 256 bits)",
+      }
   code: |
     {
-      cpuCores: navigator.hardwareConcurrency || 0,
-      deviceMemory: (() => {
-        try {
-          return navigator.deviceMemory || 0;
-        } catch (e) {
-          return 0;
-        }
-      })(),
-      batteryApi: !!navigator.getBattery,
-      webglRenderer: (() => {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl');
-        return gl && gl.getExtension('WEBGL_debug_renderer_info')
-          ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL)
-          : null;
-      })()
+      cpuCores: {
+        logicalCores: navigator.hardwareConcurrency || 0,
+        hyperThreading: (() => {
+          const cores = navigator.hardwareConcurrency || 0;
+          return cores > 0 && cores % 2 === 0;
+        })()
+      },
+      deviceMemory: {
+        totalMemory: (() => {
+          try {
+            return navigator.deviceMemory || 0;
+          } catch (e) {
+            return 0;
+          }
+        })(),
+        memoryPattern: (() => {
+          try {
+            const memory = navigator.deviceMemory || 0;
+            return memory > 0 ? "natural_variation" : "inconsistent_pattern";
+          } catch (e) {
+            return "inconsistent_pattern";
+          }
+        })()
+      },
+      batteryApi: {
+        apiAvailable: !!navigator.getBattery,
+        stateConsistency: (() => {
+          try {
+            return !!navigator.getBattery;
+          } catch (e) {
+            return false;
+          }
+        })()
+      },
+      webglRenderer: {
+        rendererName: (() => {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl');
+          if (gl && gl.getExtension('WEBGL_debug_renderer_info')) {
+            const renderer = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
+            return renderer ? renderer.split('/')[0].trim() : null;
+          }
+          return null;
+        })(),
+        driverVersion: (() => {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl');
+          if (gl && gl.getExtension('WEBGL_debug_renderer_info')) {
+            const renderer = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
+            return renderer ? renderer.split('/').pop().trim() : null;
+          }
+          return null;
+        })(),
+        hardwareAccel: (() => {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl');
+          if (gl && gl.getExtension('WEBGL_debug_renderer_info')) {
+            const renderer = gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL);
+            return renderer && !renderer.toLowerCase().includes('llvmpipe') && !renderer.toLowerCase().includes('swiftshader');
+          }
+          return false;
+        })()
+      }
     }
   description: |
     Advanced hardware capability detection system implementing sophisticated fingerprinting and virtualization detection.
@@ -39,6 +99,11 @@
     cpuCores:
       name: CPU Core Analysis
       type: number
+      exemplary_values:
+        - 8
+        - 4
+        - 2
+        - 32
       description: |
         Advanced CPU architecture analysis through hardwareConcurrency API.
         Detects logical processor count, hyper-threading capabilities, and virtualization indicators.
@@ -54,6 +119,11 @@
         logicalCores:
           name: Logical Processor Count
           type: number
+          exemplary_values:
+            - 16
+            - 8
+            - 4
+            - 2
           description: |
             Number of logical processors reported by hardwareConcurrency API.
             Expected range: 2-32 cores for physical devices, with natural variation.
@@ -65,6 +135,9 @@
         hyperThreading:
           name: Hyper-Threading Analysis
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Indicates if hyper-threading is detected based on core count patterns.
             Expected: true for modern Intel/AMD processors (2x logical cores), false for mobile/ARM.
@@ -76,6 +149,11 @@
     deviceMemory:
       name: Memory Analysis
       type: number
+      exemplary_values:
+        - 16
+        - 8
+        - 4
+        - 2
       description: |
         Comprehensive memory capacity analysis using deviceMemory API.
         Detects RAM size, allocation patterns, and virtualization indicators.
@@ -91,6 +169,11 @@
         totalMemory:
           name: Total Memory Capacity
           type: number
+          exemplary_values:
+            - 16
+            - 8
+            - 4
+            - 2
           description: |
             Total system memory in gigabytes reported by deviceMemory API.
             Expected range: 2-64GB for physical devices, with natural variation.
@@ -102,6 +185,10 @@
         memoryPattern:
           name: Memory Allocation Pattern
           type: string
+          exemplary_values:
+            - "natural_variation"
+            - "perfect_alignment"
+            - "inconsistent_pattern"
           description: |
             Pattern of memory allocation and usage.
             Expected: natural variation in allocation patterns for physical devices.
@@ -113,6 +200,9 @@
     batteryApi:
       name: Battery API Analysis
       type: boolean
+      exemplary_values:
+        - true
+        - false
       description: |
         Advanced battery status API analysis for power management and device verification.
         Detects API availability, state consistency, and device type indicators.
@@ -129,6 +219,9 @@
         apiAvailable:
           name: API Availability
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Indicates if battery API is available and accessible.
             Expected: true for mobile devices, variable for desktop.
@@ -140,6 +233,9 @@
         stateConsistency:
           name: State Consistency
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Indicates if battery state shows natural variation.
             Expected: true for physical devices, false for virtualized.
@@ -151,6 +247,11 @@
     webglRenderer:
       name: WebGL Renderer Analysis
       type: string
+      exemplary_values:
+        - "NVIDIA GeForce RTX 3080/PCIe/SSE2"
+        - "llvmpipe (LLVM 15.0.6, 256 bits)"
+        - "ANGLE (Intel, Intel(R) UHD Graphics 630 Direct3D11 vs_5_0 ps_5_0, D3D11)"
+        - "Google SwiftShader"
       description: |
         Sophisticated graphics hardware analysis through WebGL API.
         Extracts renderer information, driver versions, and acceleration status.
@@ -166,6 +267,11 @@
         rendererName:
           name: Renderer Identification
           type: string
+          exemplary_values:
+            - "NVIDIA GeForce RTX 3080"
+            - "llvmpipe"
+            - "Intel(R) UHD Graphics 630"
+            - "Google SwiftShader"
           description: |
             Name of the graphics renderer reported by WebGL.
             Expected: specific GPU model names for physical devices.
@@ -177,6 +283,11 @@
         driverVersion:
           name: Driver Version
           type: string
+          exemplary_values:
+            - "31.0.15.3598"
+            - "15.0.6"
+            - "27.20.100.8681"
+            - "unknown"
           description: |
             Version of the graphics driver reported by WebGL.
             Expected: specific version numbers for physical devices.
@@ -188,6 +299,9 @@
         hardwareAccel:
           name: Hardware Acceleration
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Indicates if hardware acceleration is enabled and working.
             Expected: true for capable physical devices.
@@ -196,4 +310,3 @@
             bot: |
               Hardware acceleration disabled on capable device indicates automated browser.
               Inconsistent acceleration state suggests automated environment.
-

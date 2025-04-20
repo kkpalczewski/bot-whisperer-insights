@@ -1,7 +1,13 @@
-
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronDown } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import React from "react";
 
 interface FeatureCellProps {
   feature: string;
@@ -18,17 +24,20 @@ export const FeatureCell: React.FC<FeatureCellProps> = ({
   isExpanded,
   onToggle,
 }) => {
+  const isMobile = useIsMobile();
+  const indentSize = isMobile ? 12 : 20;
+
   return (
     <div className="flex items-start">
       <div
-        style={{ paddingLeft: `${level * 20}px` }}
-        className="flex items-center"
+        style={{ paddingLeft: `${level * indentSize}px` }}
+        className="flex items-center w-full"
       >
         {hasChildren && (
           <Button
             variant="ghost"
             size="icon"
-            className="h-5 w-5 p-0 mr-1"
+            className="h-5 w-5 p-0 mr-1 flex-shrink-0"
             onClick={onToggle}
           >
             {isExpanded ? (
@@ -38,7 +47,18 @@ export const FeatureCell: React.FC<FeatureCellProps> = ({
             )}
           </Button>
         )}
-        <span className="text-sm font-mono text-gray-200 font-medium">{feature}</span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-sm font-mono text-gray-200 font-medium truncate block">
+                {feature}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" align="start">
+              <p className="text-sm font-mono">{feature}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

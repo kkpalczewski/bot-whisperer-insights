@@ -2,6 +2,27 @@
   name: FingerprintJS Data
   codeName: fingerprintjs_data
   type: object
+  exemplary_values:
+    - {
+        visitorId: "a1b2c3d4e5f6g7h8i9j0",
+        confidence: 0.95,
+        userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        webDriver: false,
+        language: "en-US",
+        platform: "MacIntel",
+        touchSupport: false,
+        consistentId: "a1b2c3d4e5f6g7h8i9j0",
+      }
+    - {
+        visitorId: "p0o9n8m7l6k5j4i3h2g1f0",
+        confidence: 0.3,
+        userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/120.0.0.0 Safari/537.36",
+        webDriver: true,
+        language: "en-US,zh-CN",
+        platform: "Win32",
+        touchSupport: true,
+        consistentId: "p0o9n8m7l6k5j4i3h2g1f0",
+      }
   code: |
     async () => {
       try {
@@ -59,6 +80,11 @@
     visitorId:
       name: Visitor ID Analysis
       type: string
+      exemplary_values:
+        - "a1b2c3d4e5f6g7h8i9j0"
+        - "p0o9n8m7l6k5j4i3h2g1f0"
+        - "selenium_fingerprint_123"
+        - "puppeteer_fingerprint_456"
       description: |
         Sophisticated visitor identification system generating unique fingerprints from multiple browser characteristics.
         Combines component-specific fingerprints (canvas, WebGL, audio, fonts), system capabilities, browser configuration, and hardware information.
@@ -72,6 +98,9 @@
         idStability:
           name: ID Stability Analysis
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Indicates if visitor ID remains stable across sessions.
             Expected: true for legitimate browsers (changes every 24-48 hours), false for automated environments.
@@ -83,6 +112,11 @@
         patternMatch:
           name: Pattern Matching
           type: string
+          exemplary_values:
+            - "legitimate_browser"
+            - "selenium_automation"
+            - "puppeteer_automation"
+            - "playwright_automation"
           description: |
             Matches ID patterns against known automation tools.
             Expected: no matches for legitimate browsers.
@@ -94,6 +128,10 @@
     confidence:
       name: Confidence Score Analysis
       type: number
+      exemplary_values:
+        - 0.95
+        - 0.7
+        - 0.3
       description: |
         Sophisticated confidence scoring system based on component consistency and behavioral patterns.
         Scores range from 0.0 to 1.0, with higher values indicating more legitimate browser characteristics.
@@ -107,6 +145,10 @@
         componentScore:
           name: Component Consistency Score
           type: number
+          exemplary_values:
+            - 0.95
+            - 0.6
+            - 0.3
           description: |
             Score based on component behavior consistency.
             Expected: >0.8 for legitimate browsers.
@@ -118,6 +160,10 @@
         patternScore:
           name: Pattern Recognition Score
           type: number
+          exemplary_values:
+            - 0.9
+            - 0.5
+            - 0.2
           description: |
             Score based on behavioral pattern analysis.
             Expected: >0.7 for legitimate browsers.
@@ -129,6 +175,10 @@
     userAgent:
       name: User Agent Analysis
       type: string
+      exemplary_values:
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/120.0.0.0 Safari/537.36"
+        - "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
       description: |
         Comprehensive user agent string analysis system.
         Parses browser name, version, platform, engine, and feature support claims.
@@ -143,6 +193,10 @@
         browserVersion:
           name: Browser Version Analysis
           type: string
+          exemplary_values:
+            - "120.0.0.0"
+            - "109.0.0.0"
+            - "91.0.4472.124"
           description: |
             Analyzes browser version claims and compatibility.
             Expected: consistent version numbers across APIs.
@@ -154,6 +208,9 @@
         platformMatch:
           name: Platform Compatibility
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Verifies platform-browser version compatibility.
             Expected: true for legitimate combinations.
@@ -165,6 +222,9 @@
     webDriver:
       name: WebDriver Detection
       type: boolean
+      exemplary_values:
+        - false
+        - true
       description: |
         Advanced automation framework detection system.
         Identifies Selenium WebDriver presence, automation tool markers, browser control patterns, and script injection.
@@ -178,6 +238,11 @@
         frameworkDetected:
           name: Framework Detection
           type: string
+          exemplary_values:
+            - null
+            - "selenium"
+            - "puppeteer"
+            - "playwright"
           description: |
             Identifies specific automation frameworks.
             Expected: null for legitimate browsers.
@@ -189,6 +254,9 @@
         controlPattern:
           name: Control Pattern Analysis
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Analyzes browser control patterns.
             Expected: false for legitimate browsers.
@@ -200,6 +268,10 @@
     language:
       name: Language Analysis
       type: string
+      exemplary_values:
+        - "en-US"
+        - "en-US,zh-CN"
+        - "en,fr,de,zh"
       description: |
         Sophisticated language configuration analysis system.
         Verifies primary language, regional settings, Accept-Language header, and system locale consistency.
@@ -214,6 +286,11 @@
         primaryLanguage:
           name: Primary Language
           type: string
+          exemplary_values:
+            - "en"
+            - "fr"
+            - "de"
+            - "zh"
           description: |
             Identifies primary browser language.
             Expected: consistent with system locale.
@@ -225,6 +302,9 @@
         localeConsistency:
           name: Locale Consistency
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Verifies locale consistency across APIs.
             Expected: true for legitimate browsers.
@@ -236,6 +316,19 @@
     platform:
       name: Platform Analysis
       type: object
+      exemplary_values:
+        - {
+            value: "MacIntel",
+            duration: 2,
+            osVersion: "10.15.7",
+            architectureMatch: true,
+          }
+        - {
+            value: "Win32",
+            duration: 0.5,
+            osVersion: "10.0.19043",
+            architectureMatch: false,
+          }
       description: |
         Advanced operating system platform analysis system.
         Verifies OS name, version, architecture, system capabilities, and hardware information consistency.
@@ -250,6 +343,10 @@
         value:
           name: Platform Value
           type: string
+          exemplary_values:
+            - "MacIntel"
+            - "Win32"
+            - "Linux x86_64"
           description: |
             Raw platform string from browser.
             Expected: specific OS and version combinations.
@@ -261,6 +358,10 @@
         duration:
           name: Detection Duration
           type: number
+          exemplary_values:
+            - 2
+            - 0.5
+            - 60
           description: |
             Time taken to detect platform information in milliseconds.
             Expected: 1-10ms for legitimate browsers.
@@ -272,6 +373,10 @@
         osVersion:
           name: OS Version Analysis
           type: string
+          exemplary_values:
+            - "10.15.7"
+            - "10.0.19043"
+            - "5.15.0"
           description: |
             Analyzes OS version claims and compatibility.
             Expected: consistent version numbers across APIs.
@@ -283,6 +388,9 @@
         architectureMatch:
           name: Architecture Compatibility
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Verifies OS-architecture compatibility.
             Expected: true for legitimate combinations.
@@ -294,6 +402,17 @@
     touchSupport:
       name: Touch Support Analysis
       type: object
+      exemplary_values:
+        - {
+            value: { maxTouchPoints: 0, touchEvent: false, touchStart: false },
+            duration: 3,
+            deviceType: "desktop",
+          }
+        - {
+            value: { maxTouchPoints: 5, touchEvent: true, touchStart: true },
+            duration: 0.5,
+            deviceType: "desktop",
+          }
       description: |
         Comprehensive touch capability analysis system.
         Verifies touch event support, multi-touch detection, device type, and input method consistency.
@@ -308,6 +427,9 @@
         value:
           name: Touch Support Value
           type: object
+          exemplary_values:
+            - { maxTouchPoints: 0, touchEvent: false, touchStart: false }
+            - { maxTouchPoints: 5, touchEvent: true, touchStart: true }
           description: |
             Detailed touch support capabilities.
             Expected: consistent with device type and browser version.
@@ -316,6 +438,10 @@
             maxTouchPoints:
               name: Maximum Touch Points
               type: number
+              exemplary_values:
+                - 0
+                - 5
+                - 10
               description: |
                 Maximum number of simultaneous touch points supported.
                 Expected: 0 for desktop, 2-10 for mobile devices.
@@ -327,6 +453,9 @@
             touchEvent:
               name: Touch Event Support
               type: boolean
+              exemplary_values:
+                - false
+                - true
               description: |
                 Indicates if touch events are supported.
                 Expected: false for desktop, true for mobile.
@@ -338,6 +467,9 @@
             touchStart:
               name: Touch Start Event
               type: boolean
+              exemplary_values:
+                - false
+                - true
               description: |
                 Indicates if touchstart event is supported.
                 Expected: matches touchEvent value.
@@ -349,6 +481,10 @@
         duration:
           name: Detection Duration
           type: number
+          exemplary_values:
+            - 3
+            - 0.5
+            - 25
           description: |
             Time taken to detect touch capabilities in milliseconds.
             Expected: 1-5ms for legitimate browsers.
@@ -360,6 +496,10 @@
         deviceType:
           name: Device Type Analysis
           type: string
+          exemplary_values:
+            - "desktop"
+            - "mobile"
+            - "tablet"
           description: |
             Analyzes device type claims and compatibility.
             Expected: consistent with touch support.
@@ -371,6 +511,10 @@
     consistentId:
       name: Consistent Visitor ID
       type: string
+      exemplary_values:
+        - "a1b2c3d4e5f6g7h8i9j0"
+        - "p0o9n8m7l6k5j4i3h2g1f0"
+        - "selenium_fingerprint_123"
       description: |
         Advanced persistent visitor identification system.
         Tracks cross-session consistency, browser fingerprint stability, component behavior, and pattern persistence.
@@ -385,6 +529,9 @@
         sessionConsistency:
           name: Session Consistency
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Verifies ID consistency across sessions.
             Expected: natural variation for legitimate browsers.
@@ -396,6 +543,9 @@
         crossBrowserMatch:
           name: Cross-Browser Analysis
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Analyzes ID consistency across different browsers.
             Expected: false for legitimate browsers.

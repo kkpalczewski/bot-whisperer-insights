@@ -34,6 +34,11 @@ interface MetadataContentProps {
    */
   error?: string;
 
+  /** Optional exemplary values that demonstrate typical or expected values for this feature
+   * Can include both legitimate and potentially abusive values
+   */
+  exemplary_values?: Array<string | boolean | number | object | Array<unknown>>;
+
   /** Nesting level in the feature hierarchy
    * - 0: Root level features (e.g., 'browser')
    * - 1+: Nested features (e.g., 'browser.version')
@@ -72,13 +77,16 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   const {
     description: featureDescription,
     abuseIndication: featureAbuseIndication,
+    exemplaryValues: featureExemplaryValues,
   } = findFeatureInfo(features, props.id);
 
   // If no specific feature metadata found, try to get parent metadata
   let description = featureDescription;
   let abuseIndication = featureAbuseIndication;
+  let exemplaryValues = featureExemplaryValues;
   let isUsingParentDescription = false;
   let isUsingParentAbuseIndication = false;
+  let isUsingParentExemplaryValues = false;
 
   if (!description && props.parent) {
     const { description: parentDescription } = findFeatureInfo(
@@ -99,6 +107,17 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
     if (parentAbuseIndication) {
       abuseIndication = parentAbuseIndication;
       isUsingParentAbuseIndication = true;
+    }
+  }
+
+  if (!exemplaryValues && props.parent) {
+    const { exemplaryValues: parentExemplaryValues } = findFeatureInfo(
+      features,
+      props.parent
+    );
+    if (parentExemplaryValues) {
+      exemplaryValues = parentExemplaryValues;
+      isUsingParentExemplaryValues = true;
     }
   }
 
@@ -145,6 +164,29 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
               </span>
             )}
           </p>
+        </MetadataSection>
+      )}
+
+      {exemplaryValues && (
+        <MetadataSection
+          title={
+            isUsingParentExemplaryValues
+              ? "Parent Exemplary Values"
+              : "Exemplary Values"
+          }
+        >
+          <div className="space-y-2">
+            {exemplaryValues.map((example, index) => (
+              <div key={index} className="text-sm font-mono text-gray-400">
+                <ExpandableValue value={JSON.stringify(example, null, 2)} />
+              </div>
+            ))}
+            {isUsingParentExemplaryValues && (
+              <span className="text-xs text-gray-500">
+                (inherited from parent)
+              </span>
+            )}
+          </div>
         </MetadataSection>
       )}
 

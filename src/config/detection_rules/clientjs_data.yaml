@@ -2,6 +2,64 @@
   name: ClientJS Fingerprint
   codeName: clientjs_fingerprint
   type: object
+  exemplary_values:
+    - {
+        browser:
+          {
+            name: "Chrome",
+            version: "120.0.6099.130",
+            engine: "Blink",
+            engineVersion: "120.0.6099.130",
+          },
+        device:
+          {
+            os: "Windows",
+            osVersion: "10.0",
+            device: "Desktop",
+            deviceType: "desktop",
+            deviceVendor: "Dell",
+          },
+        fingerprint: "a1b2c3d4e5f6g7h8i9j0",
+        browserSpoofed: false,
+      }
+    - {
+        browser:
+          {
+            name: "Firefox",
+            version: "122.0",
+            engine: "Gecko",
+            engineVersion: "20240201",
+          },
+        device:
+          {
+            os: "macOS",
+            osVersion: "14.2.1",
+            device: "MacBook Pro",
+            deviceType: "desktop",
+            deviceVendor: "Apple",
+          },
+        fingerprint: "z9y8x7w6v5u4t3s2r1q0",
+        browserSpoofed: false,
+      }
+    - {
+        browser:
+          {
+            name: "HeadlessChrome",
+            version: "120.0.6099.130",
+            engine: "Blink",
+            engineVersion: "120.0.6099.130",
+          },
+        device:
+          {
+            os: "Linux",
+            osVersion: "5.15.0",
+            device: "Generic",
+            deviceType: "desktop",
+            deviceVendor: "Generic",
+          },
+        fingerprint: "p0o9n8m7l6k5j4i3h2g1f0",
+        browserSpoofed: true,
+      }
   code: |
     async () => {
       const fp = await new ClientJS();
@@ -49,6 +107,25 @@
     browser:
       name: Browser Analysis
       type: object
+      exemplary_values:
+        - {
+            name: "Chrome",
+            version: "120.0.6099.130",
+            engine: "Blink",
+            engineVersion: "120.0.6099.130",
+          }
+        - {
+            name: "Firefox",
+            version: "122.0",
+            engine: "Gecko",
+            engineVersion: "20240201",
+          }
+        - {
+            name: "HeadlessChrome",
+            version: "120.0.6099.130",
+            engine: "Blink",
+            engineVersion: "120.0.6099.130",
+          }
       description: |
         Sophisticated browser identification and analysis system.
         Combines user agent parsing (navigator.userAgent), feature detection (navigator.platform), and engine verification for comprehensive browser fingerprinting.
@@ -62,6 +139,12 @@
         name:
           name: Browser Name Analysis
           type: string
+          exemplary_values:
+            - "Chrome"
+            - "Firefox"
+            - "Safari"
+            - "HeadlessChrome"
+            - "PhantomJS"
           description: |
             Advanced browser name extraction and verification system.
             Combines user agent parsing (navigator.userAgent), feature detection (navigator.vendor), and engine identification.
@@ -74,6 +157,12 @@
         version:
           name: Version Analysis
           type: string
+          exemplary_values:
+            - "120.0.6099.130"
+            - "122.0"
+            - "17.2.1"
+            - "100.0.0"
+            - "invalid_version"
           description: |
             Sophisticated version extraction and verification system.
             Analyzes major and minor version components (major.minor.build), build numbers, and release channels.
@@ -86,6 +175,12 @@
         engine:
           name: Engine Analysis
           type: string
+          exemplary_values:
+            - "Blink"
+            - "Gecko"
+            - "WebKit"
+            - "Generic"
+            - "Unknown"
           description: |
             Advanced rendering engine identification system.
             Combines user agent parsing, feature detection (navigator.vendor), and engine-specific API validation.
@@ -98,6 +193,12 @@
         engineVersion:
           name: Engine Version Analysis
           type: string
+          exemplary_values:
+            - "120.0.6099.130"
+            - "20240201"
+            - "612.1.29"
+            - "invalid_version"
+            - "unknown"
           description: |
             Sophisticated engine version verification system.
             Analyzes version components (major.minor.build), compatibility markers, and feature support.
@@ -110,6 +211,28 @@
     device:
       name: Device Analysis
       type: object
+      exemplary_values:
+        - {
+            os: "Windows",
+            osVersion: "10.0",
+            device: "Desktop",
+            deviceType: "desktop",
+            deviceVendor: "Dell",
+          }
+        - {
+            os: "macOS",
+            osVersion: "14.2.1",
+            device: "MacBook Pro",
+            deviceType: "desktop",
+            deviceVendor: "Apple",
+          }
+        - {
+            os: "Linux",
+            osVersion: "5.15.0",
+            device: "Generic",
+            deviceType: "desktop",
+            deviceVendor: "Generic",
+          }
       description: |
         Comprehensive device and operating system analysis system.
         Combines platform detection (navigator.platform), hardware information (navigator.hardwareConcurrency), and capability verification.
@@ -123,6 +246,13 @@
         os:
           name: OS Analysis
           type: string
+          exemplary_values:
+            - "Windows"
+            - "macOS"
+            - "Linux"
+            - "Android"
+            - "iOS"
+            - "Generic"
           description: |
             Advanced operating system identification system.
             Combines user agent parsing, platform detection (navigator.platform), and OS-specific API validation.
@@ -135,6 +265,12 @@
         osVersion:
           name: OS Version Analysis
           type: string
+          exemplary_values:
+            - "10.0"
+            - "14.2.1"
+            - "5.15.0"
+            - "13.3.1"
+            - "invalid_version"
           description: |
             Sophisticated OS version verification system.
             Analyzes version components (major.minor.build), build numbers, and platform capabilities.
@@ -147,6 +283,12 @@
         device:
           name: Device Analysis
           type: string
+          exemplary_values:
+            - "Desktop"
+            - "MacBook Pro"
+            - "iPhone"
+            - "Generic"
+            - "VMware Virtual Platform"
           description: |
             Advanced device identification system.
             Combines hardware information (navigator.hardwareConcurrency), screen characteristics (screen.width/height), and capability detection.
@@ -159,6 +301,12 @@
         deviceType:
           name: Device Type Analysis
           type: string
+          exemplary_values:
+            - "desktop"
+            - "mobile"
+            - "tablet"
+            - "unknown"
+            - "generic"
           description: |
             Sophisticated device type classification system.
             Analyzes screen characteristics (screen.width/height), touch support (navigator.maxTouchPoints), and input capabilities.
@@ -171,6 +319,12 @@
         deviceVendor:
           name: Vendor Analysis
           type: string
+          exemplary_values:
+            - "Dell"
+            - "Apple"
+            - "Samsung"
+            - "Generic"
+            - "VMware"
           description: |
             Advanced device vendor identification system.
             Combines hardware information (navigator.vendor), platform detection, and vendor-specific checks.
@@ -183,6 +337,12 @@
     fingerprint:
       name: Fingerprint Analysis
       type: string
+      exemplary_values:
+        - "a1b2c3d4e5f6g7h8i9j0"
+        - "z9y8x7w6v5u4t3s2r1q0"
+        - "p0o9n8m7l6k5j4i3h2g1f0"
+        - "selenium_fingerprint_123"
+        - "puppeteer_fingerprint_456"
       description: |
         Sophisticated fingerprint generation system creating unique identifiers from multiple browser characteristics.
         Combines browser information (navigator.userAgent), device details (screen.width/height), system capabilities, and feature support.
@@ -196,6 +356,9 @@
         hashStability:
           name: Hash Stability Analysis
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Indicates if fingerprint hash remains stable across sessions.
             Expected: natural variation for legitimate browsers (changes every 24-48 hours).
@@ -207,6 +370,12 @@
         componentMatch:
           name: Component Pattern Matching
           type: string
+          exemplary_values:
+            - "legitimate_browser"
+            - "selenium_automation"
+            - "puppeteer_automation"
+            - "playwright_automation"
+            - "cypress_automation"
           description: |
             Matches fingerprint patterns against known automation tools.
             Expected: no matches for legitimate browsers.
@@ -218,6 +387,9 @@
     browserSpoofed:
       name: Browser Spoofing Analysis
       type: boolean
+      exemplary_values:
+        - false
+        - true
       description: |
         Advanced browser spoofing detection system.
         Analyzes version consistency (parseInt vs split), engine compatibility, and feature support claims.
@@ -231,6 +403,9 @@
         versionMatch:
           name: Version Consistency
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Verifies version consistency across browser components.
             Expected: true for legitimate browsers.
@@ -242,6 +417,9 @@
         featureMatch:
           name: Feature Support Analysis
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             Verifies feature support claims with browser version.
             Expected: true for legitimate browsers.

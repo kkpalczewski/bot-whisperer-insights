@@ -90,6 +90,28 @@
           Presence of window.__nightmare confirms Nightmare.js framework usage.
           ChromeDP automation is indicated by chrome.app.isInstalled = true without chrome.runtime.
           The _TESTCAFE_DRIVER global variable confirms TestCafe framework usage.
+      exemplary_values:
+        - {
+            selenium: false,
+            phantom: false,
+            nightmare: false,
+            chromedp: false,
+            puppeteer: false,
+          }
+        - {
+            selenium: true,
+            phantom: false,
+            nightmare: false,
+            chromedp: false,
+            puppeteer: false,
+          }
+        - {
+            selenium: false,
+            phantom: true,
+            nightmare: false,
+            chromedp: false,
+            puppeteer: false,
+          }
       outputs:
         selenium:
           name: Selenium WebDriver Analysis
@@ -102,6 +124,7 @@
             bot: |
               True value indicates Selenium automation with webdriver flag enabled.
               Property presence suggests automated browser environment.
+          exemplary_values: [false, true]
         phantom:
           name: PhantomJS Analysis
           type: boolean
@@ -113,6 +136,7 @@
             bot: |
               True value indicates PhantomJS automation with global markers present.
               Global variable presence confirms automated environment.
+          exemplary_values: [false, true]
         nightmare:
           name: Nightmare.js Analysis
           type: boolean
@@ -124,6 +148,7 @@
             bot: |
               True value indicates Nightmare.js automation with framework marker present.
               Global variable presence confirms automated environment.
+          exemplary_values: [false, true]
         chromedp:
           name: ChromeDP Analysis
           type: boolean
@@ -135,6 +160,7 @@
             bot: |
               True value indicates ChromeDP automation with inconsistent runtime configuration.
               Configuration mismatch suggests automated environment.
+          exemplary_values: [false, true]
         puppeteer:
           name: Puppeteer/TestCafe Analysis
           type: boolean
@@ -146,6 +172,7 @@
             bot: |
               True value indicates Puppeteer or TestCafe automation with framework markers present.
               Global variable presence confirms automated environment.
+          exemplary_values: [false, true]
     permissions:
       name: Browser Permission Analysis
       type: object
@@ -159,6 +186,34 @@
           Missing Notification API (Notification.permission) with navigator.permissions undefined indicates headless Chrome automation.
           Inconsistent permission states (geolocation = true, notifications = not_supported) suggest modified browser environment.
           Absence of MIDI API (navigator.requestMIDIAccess) in Chrome indicates automation framework with limited capabilities.
+      exemplary_values:
+        - {
+            notifications: "granted",
+            geolocation: true,
+            midi: true,
+            bluetooth: true,
+            clipboard: true,
+            credentials: true,
+            orientation: true,
+          }
+        - {
+            notifications: "denied",
+            geolocation: true,
+            midi: true,
+            bluetooth: true,
+            clipboard: true,
+            credentials: true,
+            orientation: true,
+          }
+        - {
+            notifications: "not_supported",
+            geolocation: false,
+            midi: false,
+            bluetooth: false,
+            clipboard: false,
+            credentials: false,
+            orientation: false,
+          }
       outputs:
         notifications:
           name: Notification API Analysis
@@ -171,6 +226,7 @@
             bot: |
               'not_supported' value in Chrome indicates headless mode automation.
               Missing API suggests modified browser environment.
+          exemplary_values: ["granted", "denied", "default", "not_supported"]
         geolocation:
           name: Geolocation API Analysis
           type: boolean
@@ -182,6 +238,7 @@
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
+          exemplary_values: [true, false]
         midi:
           name: MIDI API Analysis
           type: boolean
@@ -193,6 +250,7 @@
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
+          exemplary_values: [true, false]
         bluetooth:
           name: Bluetooth API Analysis
           type: boolean
@@ -204,6 +262,7 @@
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
+          exemplary_values: [true, false]
         clipboard:
           name: Clipboard API Analysis
           type: boolean
@@ -215,6 +274,7 @@
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
+          exemplary_values: [true, false]
         credentials:
           name: Credentials API Analysis
           type: boolean
@@ -226,6 +286,7 @@
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
+          exemplary_values: [true, false]
         orientation:
           name: Device Orientation API Analysis
           type: boolean
@@ -237,6 +298,7 @@
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
+          exemplary_values: [true, false]
     memory:
       name: Hardware Capability Analysis
       type: object
@@ -250,6 +312,10 @@
           Device memory of 0 GB (navigator.deviceMemory) combined with single CPU core (hardwareConcurrency = 1) indicates virtualized environment.
           Zero touch points (maxTouchPoints = 0) in mobile user agent suggests emulated device.
           Hardware configuration showing 4 CPU cores with 8 GB memory in headless Chrome indicates Puppeteer default settings.
+      exemplary_values:
+        - { deviceMemory: 8, hardwareConcurrency: 4, maxTouchPoints: 5 }
+        - { deviceMemory: 16, hardwareConcurrency: 8, maxTouchPoints: 10 }
+        - { deviceMemory: 0, hardwareConcurrency: 1, maxTouchPoints: 0 }
       outputs:
         deviceMemory:
           name: Device Memory Analysis
@@ -262,6 +328,7 @@
             bot: |
               Value of 0 or 'unknown' indicates virtualized environment with limited memory.
               Unnatural memory values suggest automated environment.
+          exemplary_values: [0, 4, 8, 16, "unknown"]
         hardwareConcurrency:
           name: CPU Core Analysis
           type: number | string
@@ -273,6 +340,7 @@
             bot: |
               Value of 1 or 'unknown' indicates virtualized environment with limited CPU.
               Unnatural core count suggests automated environment.
+          exemplary_values: [1, 2, 4, 8, "unknown"]
         maxTouchPoints:
           name: Touch Capability Analysis
           type: number
@@ -284,6 +352,7 @@
             bot: |
               Value of 0 in mobile user agent indicates emulated device.
               Unnatural touch point count suggests automated environment.
+          exemplary_values: [0, 5, 10]
     features:
       name: Browser Capability Analysis
       type: object
@@ -298,6 +367,23 @@
           Missing WebGL support (canvas.getContext('webgl')) combined with navigator.webdriver = true confirms Selenium automation.
           Absence of Service Worker API (navigator.serviceWorker) in Chrome indicates headless mode automation.
           Undefined Battery API (navigator.getBattery) with empty plugin list (navigator.plugins.length = 0) suggests Puppeteer with default flags.
+      exemplary_values:
+        - {
+            serviceWorker: true,
+            webGL: true,
+            webRTC: true,
+            battery: true,
+            cookies: true,
+            localStorage: true,
+          }
+        - {
+            serviceWorker: false,
+            webGL: false,
+            webRTC: false,
+            battery: false,
+            cookies: false,
+            localStorage: false,
+          }
       outputs:
         serviceWorker:
           name: Service Worker Analysis
@@ -310,6 +396,7 @@
             bot: |
               False value in Chrome indicates headless mode automation.
               Missing API suggests modified browser environment.
+          exemplary_values: [true, false]
         webGL:
           name: WebGL Capability Analysis
           type: boolean
@@ -321,6 +408,7 @@
             bot: |
               False value with navigator.webdriver = true indicates Selenium automation.
               Missing support suggests limited capabilities.
+          exemplary_values: [true, false]
         webRTC:
           name: WebRTC Capability Analysis
           type: boolean
@@ -332,6 +420,7 @@
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
+          exemplary_values: [true, false]
         battery:
           name: Battery API Analysis
           type: boolean
@@ -343,6 +432,7 @@
             bot: |
               False value with empty plugin list indicates Puppeteer automation.
               Missing API suggests modified browser environment.
+          exemplary_values: [true, false]
         cookies:
           name: Cookie Capability Analysis
           type: boolean
@@ -354,6 +444,7 @@
             bot: |
               False value indicates modified browser environment.
               Missing support suggests automation or privacy mode.
+          exemplary_values: [true, false]
         localStorage:
           name: Local Storage Analysis
           type: boolean
@@ -365,6 +456,7 @@
             bot: |
               False value indicates modified browser environment.
               Missing support suggests automation or privacy mode.
+          exemplary_values: [true, false]
     userAgent:
       name: User Agent Analysis
       type: string
@@ -378,6 +470,10 @@
           Generic user agent strings (e.g., 'Mozilla/5.0') without specific browser details indicate automation.
           Version numbers inconsistent with platform capabilities suggest automated environment.
           Missing or malformed platform information indicates potential automation.
+      exemplary_values:
+        - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        - "Mozilla/5.0 (Linux; Android 10; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Mobile Safari/537.36"
     platform:
       name: Platform Analysis
       type: string
@@ -391,6 +487,7 @@
           Generic platform strings (e.g., 'Unknown') indicate automated environment.
           Platform inconsistent with user agent claims suggests automation.
           Missing or malformed platform information indicates potential automation.
+      exemplary_values: ["MacIntel", "Win32", "Linux x86_64", "Unknown"]
     languages:
       name: Language Preference Analysis
       type: array
@@ -404,6 +501,11 @@
           Empty language array (navigator.languages.length = 0) indicates automated environment.
           Inconsistent language preferences with timezone suggest automation.
           Missing or malformed language codes indicate potential automation.
+      exemplary_values:
+        - ["en-US", "en"]
+        - ["en-GB", "en"]
+        - ["de-DE", "de", "en-US", "en"]
+        - []
     timezone:
       name: Timezone Analysis
       type: string
@@ -417,6 +519,8 @@
           Generic timezone (e.g., 'UTC') in desktop environment indicates automation.
           Timezone inconsistent with language preferences suggests automated environment.
           Missing or malformed timezone information indicates potential automation.
+      exemplary_values:
+        ["America/New_York", "Europe/London", "Asia/Tokyo", "UTC"]
     plugins:
       name: Plugin Analysis
       type: array
@@ -430,6 +534,22 @@
           Empty plugin array (navigator.plugins.length = 0) in desktop Chrome indicates automation.
           Generic plugin names (e.g., 'Default Browser Helper') suggest automated environment.
           Missing or malformed plugin information indicates potential automation.
+      exemplary_values:
+        - [
+            {
+              name: "Chrome PDF Viewer",
+              description: "Portable Document Format",
+              filename: "internal-pdf-viewer",
+            },
+          ]
+        - [
+            {
+              name: "Native Client",
+              description: "Native Client Executable",
+              filename: "internal-nacl-plugin",
+            },
+          ]
+        - []
       outputs:
         name:
           name: Plugin Name Analysis
@@ -442,6 +562,8 @@
             bot: |
               Generic plugin names indicate automated environment.
               Missing or malformed names suggest automation.
+          exemplary_values:
+            ["Chrome PDF Viewer", "Native Client", "Default Browser Helper"]
         description:
           name: Plugin Description Analysis
           type: string
@@ -453,6 +575,12 @@
             bot: |
               Generic descriptions indicate automated environment.
               Missing or malformed descriptions suggest automation.
+          exemplary_values:
+            [
+              "Portable Document Format",
+              "Native Client Executable",
+              "Default Browser Helper",
+            ]
         filename:
           name: Plugin Filename Analysis
           type: string
@@ -464,4 +592,9 @@
             bot: |
               Generic filenames indicate automated environment.
               Missing or malformed filenames suggest automation.
-
+          exemplary_values:
+            [
+              "internal-pdf-viewer",
+              "internal-nacl-plugin",
+              "default-browser-helper",
+            ]

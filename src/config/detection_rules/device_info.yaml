@@ -2,6 +2,64 @@
   name: Device Information
   codeName: device_info
   type: object
+  exemplary_values:
+    - {
+        device: { type: "desktop", brand: "Apple", model: "MacBook Pro" },
+        os: { name: "macOS", version: "13.2.1", platform: "x64" },
+        client:
+          {
+            type: "browser",
+            name: "Chrome",
+            version: "120.0.0",
+            engine: "Blink",
+            engineVersion: "120.0.0",
+          },
+        bot:
+          {
+            name: null,
+            category: null,
+            url: null,
+            producer: { name: null, url: null },
+          },
+      }
+    - {
+        device: { type: "smartphone", brand: "Samsung", model: "Galaxy S23" },
+        os: { name: "Android", version: "13.0.0", platform: "arm64" },
+        client:
+          {
+            type: "browser",
+            name: "Samsung Internet",
+            version: "20.0.0",
+            engine: "WebKit",
+            engineVersion: "537.36",
+          },
+        bot:
+          {
+            name: null,
+            category: null,
+            url: null,
+            producer: { name: null, url: null },
+          },
+      }
+    - {
+        device: { type: "desktop", brand: "VMware", model: "Virtual Platform" },
+        os: { name: "Linux", version: "5.15.0", platform: "x64" },
+        client:
+          {
+            type: "browser",
+            name: "HeadlessChrome",
+            version: "120.0.0",
+            engine: "Blink",
+            engineVersion: "120.0.0",
+          },
+        bot:
+          {
+            name: "Selenium",
+            category: "Web Automation",
+            url: "https://www.selenium.dev",
+            producer: { name: "SeleniumHQ", url: "https://www.selenium.dev" },
+          },
+      }
   code: |
     (async () => {
       const detector = await window.libraryManager.getDeviceDetector();
@@ -73,6 +131,10 @@
     device:
       name: Device Information
       type: object
+      exemplary_values:
+        - { type: "desktop", brand: "Apple", model: "MacBook Pro" }
+        - { type: "smartphone", brand: "Samsung", model: "Galaxy S23" }
+        - { type: "desktop", brand: "VMware", model: "Virtual Platform" }
       description: |
         Comprehensive physical device characteristic analysis system. Combines hardware information (navigator.hardwareConcurrency),
         screen characteristics (screen.width/height), and touch support analysis (navigator.maxTouchPoints). Verifies device type
@@ -86,6 +148,11 @@
         type:
           name: Device Type
           type: string
+          exemplary_values:
+            - "desktop"
+            - "smartphone"
+            - "tablet"
+            - "unknown"
           description: |
             Sophisticated device type classification system. Analyzes screen characteristics (screen.width/height), touch support
             (navigator.maxTouchPoints), and input capabilities. Expected to show natural device type patterns (desktop, mobile,
@@ -98,6 +165,12 @@
         brand:
           name: Device Brand
           type: string
+          exemplary_values:
+            - "Apple"
+            - "Samsung"
+            - "Dell"
+            - "VMware"
+            - "Generic"
           description: |
             Advanced device vendor identification system. Combines hardware information (navigator.vendor), platform detection,
             and vendor-specific checks. Expected to show specific vendor patterns (Apple, Samsung, Dell) with device-specific
@@ -110,6 +183,12 @@
         model:
           name: Device Model
           type: string
+          exemplary_values:
+            - "MacBook Pro"
+            - "Galaxy S23"
+            - "XPS 13"
+            - "Virtual Platform"
+            - "Standard PC"
           description: |
             Sophisticated device model verification system. Analyzes hardware configuration, capabilities, and model-specific
             characteristics. Expected to show specific model patterns with natural variations in capabilities and features.
@@ -121,6 +200,10 @@
     os:
       name: Operating System
       type: object
+      exemplary_values:
+        - { name: "macOS", version: "13.2.1", platform: "x64" }
+        - { name: "Android", version: "13.0.0", platform: "arm64" }
+        - { name: "Linux", version: "5.15.0", platform: "x64" }
       description: |
         Comprehensive operating system analysis system. Combines user agent parsing, platform detection (navigator.platform),
         and OS-specific API validation. Verifies OS version consistency, platform capabilities, and feature support.
@@ -134,6 +217,12 @@
         name:
           name: OS Name
           type: string
+          exemplary_values:
+            - "macOS"
+            - "Windows"
+            - "Android"
+            - "Linux"
+            - "Generic OS"
           description: |
             Advanced operating system identification system. Combines user agent parsing, platform detection, and OS-specific
             API validation. Expected to show natural OS patterns (Windows, macOS, Linux) with version-specific variations.
@@ -145,6 +234,12 @@
         version:
           name: OS Version
           type: string
+          exemplary_values:
+            - "13.2.1"
+            - "10.0.19045"
+            - "13.0.0"
+            - "5.15.0"
+            - "unknown"
           description: |
             Sophisticated OS version verification system. Analyzes version components (major.minor.build), build numbers, and
             platform capabilities. Expected to show natural version progression and hardware compatibility.
@@ -156,6 +251,12 @@
         platform:
           name: Platform
           type: string
+          exemplary_values:
+            - "x64"
+            - "x86"
+            - "arm64"
+            - "arm"
+            - "unknown"
           description: |
             Advanced platform architecture analysis system. Verifies CPU architecture, instruction set support, and platform
             capabilities. Expected to show specific platform patterns (x86, x64, arm) with architecture-specific variations.
@@ -167,6 +268,28 @@
     client:
       name: Browser Information
       type: object
+      exemplary_values:
+        - {
+            type: "browser",
+            name: "Chrome",
+            version: "120.0.0",
+            engine: "Blink",
+            engineVersion: "120.0.0",
+          }
+        - {
+            type: "browser",
+            name: "Samsung Internet",
+            version: "20.0.0",
+            engine: "WebKit",
+            engineVersion: "537.36",
+          }
+        - {
+            type: "browser",
+            name: "HeadlessChrome",
+            version: "120.0.0",
+            engine: "Blink",
+            engineVersion: "120.0.0",
+          }
       description: |
         Comprehensive browser and rendering engine analysis system. Combines user agent parsing, feature detection, and
         engine-specific API validation. Verifies browser version consistency, engine capabilities, and feature support.
@@ -180,6 +303,11 @@
         type:
           name: Client Type
           type: string
+          exemplary_values:
+            - "browser"
+            - "bot"
+            - "crawler"
+            - "unknown"
           description: |
             Advanced client type classification system. Analyzes user agent patterns, feature support, and capability detection.
             Expected to show specific client types (browser, bot, crawler) with type-specific variations.
@@ -191,6 +319,12 @@
         name:
           name: Browser Name
           type: string
+          exemplary_values:
+            - "Chrome"
+            - "Firefox"
+            - "Safari"
+            - "HeadlessChrome"
+            - "Selenium"
           description: |
             Sophisticated browser identification system. Combines user agent parsing, feature detection, and browser-specific
             API validation. Expected to show specific browser patterns (Chrome, Firefox, Safari) with version-specific variations.
@@ -202,6 +336,11 @@
         version:
           name: Browser Version
           type: string
+          exemplary_values:
+            - "120.0.0"
+            - "109.0.0"
+            - "16.0.0"
+            - "unknown"
           description: |
             Advanced browser version verification system. Analyzes version components (major.minor.build), build numbers, and
             feature support. Expected to show natural version progression and capability compatibility.
@@ -213,6 +352,11 @@
         engine:
           name: Browser Engine
           type: string
+          exemplary_values:
+            - "Blink"
+            - "Gecko"
+            - "WebKit"
+            - "unknown"
           description: |
             Sophisticated rendering engine identification system. Combines user agent parsing, feature detection, and
             engine-specific API validation. Expected to show specific engine patterns (WebKit, Gecko, Blink) with
@@ -225,6 +369,11 @@
         engineVersion:
           name: Engine Version
           type: string
+          exemplary_values:
+            - "120.0.0"
+            - "109.0.0"
+            - "537.36"
+            - "unknown"
           description: |
             Advanced engine version verification system. Analyzes version components, compatibility markers, and feature support.
             Expected to show natural version progression and browser compatibility.
@@ -236,6 +385,25 @@
     bot:
       name: Bot Detection
       type: object
+      exemplary_values:
+        - {
+            name: null,
+            category: null,
+            url: null,
+            producer: { name: null, url: null },
+          }
+        - {
+            name: "Selenium",
+            category: "Web Automation",
+            url: "https://www.selenium.dev",
+            producer: { name: "SeleniumHQ", url: "https://www.selenium.dev" },
+          }
+        - {
+            name: "Puppeteer",
+            category: "Headless Browser",
+            url: "https://pptr.dev",
+            producer: { name: "Google", url: "https://pptr.dev" },
+          }
       description: |
         Comprehensive bot identification and classification system. Combines signature detection, behavioral analysis, and
         capability verification. Verifies bot type consistency, category classification, and producer information.
@@ -249,6 +417,11 @@
         name:
           name: Bot Name
           type: string
+          exemplary_values:
+            - null
+            - "Selenium"
+            - "Puppeteer"
+            - "Playwright"
           description: |
             Advanced bot identification system. Combines signature detection, behavioral analysis, and capability verification.
             Expected to show specific bot patterns with name-specific variations.
@@ -260,6 +433,11 @@
         category:
           name: Bot Category
           type: string
+          exemplary_values:
+            - null
+            - "Web Automation"
+            - "Headless Browser"
+            - "Crawler"
           description: |
             Sophisticated bot classification system. Analyzes behavior patterns, capability sets, and interaction methods.
             Expected to show specific category patterns with type-specific variations.
@@ -271,6 +449,11 @@
         url:
           name: Bot URL
           type: string
+          exemplary_values:
+            - null
+            - "https://www.selenium.dev"
+            - "https://pptr.dev"
+            - "https://playwright.dev"
           description: |
             Advanced bot source verification system. Combines URL pattern analysis, domain validation, and documentation checks.
             Expected to show specific URL patterns with source-specific variations.
@@ -282,6 +465,10 @@
         producer:
           name: Bot Producer
           type: object
+          exemplary_values:
+            - { name: null, url: null }
+            - { name: "SeleniumHQ", url: "https://www.selenium.dev" }
+            - { name: "Google", url: "https://pptr.dev" }
           description: |
             Comprehensive bot creator identification system. Combines producer information, framework detection, and capability
             verification. Verifies producer consistency, framework support, and documentation availability.
@@ -295,6 +482,11 @@
             name:
               name: Producer Name
               type: string
+              exemplary_values:
+                - null
+                - "SeleniumHQ"
+                - "Google"
+                - "Microsoft"
               description: |
                 Advanced producer identification system. Combines name pattern analysis, framework detection, and capability
                 verification. Expected to show specific producer patterns with name-specific variations.
@@ -306,11 +498,15 @@
             url:
               name: Producer URL
               type: string
+              exemplary_values:
+                - null
+                - "https://www.selenium.dev"
+                - "https://pptr.dev"
+                - "https://playwright.dev"
               description: |
                 Sophisticated producer source verification system. Combines URL pattern analysis, domain validation, and
                 documentation checks. Expected to show specific URL patterns with source-specific variations.
-              abuse_indication:
-                bot: |
-                  URL matching known automation framework documentation indicates automated environment. URL inconsistent with
-                  capabilities suggests sophisticated automation. Generic or missing URL information indicates potential
-                  automation. Perfect consistency in producer URL across requests reveals virtualized environment. 
+              abuse_indication: |
+                URL matching known automation framework documentation indicates automated environment. URL inconsistent with
+                capabilities suggests sophisticated automation. Generic or missing URL information indicates potential
+                automation. Perfect consistency in producer URL across requests reveals virtualized environment.
