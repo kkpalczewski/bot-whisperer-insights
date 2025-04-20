@@ -5,6 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { AlertTriangle, Info, Package } from "lucide-react";
 import React from "react";
 
@@ -25,6 +26,8 @@ export const FeatureHeader: React.FC<FeatureHeaderProps> = ({
   onToggleCode,
   codeVisible,
 }) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
@@ -35,10 +38,15 @@ export const FeatureHeader: React.FC<FeatureHeaderProps> = ({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Package
-                    size={14}
-                    className="inline text-blue-400 ml-1 cursor-help"
-                  />
+                  <button
+                    className="inline"
+                    onClick={isMobile ? (e) => e.preventDefault() : undefined}
+                  >
+                    <Package
+                      size={14}
+                      className="inline text-blue-400 ml-1 cursor-help"
+                    />
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="text-xs">Dependencies: {dependency}</p>
@@ -57,6 +65,7 @@ export const FeatureHeader: React.FC<FeatureHeaderProps> = ({
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 p-0 whitespace-pre-line"
+                  onClick={isMobile ? (e) => e.preventDefault() : undefined}
                 >
                   <Info className="h-4 w-4" />
                 </Button>
