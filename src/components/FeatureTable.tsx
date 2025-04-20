@@ -1,8 +1,15 @@
-
-import React from 'react';
-import { Table, TableBody, TableHeader, TableHead, TableRow, TableCell } from '@/components/ui/table';
-import { FeatureTableRow } from './FeatureTableRow';
-import { FeatureNode } from '@/hooks/useFeatureTree';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { FeatureNode } from "@/hooks/useFeatureTree";
+import React from "react";
+import { FeatureTableRow } from "./FeatureTableRow";
 
 interface FeatureTableProps {
   nodes: FeatureNode[];
@@ -13,15 +20,31 @@ interface FeatureTableProps {
 export const FeatureTable: React.FC<FeatureTableProps> = ({
   nodes,
   isLoading,
-  onToggleNode
+  onToggleNode,
 }) => {
+  const isMobile = useIsMobile();
+
   return (
     <Table>
       <TableHeader>
         <TableRow className="border-b border-gray-800">
-          <TableHead className="w-[35%] font-medium text-xs py-2">Feature</TableHead>
-          <TableHead className="w-[5%] py-2"></TableHead>
-          <TableHead className="w-[60%] font-medium text-xs py-2">Value</TableHead>
+          <TableHead
+            className={`font-medium text-xs py-2 ${
+              isMobile ? "w-[45%]" : "w-[35%]"
+            }`}
+          >
+            Feature
+          </TableHead>
+          <TableHead
+            className={`py-2 ${isMobile ? "w-[5%] px-0" : "w-[5%]"}`}
+          ></TableHead>
+          <TableHead
+            className={`font-medium text-xs py-2 ${
+              isMobile ? "w-[50%]" : "w-[60%]"
+            }`}
+          >
+            Value
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -44,7 +67,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
         {nodes.length === 0 && (
           <TableRow>
             <TableCell colSpan={3} className="text-center py-4 text-gray-400">
-              {isLoading ? 'Loading features...' : 'No features found'}
+              {isLoading ? "Loading features..." : "No features found"}
             </TableCell>
           </TableRow>
         )}

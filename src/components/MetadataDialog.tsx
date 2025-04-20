@@ -24,6 +24,7 @@ interface MetadataDialogProps {
   parent: string;
   description?: string;
   error?: string;
+  exemplary_values?: Array<string | boolean | number | object | Array<unknown>>;
   level: number;
   id: string;
   hasChildren: boolean;

@@ -1,9 +1,9 @@
-
-import React from 'react';
-import { TableRow, TableCell } from '@/components/ui/table';
-import { MetadataDialog } from './MetadataDialog';
-import { FeatureCell } from './feature/FeatureCell';
-import { ValueCell } from './feature/ValueCell';
+import { TableCell, TableRow } from "@/components/ui/table";
+import { useIsMobile } from "@/hooks/use-mobile";
+import React from "react";
+import { MetadataDialog } from "./MetadataDialog";
+import { FeatureCell } from "./feature/FeatureCell";
+import { ValueCell } from "./feature/ValueCell";
 
 interface FeatureTableRowProps {
   feature: string;
@@ -30,13 +30,20 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
   hasChildren,
   description,
   error,
-  isTruncated
+  isTruncated,
 }) => {
   const id = parent ? `${parent}.${feature}` : feature;
-  
+  const isMobile = useIsMobile();
+
   return (
-    <TableRow className={error ? 'bg-red-950/20' : ''}>
-      <TableCell className="py-2 align-top">
+    <TableRow
+      className={`${error ? "bg-red-950/20" : ""} hover:bg-gray-900/50`}
+    >
+      <TableCell
+        className={`py-2 align-top ${
+          isMobile ? "min-w-[100px] max-w-[120px] pr-0" : "min-w-[120px]"
+        }`}
+      >
         <FeatureCell
           feature={feature}
           level={level}
@@ -45,8 +52,12 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
           onToggle={onToggle}
         />
       </TableCell>
-      
-      <TableCell className="py-2 pr-1 align-top">
+
+      <TableCell
+        className={`py-2 align-top ${
+          isMobile ? "w-[32px] px-0" : "w-[40px] pr-1"
+        }`}
+      >
         <MetadataDialog
           feature={feature}
           value={value}
@@ -59,12 +70,13 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
           isExpanded={isExpanded}
         />
       </TableCell>
-      
-      <TableCell className="py-2 align-top">
-        <ValueCell 
-          value={value} 
-          type={type} 
+
+      <TableCell className="py-2 align-top break-all">
+        <ValueCell
+          value={value}
+          type={type}
           error={error}
+          isMobileOptimized={isMobile}
         />
       </TableCell>
     </TableRow>

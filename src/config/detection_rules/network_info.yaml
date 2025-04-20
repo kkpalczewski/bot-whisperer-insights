@@ -2,6 +2,49 @@
   name: Network Information
   codeName: network_info
   type: object
+  exemplary_values:
+    - {
+        connection:
+          { effectiveType: "4g", rtt: 50, downlink: 25, saveData: false },
+        webRTC: { available: true, protocol: "https:" },
+        timing:
+          {
+            navigationStart: 1677721600000,
+            loadEventEnd: 1677721602000,
+            loadTime: 2000,
+          },
+        ipInfo:
+          {
+            ip: "192.168.1.1",
+            isp: "Comcast Cable",
+            asn: "AS7922",
+            country: "United States",
+            city: "New York",
+            timezone: "America/New_York",
+            isDatacenter: false,
+          },
+      }
+    - {
+        connection:
+          { effectiveType: "4g", rtt: 5, downlink: 100, saveData: true },
+        webRTC: { available: false, protocol: "http:" },
+        timing:
+          {
+            navigationStart: 1677721600000,
+            loadEventEnd: 1677721600200,
+            loadTime: 200,
+          },
+        ipInfo:
+          {
+            ip: "3.0.0.1",
+            isp: "Amazon Data Services",
+            asn: "AS16509",
+            country: "United States",
+            city: "Ashburn",
+            timezone: "UTC",
+            isDatacenter: true,
+          },
+      }
   code: |
     async () => {
       try {
@@ -81,6 +124,9 @@
     connection:
       name: Connection Analysis
       type: object
+      exemplary_values:
+        - { effectiveType: "4g", rtt: 50, downlink: 25, saveData: false }
+        - { effectiveType: "4g", rtt: 5, downlink: 100, saveData: true }
       description: |
         Analyzes connection type, latency (RTT), bandwidth (Mbps), and data saving preferences.
         Residential networks show natural variation in metrics (RTT: 20-100ms, bandwidth: 10-100Mbps),
@@ -95,6 +141,10 @@
         effectiveType:
           name: Connection Type Analysis
           type: string
+          exemplary_values:
+            - "4g"
+            - "3g"
+            - "slow-2g"
           description: |
             Verifies reported type against actual performance metrics.
             4G: Modern mobile network (20-100ms RTT, 10-100Mbps bandwidth).
@@ -107,6 +157,10 @@
         rtt:
           name: Latency Analysis
           type: number
+          exemplary_values:
+            - 50
+            - 5
+            - 200
           description: |
             Round-Trip Time in milliseconds, measuring network latency.
             Residential connections: 20-100ms with natural variation.
@@ -119,6 +173,10 @@
         downlink:
           name: Bandwidth Analysis
           type: number
+          exemplary_values:
+            - 25
+            - 100
+            - 5
           description: |
             Download speed in Megabits per second (Mbps).
             Residential networks: 10-100Mbps with natural variation.
@@ -131,6 +189,9 @@
         saveData:
           name: Data Saving Analysis
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Browser's data saving mode status, optimizing for limited bandwidth.
             Expected: enabled on slow connections (<10Mbps), disabled on fast connections.
@@ -142,6 +203,9 @@
     webRTC:
       name: WebRTC Analysis
       type: object
+      exemplary_values:
+        - { available: true, protocol: "https:" }
+        - { available: false, protocol: "http:" }
       description: |
         WebRTC (Web Real-Time Communication) API analysis for real-time communication capabilities.
         Modern browsers (>90% market share) support WebRTC by default for peer-to-peer communication.
@@ -154,6 +218,9 @@
         available:
           name: WebRTC Availability
           type: boolean
+          exemplary_values:
+            - true
+            - false
           description: |
             WebRTC API availability check.
             Expected: present in modern browsers (Chrome 90+).
@@ -165,6 +232,9 @@
         protocol:
           name: Protocol Analysis
           type: string
+          exemplary_values:
+            - "https:"
+            - "http:"
           description: |
             Connection protocol verification (HTTP/HTTPS).
             Modern browsers enforce HTTPS by default for security.
@@ -176,6 +246,17 @@
     timing:
       name: Navigation Timing Analysis
       type: object
+      exemplary_values:
+        - {
+            navigationStart: 1677721600000,
+            loadEventEnd: 1677721602000,
+            loadTime: 2000,
+          }
+        - {
+            navigationStart: 1677721600000,
+            loadEventEnd: 1677721600200,
+            loadTime: 200,
+          }
       description: |
         Comprehensive page load performance analysis.
         Human users show natural variation in load times (1000-5000ms).
@@ -189,6 +270,9 @@
         navigationStart:
           name: Navigation Start Analysis
           type: number
+          exemplary_values:
+            - 1677721600000
+            - 1677721600000
           description: |
             Navigation start timestamp in milliseconds since epoch.
             Human users show natural variation (±100ms).
@@ -200,6 +284,9 @@
         loadEventEnd:
           name: Load Completion Analysis
           type: number
+          exemplary_values:
+            - 1677721602000
+            - 1677721600200
           description: |
             Page load completion timestamp in milliseconds since epoch.
             Varies based on content size and connection quality.
@@ -211,6 +298,9 @@
         loadTime:
           name: Load Duration Analysis
           type: number
+          exemplary_values:
+            - 2000
+            - 200
           description: |
             Total page load duration in milliseconds.
             Residential connections: 1-3s with natural variation.
@@ -222,6 +312,25 @@
     ipInfo:
       name: IP and ISP Analysis
       type: object
+      exemplary_values:
+        - {
+            ip: "192.168.1.1",
+            isp: "Comcast Cable",
+            asn: "AS7922",
+            country: "United States",
+            city: "New York",
+            timezone: "America/New_York",
+            isDatacenter: false,
+          }
+        - {
+            ip: "3.0.0.1",
+            isp: "Amazon Data Services",
+            asn: "AS16509",
+            country: "United States",
+            city: "Ashburn",
+            timezone: "UTC",
+            isDatacenter: true,
+          }
       description: |
         Comprehensive IP and ISP information analysis for network origin verification.
         Residential IPs show natural geographic distribution and ISP patterns.
@@ -236,6 +345,10 @@
         ip:
           name: IP Address Analysis
           type: string
+          exemplary_values:
+            - "192.168.1.1"
+            - "3.0.0.1"
+            - "34.0.0.1"
           description: |
             IP address verification and classification.
             Residential IPs: Dynamic ranges from ISPs, showing natural geographic distribution.
@@ -248,6 +361,10 @@
         isp:
           name: ISP Analysis
           type: string
+          exemplary_values:
+            - "Comcast Cable"
+            - "Amazon Data Services"
+            - "Google Cloud"
           description: |
             Internet Service Provider identification and verification.
             Residential ISPs: Local providers with geographic-specific names.
@@ -260,6 +377,10 @@
         asn:
           name: ASN Analysis
           type: string
+          exemplary_values:
+            - "AS7922"
+            - "AS16509"
+            - "AS15169"
           description: |
             Autonomous System Number analysis for network identification.
             Residential ASNs: Assigned to local ISPs, showing natural geographic distribution.
@@ -272,6 +393,10 @@
         country:
           name: Geographic Analysis
           type: string
+          exemplary_values:
+            - "United States"
+            - "Germany"
+            - "Singapore"
           description: |
             Geographic location verification based on IP address.
             Residential IPs: Match user's claimed location with natural distribution.
@@ -284,6 +409,10 @@
         city:
           name: City Analysis
           type: string
+          exemplary_values:
+            - "New York"
+            - "Ashburn"
+            - "Frankfurt"
           description: |
             City-level geographic verification based on IP address.
             Residential IPs: Match user's claimed city with natural distribution.
@@ -296,6 +425,10 @@
         timezone:
           name: Timezone Analysis
           type: string
+          exemplary_values:
+            - "America/New_York"
+            - "UTC"
+            - "Europe/Berlin"
           description: |
             Timezone verification based on IP address location.
             Residential IPs: Match user's claimed timezone with natural patterns.
@@ -308,6 +441,9 @@
         isDatacenter:
           name: Datacenter Detection
           type: boolean
+          exemplary_values:
+            - false
+            - true
           description: |
             Datacenter IP detection based on ISP name and IP range analysis.
             Residential IPs: False (natural ISP names, residential IP ranges).
