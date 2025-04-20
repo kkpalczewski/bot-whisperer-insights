@@ -132,17 +132,31 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 pr-4">
       <MetadataSection title="Feature">
         <h3 className="text-lg font-mono mb-2">{props.feature}</h3>
       </MetadataSection>
 
       <MetadataSection title="ID">
-        <p className="text-sm font-mono text-gray-400">{props.id}</p>
+        <p className="text-sm font-mono text-gray-400 break-all whitespace-pre-wrap">
+          {props.id}
+        </p>
       </MetadataSection>
 
       <MetadataSection title="Value">
-        <ExpandableValue value={value} />
+        <div className="max-w-full overflow-hidden">
+          <ExpandableValue value={value} />
+        </div>
+      </MetadataSection>
+
+      <MetadataSection title="Type">
+        <p className="text-sm font-mono text-gray-400 capitalize">
+          {props.type}
+        </p>
+      </MetadataSection>
+
+      <MetadataSection title="Parent">
+        <p className="text-sm font-mono text-gray-400">{props.parent || "—"}</p>
       </MetadataSection>
 
       {description && (

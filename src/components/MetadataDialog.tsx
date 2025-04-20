@@ -87,8 +87,14 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
                   <InfoButton onClick={handleOpen} />
                 </HoverCardTrigger>
 
-                <HoverCardContent className="w-80" side="right" align="start">
-                  <MetadataContent {...props} type={props.type} />
+                <HoverCardContent
+                  className="w-80 max-w-[90vw]"
+                  side="right"
+                  align="start"
+                >
+                  <div className="max-h-[80vh] overflow-y-auto">
+                    <MetadataContent {...props} />
+                  </div>
                 </HoverCardContent>
               </HoverCard>
             )
@@ -111,7 +117,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
             </Button>
           </DrawerHeader>
           <ScrollArea className="h-[calc(100vh-120px)] px-4">
-            <MetadataContent {...props} type={props.type} />
+            <MetadataContent {...props} />
           </ScrollArea>
         </DrawerContent>
       </Drawer>

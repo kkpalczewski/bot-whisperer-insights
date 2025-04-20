@@ -1,8 +1,7 @@
-
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { ChevronUp, ChevronDown } from 'lucide-react';
-import { FormattedValue } from '../feature/FormattedValue';
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import React, { useState } from "react";
+import { FormattedValue } from "../feature/FormattedValue";
 
 interface ExpandableValueProps {
   value: string;
@@ -10,11 +9,15 @@ interface ExpandableValueProps {
 
 export const ExpandableValue: React.FC<ExpandableValueProps> = ({ value }) => {
   const [isValueExpanded, setIsValueExpanded] = useState(false);
-  const lines = value.split('\n');
+  const lines = value.split("\n");
   const isLongValue = lines.length > 3 || value.length > 150;
-  const displayValue = isValueExpanded ? value : 
-    (lines.length > 3 ? lines.slice(0, 3).join('\n') + '\n...' : 
-      value.length > 150 ? value.slice(0, 150) + '...' : value);
+  const displayValue = isValueExpanded
+    ? value
+    : lines.length > 3
+    ? lines.slice(0, 3).join("\n") + "\n..."
+    : value.length > 150
+    ? value.slice(0, 150) + "..."
+    : value;
 
   if (!isLongValue) {
     return (
