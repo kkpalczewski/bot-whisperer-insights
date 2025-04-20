@@ -15,6 +15,7 @@ export const findFeatureInfo = (
   let description;
   let abuseIndication;
   let exemplaryValues;
+  let type;
 
   // Look through all features to find the specific one
   for (const feature of features) {
@@ -29,6 +30,7 @@ export const findFeatureInfo = (
         description = feature.description;
         abuseIndication = feature.abuse_indication?.bot;
         exemplaryValues = feature.exemplary_values;
+        type = feature.type;
         break;
       }
 
@@ -48,6 +50,7 @@ export const findFeatureInfo = (
               description = currentOutput[part].description;
               abuseIndication = currentOutput[part].abuse_indication?.bot;
               exemplaryValues = currentOutput[part].exemplary_values;
+              type = currentOutput[part].type;
               featureDefinition = feature;
               break;
             }

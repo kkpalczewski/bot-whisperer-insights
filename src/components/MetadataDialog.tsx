@@ -25,6 +25,7 @@ interface MetadataDialogProps {
   description?: string;
   error?: string;
   exemplary_values?: Array<string | boolean | number | object | Array<unknown>>;
+  type: "string" | "boolean" | "array" | "object" | "number";
   level: number;
   id: string;
   hasChildren: boolean;
@@ -86,8 +87,14 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
                   <InfoButton onClick={handleOpen} />
                 </HoverCardTrigger>
 
-                <HoverCardContent className="w-80" side="right" align="start">
-                  <MetadataContent {...props} />
+                <HoverCardContent
+                  className="w-80 max-w-[90vw]"
+                  side="right"
+                  align="start"
+                >
+                  <div className="max-h-[80vh] overflow-y-auto">
+                    <MetadataContent {...props} />
+                  </div>
                 </HoverCardContent>
               </HoverCard>
             )

@@ -39,10 +39,20 @@ interface MetadataContentProps {
    */
   exemplary_values?: Array<string | boolean | number | object | Array<unknown>>;
 
+  /** The data type of the feature value
+   * - string: Text-based values like user agent strings or browser versions
+   * - boolean: Binary true/false values like feature support flags
+   * - array: List of values like supported plugins or languages
+   * - object: Nested data structures with multiple properties
+   * - number: Numeric values like screen dimensions or color depth
+   */
+  type: "string" | "boolean" | "array" | "object" | "number";
+
   /** Nesting level in the feature hierarchy
    * - 0: Root level features (e.g., 'browser')
    * - 1+: Nested features (e.g., 'browser.version')
    */
+
   level: number;
 
   /** Unique identifier for the feature
@@ -122,17 +132,27 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 pr-4">
       <MetadataSection title="Feature">
         <h3 className="text-lg font-mono mb-2">{props.feature}</h3>
       </MetadataSection>
 
       <MetadataSection title="ID">
-        <p className="text-sm font-mono text-gray-400">{props.id}</p>
+        <p className="text-sm font-mono text-gray-400 break-all whitespace-pre-wrap">
+          {props.id}
+        </p>
       </MetadataSection>
 
       <MetadataSection title="Value">
-        <ExpandableValue value={value} />
+        <div className="max-w-full overflow-hidden">
+          <ExpandableValue value={value} />
+        </div>
+      </MetadataSection>
+
+      <MetadataSection title="Type">
+        <p className="text-sm font-mono text-gray-400 capitalize">
+          {props.type}
+        </p>
       </MetadataSection>
 
       <MetadataSection title="Parent">
@@ -189,6 +209,16 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
           </div>
         </MetadataSection>
       )}
+
+      <MetadataSection title="Type">
+        <p className="text-sm font-mono text-gray-400 capitalize">
+          {props.type}
+        </p>
+      </MetadataSection>
+
+      <MetadataSection title="Parent">
+        <p className="text-sm font-mono text-gray-400">{props.parent || "—"}</p>
+      </MetadataSection>
 
       {props.error && (
         <MetadataSection title="Error">
