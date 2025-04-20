@@ -39,10 +39,20 @@ interface MetadataContentProps {
    */
   exemplary_values?: Array<string | boolean | number | object | Array<unknown>>;
 
+  /** The data type of the feature value
+   * - string: Text-based values like user agent strings or browser versions
+   * - boolean: Binary true/false values like feature support flags
+   * - array: List of values like supported plugins or languages
+   * - object: Nested data structures with multiple properties
+   * - number: Numeric values like screen dimensions or color depth
+   */
+  type: "string" | "boolean" | "array" | "object" | "number";
+
   /** Nesting level in the feature hierarchy
    * - 0: Root level features (e.g., 'browser')
    * - 1+: Nested features (e.g., 'browser.version')
    */
+
   level: number;
 
   /** Unique identifier for the feature
@@ -135,10 +145,6 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
         <ExpandableValue value={value} />
       </MetadataSection>
 
-      <MetadataSection title="Parent">
-        <p className="text-sm font-mono text-gray-400">{props.parent || "—"}</p>
-      </MetadataSection>
-
       {description && (
         <div className="mb-4">
           <h4 className="text-sm font-medium mb-1">Description</h4>
@@ -189,6 +195,16 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
           </div>
         </MetadataSection>
       )}
+
+      <MetadataSection title="Type">
+        <p className="text-sm font-mono text-gray-400 capitalize">
+          {props.type}
+        </p>
+      </MetadataSection>
+
+      <MetadataSection title="Parent">
+        <p className="text-sm font-mono text-gray-400">{props.parent || "—"}</p>
+      </MetadataSection>
 
       {props.error && (
         <MetadataSection title="Error">
