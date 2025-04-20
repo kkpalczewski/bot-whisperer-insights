@@ -174,6 +174,31 @@
           Inconsistent canvas fingerprints indicate automated browser.
           Missing or manipulated canvas data suggests automated environment.
           Unusual rendering patterns indicate potential automation.
+      outputs:
+        winding:
+          name: Canvas Winding Analysis
+          type: boolean
+          description: |
+            Advanced canvas winding rule analysis.
+            Verifies the non-zero winding rule implementation in canvas rendering.
+            Expected: true for legitimate browsers.
+          abuse_indication:
+            bot: |
+              False value indicates automated browser with modified canvas implementation.
+              Inconsistent winding behavior suggests automated environment.
+          exemplary_values: [true, false]
+        geometry:
+          name: Canvas Geometry Analysis
+          type: string
+          description: |
+            Sophisticated canvas geometry fingerprinting.
+            Analyzes canvas rendering patterns and geometric transformations.
+            Expected: consistent base64-encoded image data for legitimate browsers.
+          abuse_indication:
+            bot: |
+              Missing or manipulated geometry data indicates automated browser.
+              Inconsistent rendering patterns suggest automated environment.
+          exemplary_values: ["data:image/png;base64,...", ""]
     webGlBasics:
       name: WebGL Basic Capabilities
       type: object
@@ -193,6 +218,48 @@
           Missing or limited WebGL capabilities indicate automated browser.
           Inconsistent vendor/renderer information suggests automated environment.
           Unusual WebGL configurations indicate potential automation.
+      outputs:
+        version:
+          name: WebGL Version Analysis
+          type: string
+          description: |
+            Advanced WebGL version detection.
+            Verifies WebGL implementation version and compatibility.
+            Expected: "WebGL 1.0" or "WebGL 2.0" for legitimate browsers.
+          abuse_indication:
+            bot: |
+              Missing or incorrect version indicates automated browser.
+              Version inconsistent with browser capabilities suggests automation.
+          exemplary_values: ["WebGL 1.0", "WebGL 2.0", ""]
+        vendor:
+          name: WebGL Vendor Analysis
+          type: string
+          description: |
+            Sophisticated WebGL vendor detection.
+            Analyzes graphics driver vendor and implementation details.
+            Expected: Standard vendor names (e.g., "WebKit", "Google Inc.").
+          abuse_indication:
+            bot: |
+              Generic or missing vendor information indicates automated browser.
+              Vendor inconsistent with browser type suggests automation.
+          exemplary_values: ["WebKit", "Google Inc.", "HeadlessChrome"]
+        renderer:
+          name: WebGL Renderer Analysis
+          type: string
+          description: |
+            Advanced WebGL renderer detection.
+            Verifies graphics driver renderer and capabilities.
+            Expected: Standard renderer names matching browser and vendor.
+          abuse_indication:
+            bot: |
+              Generic or missing renderer information indicates automated browser.
+              Renderer inconsistent with vendor suggests automation.
+          exemplary_values:
+            [
+              "WebKit WebGL",
+              "ANGLE (Intel, Intel(R) UHD Graphics Direct3D11 vs_5_0 ps_5_0)",
+              "HeadlessChrome WebGL",
+            ]
     webGlExtensions:
       name: WebGL Extensions Analysis
       type: object
@@ -212,6 +279,45 @@
           Missing or limited WebGL extensions indicate automated browser.
           Inconsistent extension patterns suggest automated environment.
           Unusual parameter values indicate potential automation.
+      outputs:
+        extensions:
+          name: WebGL Extensions List
+          type: array
+          description: |
+            Advanced WebGL extensions enumeration.
+            Verifies available WebGL extensions and their support.
+            Expected: Array of supported WebGL extension names.
+          abuse_indication:
+            bot: |
+              Empty or minimal extensions list indicates automated browser.
+              Missing standard extensions suggests automated environment.
+          exemplary_values:
+            - [
+                "ANGLE_instanced_arrays",
+                "EXT_blend_minmax",
+                "OES_texture_float",
+              ]
+            - ["ANGLE_instanced_arrays"]
+            - []
+        parameters:
+          name: WebGL Parameters Analysis
+          type: array
+          description: |
+            Sophisticated WebGL parameter analysis.
+            Analyzes WebGL implementation limits and capabilities.
+            Expected: Array of parameter strings with standard values.
+          abuse_indication:
+            bot: |
+              Missing or incorrect parameters indicate automated browser.
+              Parameter values inconsistent with hardware suggest automation.
+          exemplary_values:
+            - [
+                "MAX_TEXTURE_SIZE=16384",
+                "MAX_VIEWPORT_DIMS=16384,16384",
+                "MAX_VERTEX_ATTRIBS=16",
+              ]
+            - ["MAX_TEXTURE_SIZE=8192"]
+            - []
     consistentId:
       name: Consistent Visitor ID
       type: string
