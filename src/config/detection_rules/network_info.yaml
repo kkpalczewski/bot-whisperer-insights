@@ -3,13 +3,33 @@
   codeName: network_info
   type: object
   code: |
-    (() => {
+    async () => {
       try {
         const connection = navigator.connection || {};
         const vpnPatterns = /datacenter|cloud|proxy|vpn|hosting/i;
         
         // Get IP info via WebRTC (if available)
         const hasWebRTC = !!(window.RTCPeerConnection || window.webkitRTCPeerConnection);
+        
+        // Get IP and ISP information
+        let ipInfo = {};
+        try {
+          const response = await fetch('https://ipapi.co/json/');
+          const data = await response.json();
+          ipInfo = {
+            ip: data.ip,
+            isp: data.org,
+            asn: data.asn,
+            country: data.country_name,
+            city: data.city,
+            timezone: data.timezone,
+            isDatacenter: vpnPatterns.test(data.org || '')
+          };
+        } catch (e) {
+          ipInfo = {
+            error: 'Failed to fetch IP information'
+          };
+        }
         
         return {
           connection: {
@@ -27,7 +47,8 @@
             navigationStart: performance?.timing?.navigationStart || 0,
             loadEventEnd: performance?.timing?.loadEventEnd || 0,
             loadTime: performance?.timing?.loadEventEnd - performance?.timing?.navigationStart || 0
-          }
+          },
+          ipInfo
         };
       } catch (e) {
         return {
@@ -40,7 +61,7 @@
           }
         };
       }
-    })()
+    }
   description: |
     Network fingerprinting system analyzing connection properties, WebRTC capabilities, and timing metrics.
     RTT (Round-Trip Time) measures network latency in milliseconds, critical for connection quality assessment.
@@ -54,6 +75,8 @@
       Page load times consistently below 500ms (unrealistic for human users, expected: 1000-5000ms) indicate automation.
       Connection type claiming 4G with latency below 15ms (physically impossible for mobile networks) suggests spoofed information.
       Perfect bandwidth stability (zero variation in downlink speed) indicates emulated network conditions.
+      IP addresses from known datacenter ranges (AWS, GCP, Azure) suggest automated environment.
+      ISP names containing 'datacenter', 'cloud', or 'hosting' indicate potential automation.
   outputs:
     connection:
       name: Connection Analysis
@@ -196,5 +219,101 @@
             bot: |
               Load duration consistently at 200ms (unrealistic for humans) indicates automated browser.
               Zero variation in load times (impossible for humans) suggests automated environment.
-
-
+    ipInfo:
+      name: IP and ISP Analysis
+      type: object
+      description: |
+        Comprehensive IP and ISP information analysis for network origin verification.
+        Residential IPs show natural geographic distribution and ISP patterns.
+        Datacenter IPs often belong to known cloud providers (AWS, GCP, Azure).
+        ASN (Autonomous System Number) analysis helps identify network ownership and type.
+      abuse_indication:
+        bot: |
+          IP from known datacenter ranges (AWS, GCP, Azure) indicates automated environment.
+          ISP name containing 'datacenter', 'cloud', or 'hosting' suggests automated browser.
+          ASN belonging to cloud providers (e.g., AS16509 for Amazon) indicates potential automation.
+      outputs:
+        ip:
+          name: IP Address Analysis
+          type: string
+          description: |
+            IP address verification and classification.
+            Residential IPs: Dynamic ranges from ISPs, showing natural geographic distribution.
+            Datacenter IPs: Static ranges from cloud providers, often in specific geographic regions.
+            VPN/Proxy IPs: Often from known datacenter ranges or VPN providers.
+          abuse_indication:
+            bot: |
+              IP from AWS/GCP/Azure ranges (e.g., 3.0.0.0/8, 34.0.0.0/8) indicates automated browser.
+              IP changing every few minutes (unnatural for residential connections) suggests automated environment.
+        isp:
+          name: ISP Analysis
+          type: string
+          description: |
+            Internet Service Provider identification and verification.
+            Residential ISPs: Local providers with geographic-specific names.
+            Datacenter ISPs: Cloud providers, hosting companies, or VPN services.
+            Natural patterns show consistent ISP names within geographic regions.
+          abuse_indication:
+            bot: |
+              ISP name containing 'Amazon', 'Google', 'Microsoft' indicates automated environment.
+              ISP name containing 'datacenter', 'hosting', or 'cloud' suggests automated browser.
+        asn:
+          name: ASN Analysis
+          type: string
+          description: |
+            Autonomous System Number analysis for network identification.
+            Residential ASNs: Assigned to local ISPs, showing natural geographic distribution.
+            Datacenter ASNs: Assigned to cloud providers and hosting companies.
+            ASN patterns help identify network type and ownership.
+          abuse_indication:
+            bot: |
+              ASN belonging to cloud providers (e.g., AS16509 for Amazon) indicates automated browser.
+              ASN changing frequently (unnatural for residential connections) suggests automated environment.
+        country:
+          name: Geographic Analysis
+          type: string
+          description: |
+            Geographic location verification based on IP address.
+            Residential IPs: Match user's claimed location with natural distribution.
+            Datacenter IPs: Often in major data center locations (US, EU, Asia).
+            VPN/Proxy IPs: May show mismatched or unusual geographic patterns.
+          abuse_indication:
+            bot: |
+              Country mismatching user's claimed location indicates automated environment.
+              Country changing frequently (unnatural for residential connections) suggests automated browser.
+        city:
+          name: City Analysis
+          type: string
+          description: |
+            City-level geographic verification based on IP address.
+            Residential IPs: Match user's claimed city with natural distribution.
+            Datacenter IPs: Often in major data center cities.
+            VPN/Proxy IPs: May show mismatched or unusual city patterns.
+          abuse_indication:
+            bot: |
+              City mismatching user's claimed location indicates automated environment.
+              City changing frequently (unnatural for residential connections) suggests automated browser.
+        timezone:
+          name: Timezone Analysis
+          type: string
+          description: |
+            Timezone verification based on IP address location.
+            Residential IPs: Match user's claimed timezone with natural patterns.
+            Datacenter IPs: Often in UTC or major timezone regions.
+            VPN/Proxy IPs: May show mismatched or unusual timezone patterns.
+          abuse_indication:
+            bot: |
+              Timezone mismatching IP location indicates automated environment.
+              Timezone changing frequently (unnatural for residential connections) suggests automated browser.
+        isDatacenter:
+          name: Datacenter Detection
+          type: boolean
+          description: |
+            Datacenter IP detection based on ISP name and IP range analysis.
+            Residential IPs: False (natural ISP names, residential IP ranges).
+            Datacenter IPs: True (cloud provider names, datacenter IP ranges).
+            VPN/Proxy IPs: Often True (hosting provider names, datacenter IP ranges).
+          abuse_indication:
+            bot: |
+              isDatacenter = true indicates automated environment.
+              isDatacenter changing frequently (unnatural pattern) suggests automated browser.
