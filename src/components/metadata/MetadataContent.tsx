@@ -1,5 +1,4 @@
-import { features } from "@/detection/config/detectionFeatures";
-import { findFeatureInfo } from "@/detection/utils/featureLookup";
+import { detectionModule } from "@/detection";
 import React from "react";
 import { FormattedValue } from "../feature/FormattedValue";
 import { ExpandableValue } from "./ExpandableValue";
@@ -52,7 +51,6 @@ interface MetadataContentProps {
    * - 0: Root level features (e.g., 'browser')
    * - 1+: Nested features (e.g., 'browser.version')
    */
-
   level: number;
 
   /** Unique identifier for the feature
@@ -83,12 +81,12 @@ interface MetadataContentProps {
 export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   const value = props.value === undefined ? "undefined" : String(props.value);
 
-  // Find feature info using the full path ID
+  // Get feature metadata using the public API
   const {
     description: featureDescription,
     abuseIndication: featureAbuseIndication,
     exemplaryValues: featureExemplaryValues,
-  } = findFeatureInfo(features, props.id);
+  } = detectionModule.getFeatureMetadata(props.id);
 
   // If no specific feature metadata found, try to get parent metadata
   let description = featureDescription;
@@ -99,10 +97,8 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   let isUsingParentExemplaryValues = false;
 
   if (!description && props.parent) {
-    const { description: parentDescription } = findFeatureInfo(
-      features,
-      props.parent
-    );
+    const { description: parentDescription } =
+      detectionModule.getFeatureMetadata(props.parent);
     if (parentDescription) {
       description = parentDescription;
       isUsingParentDescription = true;
@@ -110,10 +106,8 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   }
 
   if (!abuseIndication && props.parent) {
-    const { abuseIndication: parentAbuseIndication } = findFeatureInfo(
-      features,
-      props.parent
-    );
+    const { abuseIndication: parentAbuseIndication } =
+      detectionModule.getFeatureMetadata(props.parent);
     if (parentAbuseIndication) {
       abuseIndication = parentAbuseIndication;
       isUsingParentAbuseIndication = true;
@@ -121,10 +115,8 @@ export const MetadataContent: React.FC<MetadataContentProps> = (props) => {
   }
 
   if (!exemplaryValues && props.parent) {
-    const { exemplaryValues: parentExemplaryValues } = findFeatureInfo(
-      features,
-      props.parent
-    );
+    const { exemplaryValues: parentExemplaryValues } =
+      detectionModule.getFeatureMetadata(props.parent);
     if (parentExemplaryValues) {
       exemplaryValues = parentExemplaryValues;
       isUsingParentExemplaryValues = true;

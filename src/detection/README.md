@@ -1,124 +1,59 @@
 # Detection Module
 
-A browser-based detection module that collects and analyzes various browser and device characteristics to identify potential automation or bot activity.
+A robust browser-based detection module that collects and analyzes various browser and device characteristics to identify potential automation or bot activity.
 
-## Purpose
+## Architecture
 
-This module is designed to:
-
-- Collect comprehensive browser and device information
-- Evaluate detection rules defined in YAML configuration files
-- Provide a clean interface for accessing detection results
-- Cache results for performance optimization
-- Support extensible detection rules and patterns
-- Enable easy integration with any JavaScript framework
-
-## Features
-
-- **Browser Fingerprinting**: Collects detailed browser characteristics
-- **Device Detection**: Identifies device type, brand, and model
-- **Automation Detection**: Detects common automation frameworks and tools
-- **Performance Monitoring**: Tracks browser performance characteristics
-- **Caching System**: Implements efficient result caching with configurable expiry
-- **Type Safety**: Full TypeScript support with comprehensive type definitions
-- **Extensible Rules**: Easy to add new detection rules via YAML configuration
-
-## Installation
-
-```bash
-npm install @your-org/detection
+```
+detection/
+├── core/           # Core types and interfaces
+│   ├── types.ts    # Type definitions
+│   └── index.ts    # Core module exports
+├── config/         # Configuration and rules
+│   ├── detectionFeatures.ts    # Feature definitions
+│   ├── fingerprintingLibraries.ts # Library definitions
+│   └── detection_rules/        # YAML rule files
+├── storage/        # Storage interface and implementations
+│   ├── interface.ts # Storage interface
+│   └── index.ts    # Storage implementations
+└── utils/          # Utility functions
+    ├── detection-codes-manager.ts  # Code loading and caching
+    ├── evaluation-manager.ts       # Feature evaluation
+    ├── featureLookup.ts           # Feature metadata lookup
+    ├── library-manager.ts         # External library management
+    └── external-libraries/        # External library implementations
 ```
 
-## Quick Start
+## Core Components
+
+### 1. Detection Module (`index.ts`)
+
+The main entry point that provides:
+
+- Feature evaluation
+- Result caching
+- Context management
+- Public API for feature and library access
 
 ```typescript
-import { initDetection } from "@your-org/detection";
+import { detectionModule } from "@/detection";
 
-// Initialize with options
-const detection = initDetection({
-  storage: {
-    getItem: (key: string) => localStorage.getItem(key),
-    setItem: (key: string, value: string) => localStorage.setItem(key, value),
-  },
-  cacheExpiry: 24 * 60 * 60 * 1000, // 24 hours
-  autoRefresh: true,
-});
+// Get all available features
+const features = detectionModule.getFeatures();
 
-// Get detection results
-try {
-  const results = await detection.getResults();
-  console.log("Browser characteristics:", results);
-} catch (error) {
-  console.error("Failed to get results:", error);
-}
+// Get all available libraries
+const libraries = detectionModule.getLibraries();
 
-// Force refresh results
-const freshResults = await detection.refresh();
+// Get feature metadata
+const metadata = detectionModule.getFeatureMetadata("featureId");
 
-// Clear cache
-detection.clearCache();
+// Create a detection context
+const { getState, actions } = detectionModule.createContext(options);
 ```
 
-## API Reference
+### 2. Feature Configuration (`config/`)
 
-### `initDetection(options: DetectionOptions): DetectionInstance`
-
-Initialize the detection module with configuration options.
-
-#### Options
-
-```typescript
-interface DetectionOptions {
-  /**
-   * Storage implementation for caching results
-   * Must implement getItem and setItem methods
-   */
-  storage: Storage;
-
-  /**
-   * Cache expiration time in milliseconds
-   * @default 24 hours
-   */
-  cacheExpiry?: number;
-
-  /**
-   * Whether to automatically refresh results when they expire
-   * @default true
-   */
-  autoRefresh?: boolean;
-}
-```
-
-#### Instance Methods
-
-- `getResults(): Promise<DetectionResult>` - Get current detection results
-  ```typescript
-  interface DetectionResult {
-    [key: string]: {
-      value?: DetectionValue;
-      error?: string;
-      timestamp: string;
-    };
-  }
-  ```
-- `refresh(): Promise<DetectionResult>` - Force refresh of detection results
-- `clearCache(): void` - Clear cached results
-
-## Configuration
-
-Detection rules are defined in YAML files under the `config/detection_rules` directory. Each rule includes:
-
-- `id`: Unique identifier
-- `name`: Human-readable name
-- `codeName`: Code identifier
-- `type`: Value type (string, number, boolean, array, object)
-- `code`: Detection logic
-- `description`: Rule description
-- `abuse_indication`: Bot detection indicators
-- `outputs`: Expected output structure
-- `exemplary_values`: Example values for testing
-
-Example rule:
+Features are defined in YAML files with the following structure:
 
 ```yaml
 - id: "browser_features"
@@ -142,51 +77,142 @@ Example rule:
     - { webgl: false }
 ```
 
-## Project Structure
+### 3. Storage Interface (`storage/`)
 
-```
-detection/
-├── core/           # Core types and interfaces
-│   ├── types.ts    # Type definitions
-│   └── index.ts    # Core module exports
-├── storage/        # Storage interface and implementations
-│   ├── interface.ts # Storage interface
-│   └── index.ts    # Storage implementations
-├── config/         # Configuration and rules
-│   ├── detectionFeatures.ts # Feature definitions
-│   └── detection_rules/     # YAML rule files
-└── utils/          # Utility functions and managers
-    ├── evaluation-manager.ts    # Result evaluation
-    ├── detection-codes-manager.ts # Code management
-    └── library-manager.ts      # External library handling
+Abstract storage interface for caching results:
+
+```typescript
+interface Storage {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+}
 ```
 
-## Development
+### 4. Evaluation Manager (`utils/evaluation-manager.ts`)
 
-The module is designed to be:
+Handles feature evaluation and result management:
 
-- **Framework-agnostic**: Works with any JavaScript framework
-- **Easily testable**: Comprehensive test coverage
-- **Extensible**: Easy to add new detection rules
-- **Well-typed**: Full TypeScript support
-- **Performant**: Efficient caching and evaluation
-- **Maintainable**: Clear code structure and documentation
+- Loads and evaluates detection codes
+- Manages result caching
+- Handles error states
+
+## Usage
+
+### Basic Setup
+
+```typescript
+import { detectionModule } from "@/detection";
+
+// Initialize with storage implementation
+const storage = {
+  getItem: (key: string) => localStorage.getItem(key),
+  setItem: (key: string, value: string) => localStorage.setItem(key, value),
+};
+
+// Create detection context
+const { getState, actions } = detectionModule.createContext({
+  storage,
+  cacheExpiry: 24 * 60 * 60 * 1000, // 24 hours
+  autoRefresh: true,
+});
+```
+
+### Feature Evaluation
+
+```typescript
+// Get current results
+const { results, status, error } = getState();
+
+// Force refresh results
+await actions.refresh();
+
+// Retry on error
+await actions.retry();
+```
+
+### Custom Features
+
+1. Create a new YAML file in `config/detection_rules/`:
+
+```yaml
+- id: "custom_detection"
+  name: "Custom Detection"
+  codeName: "customDetection"
+  type: "object"
+  code: |
+    (async () => {
+      // Your detection logic
+      return {
+        result: true,
+        details: "Custom detection details"
+      };
+    })()
+  description: "Custom detection feature"
+  abuse_indication:
+    bot: "Indicates potential bot activity"
+  outputs:
+    result:
+      name: "Detection Result"
+      type: "boolean"
+    details:
+      name: "Details"
+      type: "string"
+```
+
+2. The feature will be automatically loaded and available through the detection module.
+
+## Error Handling
+
+The module provides robust error handling:
+
+- Automatic error boundaries
+- Graceful fallbacks
+- Clear error messages
+- Retry mechanisms
+
+```typescript
+try {
+  const results = await detectionModule.loadAndEvaluate(storage);
+} catch (error) {
+  console.error("Detection failed:", error);
+  // Handle error appropriately
+}
+```
+
+## Performance Optimization
+
+- Results are cached with configurable expiry
+- Features are evaluated only when necessary
+- Efficient storage implementation
+- Memoization of feature metadata
+
+## Type Safety
+
+Full TypeScript support with comprehensive type definitions:
+
+- `DetectionResult`
+- `DetectionFeature`
+- `Storage`
+- `DetectionOptions`
+- And more...
+
+## Testing
+
+Run detection module tests:
+
+```bash
+npm test detection
+# or
+yarn test detection
+```
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Add your changes
-4. Update documentation
-5. Submit a pull request
+1. Follow the existing code structure
+2. Add appropriate tests
+3. Update documentation
+4. Submit a pull request
 
-## Future Improvements
+## License
 
-- [ ] Add more detection rules
-- [ ] Improve error handling
-- [ ] Add more test coverage
-- [ ] Document API in detail
-- [ ] Add performance benchmarks
-- [ ] Support custom rule loading
-- [ ] Add real-time monitoring
-- [ ] Implement rule versioning
+This module is part of the main project and follows the same MIT license.

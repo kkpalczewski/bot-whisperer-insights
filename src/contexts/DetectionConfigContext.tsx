@@ -1,20 +1,24 @@
 import { LoadingIndicator } from "@/components/LoadingIndicator";
-import { initDetection } from "@/detection";
 import {
-  DetectionInstance,
-  DetectionOptions,
+  DetectionContextState,
+  detectionModule,
   DetectionResult,
-} from "@/detection/core/types";
-import type { Storage } from "@/detection/storage/interface";
-import React, { createContext, useContext, useEffect, useReducer } from "react";
+} from "@/detection";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+} from "react";
 
-const localStorageImpl: Storage = {
+const localStorageImpl = {
   getItem: (key: string): string | null => localStorage.getItem(key),
   setItem: (key: string, value: string): void =>
     localStorage.setItem(key, value),
 };
 
-const detectionOptions: DetectionOptions = {
+const detectionOptions = {
   storage: localStorageImpl,
   autoRefresh: true,
 };
@@ -27,91 +31,55 @@ interface DetectionConfigContextType {
   retry: () => Promise<void>;
 }
 
+type ReducerAction = {
+  type: "SET_STATE";
+  payload: DetectionContextState;
+};
+
 const DetectionConfigContext = createContext<
   DetectionConfigContextType | undefined
 >(undefined);
 
-const initialState: Omit<DetectionConfigContextType, "refresh" | "retry"> = {
-  results: {},
-  status: "idle",
-  error: null,
-};
-
-function reducer(
-  state: Omit<DetectionConfigContextType, "refresh" | "retry">,
-  action:
-    | { type: "START_LOADING" }
-    | { type: "SET_RESULTS"; payload: DetectionResult }
-    | { type: "SET_ERROR"; payload: Error }
-    | { type: "CLEAR_ERROR" }
-) {
-  switch (action.type) {
-    case "START_LOADING":
-      return { ...state, status: "loading", error: null };
-    case "SET_RESULTS":
-      return { ...state, results: action.payload, status: "idle" };
-    case "SET_ERROR":
-      return { ...state, error: action.payload, status: "error" };
-    case "CLEAR_ERROR":
-      return { ...state, error: null };
-    default:
-      return state;
-  }
-}
-
 export const DetectionConfigProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const detection = React.useRef<DetectionInstance | null>(null);
+  const { getState, actions } = detectionModule.createContext(detectionOptions);
+  const stateRef = useRef(getState());
+
+  const [contextState, dispatch] = useReducer(
+    (
+      state: Omit<DetectionConfigContextType, "refresh" | "retry">,
+      action: ReducerAction
+    ) => {
+      switch (action.type) {
+        case "SET_STATE":
+          return { ...state, ...action.payload };
+        default:
+          return state;
+      }
+    },
+    stateRef.current
+  );
 
   useEffect(() => {
-    detection.current = initDetection(detectionOptions);
-    loadAndEvaluateFeatures();
-  }, []);
+    const checkForUpdates = () => {
+      const newState = getState();
+      if (newState !== stateRef.current) {
+        stateRef.current = newState;
+        dispatch({ type: "SET_STATE", payload: newState });
+      }
+    };
 
-  const loadAndEvaluateFeatures = async () => {
-    if (!detection.current) return;
+    // Check for updates periodically
+    const intervalId = setInterval(checkForUpdates, 100);
 
-    dispatch({ type: "START_LOADING" });
-    try {
-      const results = await detection.current.getResults();
-      dispatch({ type: "SET_RESULTS", payload: results });
-    } catch (error) {
-      dispatch({
-        type: "SET_ERROR",
-        payload:
-          error instanceof Error ? error : new Error("Failed to get results"),
-      });
-    }
-  };
-
-  const refresh = async () => {
-    if (!detection.current) return;
-
-    dispatch({ type: "START_LOADING" });
-    try {
-      const results = await detection.current.refresh();
-      dispatch({ type: "SET_RESULTS", payload: results });
-    } catch (error) {
-      dispatch({
-        type: "SET_ERROR",
-        payload:
-          error instanceof Error
-            ? error
-            : new Error("Failed to refresh results"),
-      });
-    }
-  };
-
-  const retry = async () => {
-    dispatch({ type: "CLEAR_ERROR" });
-    await loadAndEvaluateFeatures();
-  };
+    return () => clearInterval(intervalId);
+  }, [getState]);
 
   if (
-    state.status === "loading" ||
-    (state.status === "idle" && Object.keys(state.results).length === 0)
+    contextState.status === "loading" ||
+    (contextState.status === "idle" &&
+      Object.keys(contextState.results).length === 0)
   ) {
     return <LoadingIndicator />;
   }
@@ -119,11 +87,9 @@ export const DetectionConfigProvider: React.FC<{
   return (
     <DetectionConfigContext.Provider
       value={{
-        results: state.results,
-        status: state.status as "idle" | "loading" | "error",
-        error: state.error,
-        refresh,
-        retry,
+        ...contextState,
+        refresh: actions.refresh,
+        retry: actions.retry,
       }}
     >
       {children}

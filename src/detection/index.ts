@@ -1,3 +1,5 @@
+import { features } from "./config/detectionFeatures";
+import { libraries } from "./config/fingerprintingLibraries";
 import {
   DetectionInstance,
   DetectionOptions,
@@ -7,6 +9,26 @@ import {
 import { Storage } from "./storage/interface";
 import { loadDetectionCodes } from "./utils/detection-codes-manager";
 import { loadAndEvaluate, refreshResults } from "./utils/evaluation-manager";
+import { findFeatureInfo } from "./utils/featureLookup";
+
+export type { DetectionResult } from "./core/types";
+
+export interface FeatureMetadata {
+  description?: string;
+  abuseIndication?: string;
+  exemplaryValues?: Array<string | boolean | number | object | Array<unknown>>;
+}
+
+export interface DetectionContextState {
+  results: DetectionResult;
+  status: "idle" | "loading" | "error";
+  error: Error | null;
+}
+
+export interface DetectionContextActions {
+  refresh: () => Promise<void>;
+  retry: () => Promise<void>;
+}
 
 export interface DetectionModule {
   loadAndEvaluate: (storage: Storage) => Promise<{
@@ -18,12 +40,87 @@ export interface DetectionModule {
     error: Error | null;
   }>;
   loadDetectionCodes: (storage: Storage) => Promise<Record<string, string>>;
+  getFeatureMetadata: (featureId: string) => FeatureMetadata;
+  createContext: (options: DetectionOptions) => {
+    getState: () => DetectionContextState;
+    actions: DetectionContextActions;
+  };
+  getFeatures: () => typeof features;
+  getLibraries: () => typeof libraries;
 }
+
+const createDetectionContext = (options: DetectionOptions) => {
+  const detection = initDetection(options);
+  let currentState: DetectionContextState = {
+    results: {},
+    status: "idle",
+    error: null,
+  };
+
+  const getState = () => currentState;
+
+  const setState = (newState: Partial<DetectionContextState>) => {
+    currentState = { ...currentState, ...newState };
+  };
+
+  const loadAndEvaluateFeatures = async () => {
+    setState({ status: "loading", error: null });
+    try {
+      const results = await detection.getResults();
+      setState({ results, status: "idle" });
+    } catch (error) {
+      setState({
+        error:
+          error instanceof Error ? error : new Error("Failed to get results"),
+        status: "error",
+      });
+    }
+  };
+
+  const refresh = async () => {
+    setState({ status: "loading", error: null });
+    try {
+      const results = await detection.refresh();
+      setState({ results, status: "idle" });
+    } catch (error) {
+      setState({
+        error:
+          error instanceof Error
+            ? error
+            : new Error("Failed to refresh results"),
+        status: "error",
+      });
+    }
+  };
+
+  const retry = async () => {
+    setState({ error: null });
+    await loadAndEvaluateFeatures();
+  };
+
+  // Initial load
+  loadAndEvaluateFeatures();
+
+  return {
+    getState,
+    actions: { refresh, retry },
+  };
+};
 
 export const detectionModule: DetectionModule = {
   loadAndEvaluate,
   refreshResults,
   loadDetectionCodes,
+  getFeatureMetadata: (featureId: string) => {
+    const { description, abuseIndication, exemplaryValues } = findFeatureInfo(
+      features,
+      featureId
+    );
+    return { description, abuseIndication, exemplaryValues };
+  },
+  createContext: createDetectionContext,
+  getFeatures: () => features,
+  getLibraries: () => libraries,
 };
 
 class Detection implements DetectionInstance {
