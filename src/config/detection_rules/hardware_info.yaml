@@ -4,15 +4,15 @@
   type: object
   exemplary_values:
     - {
-        cpuCores: 8,
-        deviceMemory: 16,
-        batteryApi: true,
+        cpuCores: { logicalCores: 8, hyperThreading: true },
+        deviceMemory: { totalMemory: 16, memoryPattern: "natural_variation" },
+        batteryApi: { apiAvailable: true, stateConsistency: true },
         webglRenderer: "NVIDIA GeForce RTX 3080/PCIe/SSE2",
       }
     - {
-        cpuCores: 4,
-        deviceMemory: 4,
-        batteryApi: false,
+        cpuCores: { logicalCores: 4, hyperThreading: false },
+        deviceMemory: { totalMemory: 4, memoryPattern: "inconsistent_pattern" },
+        batteryApi: { apiAvailable: false, stateConsistency: false },
         webglRenderer: "llvmpipe (LLVM 15.0.6, 256 bits)",
       }
   code: |
@@ -110,12 +110,12 @@
   outputs:
     cpuCores:
       name: CPU Core Analysis
-      type: number
+      type: object
       exemplary_values:
-        - 8
-        - 4
-        - 2
-        - 32
+        - { logicalCores: 16, hyperThreading: true }
+        - { logicalCores: 8, hyperThreading: true }
+        - { logicalCores: 4, hyperThreading: false }
+        - { logicalCores: 2, hyperThreading: false }
       description: |
         Advanced CPU architecture analysis through hardwareConcurrency API.
         Detects logical processor count, hyper-threading capabilities, and virtualization indicators.
@@ -160,12 +160,12 @@
               Inconsistent hyper-threading state suggests automated environment.
     deviceMemory:
       name: Memory Analysis
-      type: number
+      type: object
       exemplary_values:
-        - 16
-        - 8
-        - 4
-        - 2
+        - { totalMemory: 16, memoryPattern: "natural_variation" }
+        - { totalMemory: 8, memoryPattern: "natural_variation" }
+        - { totalMemory: 4, memoryPattern: "inconsistent_pattern" }
+        - { totalMemory: 2, memoryPattern: "inconsistent_pattern" }
       description: |
         Comprehensive memory capacity analysis using deviceMemory API.
         Detects RAM size, allocation patterns, and virtualization indicators.
@@ -211,7 +211,7 @@
               Consistent allocation patterns suggest automated environment.
     batteryApi:
       name: Battery API Analysis
-      type: boolean
+      type: object
       exemplary_values:
         - true
         - false
@@ -258,7 +258,7 @@
               Unnatural state changes suggest automated environment.
     webglRenderer:
       name: WebGL Renderer Analysis
-      type: string
+      type: object
       exemplary_values:
         - "NVIDIA GeForce RTX 3080/PCIe/SSE2"
         - "llvmpipe (LLVM 15.0.6, 256 bits)"

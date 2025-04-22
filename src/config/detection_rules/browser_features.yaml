@@ -23,8 +23,8 @@
         orientation: 'DeviceOrientationEvent' in window
       },
       memory: {
-        deviceMemory: navigator.deviceMemory || 'unknown',
-        hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
+        deviceMemory: navigator.deviceMemory,
+        hardwareConcurrency: navigator.hardwareConcurrency,
         maxTouchPoints: navigator.maxTouchPoints || 0
       },
       features: {
@@ -351,28 +351,28 @@
       outputs:
         deviceMemory:
           name: Device Memory Analysis
-          type: number | string
+          type: number
           description: |
             Advanced device memory analysis measuring available RAM (navigator.deviceMemory).
             Verifies memory allocation and hardware capabilities.
             Expected: 4-16 GB for modern devices.
           abuse_indication:
             bot: |
-              Value of 0 or 'unknown' indicates virtualized environment with limited memory.
+              Value of 0 indicates virtualized environment with limited memory.
               Unnatural memory values suggest automated environment.
-          exemplary_values: [0, 4, 8, 16, "unknown"]
+          exemplary_values: [0, 4, 8, 16]
         hardwareConcurrency:
           name: CPU Core Analysis
-          type: number | string
+          type: number
           description: |
             Sophisticated CPU core count analysis (navigator.hardwareConcurrency).
             Verifies processor capabilities and virtualization status.
             Expected: 2-8 cores for modern devices.
           abuse_indication:
             bot: |
-              Value of 1 or 'unknown' indicates virtualized environment with limited CPU.
+              Value of 1 or 0 indicates virtualized environment with limited CPU.
               Unnatural core count suggests automated environment.
-          exemplary_values: [1, 2, 4, 8, "unknown"]
+          exemplary_values: [1, 2, 4, 8]
         maxTouchPoints:
           name: Touch Capability Analysis
           type: number

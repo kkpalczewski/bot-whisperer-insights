@@ -12,12 +12,12 @@ interface FeaturePillProps {
 
 export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
   const [codeVisible, setCodeVisible] = useState(false);
-  const { isLoading, hasError, flattenedNodes, toggleNode, evaluateCode } =
+  const { isLoading, hasError, flattenedNodes, toggleNode, loadResults } =
     useFeatureTree(feature);
   const codeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    evaluateCode();
+    loadResults();
   }, []);
 
   useEffect(() => {

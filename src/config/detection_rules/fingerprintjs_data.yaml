@@ -49,9 +49,7 @@
         const result = await agent.get({
           extendedResult: true
         });
-        
-        console.log("FingerprintJS result:", JSON.stringify(result, null, 2));
-        
+                
         return {
           visitorId: result.visitorId,
           confidence: result.confidence.score,

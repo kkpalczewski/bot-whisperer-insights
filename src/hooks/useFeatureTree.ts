@@ -1,6 +1,5 @@
 import { DetectionFeature } from "@/config/detectionFeatures";
-import { safeEvaluate } from "@/utils/library-manager";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export interface FeatureNode {
@@ -163,37 +162,56 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     setFlattenedNodes(flattenTree(updated));
   };
 
-  const evaluateCode = async () => {
+  const loadResults = async () => {
     setIsLoading(true);
     try {
-      const result = await safeEvaluate(
-        feature.code,
-        feature.type,
-        feature.dependency
-      );
+      // Try to get results from localStorage first
+      const storedResults = localStorage.getItem("detection_results");
+      let result;
 
-      if (result.error) {
+      if (storedResults) {
+        const { results: parsedResults } = JSON.parse(storedResults);
+        result = parsedResults[feature.codeName];
+      }
+
+      if (!result) {
+        // Fallback to state if available
+        const stateResults = (window as any).__DETECTION_RESULTS__;
+        if (stateResults) {
+          result = stateResults[feature.codeName];
+        }
+      }
+
+      if (!result) {
         setHasError(true);
-        toast.error(`Error evaluating ${feature.name}: ${result.error}`);
+        toast.error(`No results found for ${feature.name}`);
         const tree = buildFeatureTree(
-          result.value,
+          {},
           feature.codeName,
           0,
           undefined,
-          result.error
+          "No results available"
         );
         setFeatureTree(tree);
         setFlattenedNodes(flattenTree(tree));
-      } else {
-        const tree = buildFeatureTree(result.value);
-        setFeatureTree(tree);
-        setFlattenedNodes(flattenTree(tree));
-        setHasError(false);
+        return;
       }
+
+      // Extract the value from the result object
+      const resultValue = result.value || result;
+      const tree = buildFeatureTree(
+        resultValue,
+        feature.codeName,
+        0,
+        feature.outputs
+      );
+      setFeatureTree(tree);
+      setFlattenedNodes(flattenTree(tree));
+      setHasError(false);
     } catch (error) {
       setHasError(true);
       const errorMessage = (error as Error).message;
-      toast.error(`Error evaluating ${feature.name}: ${errorMessage}`);
+      toast.error(`Error loading results for ${feature.name}: ${errorMessage}`);
       const tree = buildFeatureTree(
         {},
         feature.codeName,
@@ -208,11 +226,15 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     }
   };
 
+  useEffect(() => {
+    loadResults();
+  }, [feature.codeName]);
+
   return {
     isLoading,
     hasError,
     flattenedNodes,
     toggleNode,
-    evaluateCode,
+    loadResults,
   };
 };
