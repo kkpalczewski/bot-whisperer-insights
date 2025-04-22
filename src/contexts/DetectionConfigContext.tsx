@@ -3,16 +3,50 @@ import { DetectionResult } from "@/types/detection";
 import { loadDetectionCodes } from "@/utils/detection-codes-manager";
 import { LibraryDependency } from "@/utils/external-libraries/dependency-manager";
 import { safeEvaluate } from "@/utils/library-manager";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useReducer } from "react";
 
 const RESULTS_KEY = "detection_results";
 const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
 
-interface DetectionConfigContextType {
+interface DetectionConfigState {
   results: DetectionResult;
-  isLoading: boolean;
+  status: "idle" | "loading" | "error";
   error: Error | null;
+}
+
+type DetectionConfigAction =
+  | { type: "START_LOADING" }
+  | { type: "SET_RESULTS"; payload: DetectionResult }
+  | { type: "SET_ERROR"; payload: Error }
+  | { type: "CLEAR_ERROR" };
+
+const initialState: DetectionConfigState = {
+  results: {},
+  status: "idle",
+  error: null,
+};
+
+function reducer(
+  state: DetectionConfigState,
+  action: DetectionConfigAction
+): DetectionConfigState {
+  switch (action.type) {
+    case "START_LOADING":
+      return { ...state, status: "loading", error: null };
+    case "SET_RESULTS":
+      return { ...state, results: action.payload, status: "idle" };
+    case "SET_ERROR":
+      return { ...state, error: action.payload, status: "error" };
+    case "CLEAR_ERROR":
+      return { ...state, error: null };
+    default:
+      return state;
+  }
+}
+
+interface DetectionConfigContextType extends DetectionConfigState {
   refresh: () => Promise<void>;
+  retry: () => Promise<void>;
 }
 
 const DetectionConfigContext = createContext<
@@ -22,9 +56,7 @@ const DetectionConfigContext = createContext<
 export const DetectionConfigProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [results, setResults] = useState<DetectionResult>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     // Load detection codes when the component mounts
@@ -43,7 +75,6 @@ export const DetectionConfigProvider: React.FC<{
           feature.outputs
         );
 
-        // Ensure the result has a timestamp and is an object
         const resultValue = result.value || {};
         evaluationResults[feature.codeName] = {
           ...(typeof resultValue === "object"
@@ -65,14 +96,15 @@ export const DetectionConfigProvider: React.FC<{
   };
 
   const loadAndEvaluate = async () => {
+    dispatch({ type: "START_LOADING" });
+
     try {
       // Check for valid cached results
       const cached = localStorage.getItem(RESULTS_KEY);
       if (cached) {
         const { results: cachedResults, timestamp } = JSON.parse(cached);
         if (Date.now() - timestamp < CACHE_EXPIRY) {
-          setResults(cachedResults);
-          setIsLoading(false);
+          dispatch({ type: "SET_RESULTS", payload: cachedResults });
           return;
         }
       }
@@ -85,14 +117,13 @@ export const DetectionConfigProvider: React.FC<{
       };
 
       localStorage.setItem(RESULTS_KEY, JSON.stringify(cacheData));
-      setResults(newResults);
-      setError(null);
+      dispatch({ type: "SET_RESULTS", payload: newResults });
     } catch (err) {
-      setError(
-        err instanceof Error ? err : new Error("Failed to evaluate features")
-      );
-    } finally {
-      setIsLoading(false);
+      dispatch({
+        type: "SET_ERROR",
+        payload:
+          err instanceof Error ? err : new Error("Failed to evaluate features"),
+      });
     }
   };
 
@@ -101,7 +132,7 @@ export const DetectionConfigProvider: React.FC<{
   }, []);
 
   const refresh = async () => {
-    setIsLoading(true);
+    dispatch({ type: "START_LOADING" });
     try {
       const newResults = await evaluateFeatures();
       const cacheData = {
@@ -110,20 +141,36 @@ export const DetectionConfigProvider: React.FC<{
       };
 
       localStorage.setItem(RESULTS_KEY, JSON.stringify(cacheData));
-      setResults(newResults);
-      setError(null);
+      dispatch({ type: "SET_RESULTS", payload: newResults });
     } catch (err) {
-      setError(
-        err instanceof Error ? err : new Error("Failed to refresh results")
-      );
-    } finally {
-      setIsLoading(false);
+      dispatch({
+        type: "SET_ERROR",
+        payload:
+          err instanceof Error ? err : new Error("Failed to refresh results"),
+      });
     }
   };
 
+  const retry = async () => {
+    dispatch({ type: "CLEAR_ERROR" });
+    await loadAndEvaluate();
+  };
+
+  // Don't render children until we have results
+  if (
+    state.status === "loading" ||
+    (state.status === "idle" && Object.keys(state.results).length === 0)
+  ) {
+    return null;
+  }
+
   return (
     <DetectionConfigContext.Provider
-      value={{ results, isLoading, error, refresh }}
+      value={{
+        ...state,
+        refresh,
+        retry,
+      }}
     >
       {children}
     </DetectionConfigContext.Provider>
