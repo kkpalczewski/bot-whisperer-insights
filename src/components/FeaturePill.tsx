@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { DetectionFeature } from "@/config/detectionFeatures";
+import { DetectionFeature } from "@/detection/config/detectionFeatures";
+import { DetectionResult } from "@/detection/core/types";
 import { useFeatureTree } from "@/hooks/useFeatureTree";
 import React, { useEffect, useRef, useState } from "react";
 import { CodePreview } from "./CodePreview";
@@ -8,9 +9,13 @@ import { FeatureTable } from "./FeatureTable";
 
 interface FeaturePillProps {
   feature: DetectionFeature;
+  result?: DetectionResult[string];
 }
 
-export const FeaturePill: React.FC<FeaturePillProps> = ({ feature }) => {
+export const FeaturePill: React.FC<FeaturePillProps> = ({
+  feature,
+  result,
+}) => {
   const [codeVisible, setCodeVisible] = useState(false);
   const { isLoading, hasError, flattenedNodes, toggleNode, loadResults } =
     useFeatureTree(feature);

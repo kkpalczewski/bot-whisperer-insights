@@ -1,4 +1,6 @@
-import { DetectionFeature } from "@/config/detectionFeatures";
+import { useDetectionConfig } from "@/contexts/DetectionConfigContext";
+import { DetectionFeature } from "@/detection/config/detectionFeatures";
+import { DetectionValue } from "@/detection/core/types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +19,7 @@ export interface FeatureNode {
 }
 
 const formatValue = (
-  val: any,
+  val: unknown,
   error?: string
 ): string | boolean | undefined => {
   if (error) return undefined;
@@ -53,86 +55,69 @@ const getParentPath = (path: string): string => {
   return parts.slice(0, -1).join("."); // Return everything except the last part
 };
 
+type ValueType = "string" | "number" | "boolean" | "object" | "array";
+
+const getValueType = (value: unknown): ValueType => {
+  if (value === null) return "object";
+  if (Array.isArray(value)) return "array";
+  if (typeof value === "object") return "object";
+  return typeof value as ValueType;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+};
+
 export const useFeatureTree = (feature: DetectionFeature) => {
   const [isLoading, setIsLoading] = useState(true);
   const [featureTree, setFeatureTree] = useState<FeatureNode[]>([]);
   const [flattenedNodes, setFlattenedNodes] = useState<FeatureNode[]>([]);
   const [hasError, setHasError] = useState(false);
+  const { results, status, error, refresh, retry } = useDetectionConfig();
 
   const buildFeatureTree = (
-    value: any,
-    path: string = feature.codeName,
-    level: number = 0,
-    outputs?: Record<string, any>,
+    data: DetectionValue | Record<string, unknown>,
+    feature: string,
+    level: number,
+    outputs?: Record<string, unknown>,
     error?: string
   ): FeatureNode[] => {
-    if (!value || typeof value !== "object" || Array.isArray(value)) {
-      return [
-        {
-          id: path,
-          feature: path.split(".").pop() || path,
-          value: formatValue(value, error),
-          type: feature.type,
-          parent: getParentPath(path),
-          level,
-          children: [],
-          isExpanded: false,
-          description: outputs?.description || feature.description,
-          error,
-        },
-      ];
+    const nodes: FeatureNode[] = [];
+
+    // If data is not an object or is null, return empty array
+    if (typeof data !== "object" || data === null) {
+      return nodes;
     }
 
-    return Object.entries(value).flatMap(([key, val]) => {
-      const output = outputs?.[key];
-      const currentPath = `${path}.${key}`;
-      // Determine the type from output configuration
-      const dataType =
-        output?.type || (Array.isArray(val) ? "array" : typeof val);
+    const entries = Object.entries(data);
 
-      if (val && typeof val === "object" && !Array.isArray(val)) {
-        const children = buildFeatureTree(
-          val,
-          currentPath,
+    for (const [key, value] of entries) {
+      const node: FeatureNode = {
+        id: `${feature}-${key}`,
+        feature: key,
+        value: formatValue(value),
+        type: getValueType(value),
+        parent: feature,
+        level,
+        children: [],
+        isExpanded: false,
+        description: outputs?.[key] as string | undefined,
+        error,
+      };
+
+      if (isRecord(value)) {
+        node.children = buildFeatureTree(
+          value,
+          `${feature}-${key}`,
           level + 1,
-          output?.outputs,
-          error
+          outputs?.[key] as Record<string, unknown> | undefined
         );
-        return [
-          {
-            id: currentPath,
-            feature: key,
-            value: formatValue(val, error),
-            type: dataType,
-            parent: path, // Parent is the current path without the feature name
-            level,
-            children,
-            isExpanded: false,
-            description:
-              output?.description ||
-              (level === 0 ? feature.description : undefined),
-            error,
-          },
-        ];
       }
 
-      return [
-        {
-          id: currentPath,
-          feature: key,
-          value: formatValue(val, error),
-          type: dataType,
-          parent: path, // Parent is the current path without the feature name
-          level,
-          children: [],
-          isExpanded: false,
-          description:
-            output?.description ||
-            (level === 0 ? feature.description : undefined),
-          error,
-        },
-      ];
-    });
+      nodes.push(node);
+    }
+
+    return nodes;
   };
 
   const flattenTree = (nodes: FeatureNode[]): FeatureNode[] => {
@@ -165,23 +150,24 @@ export const useFeatureTree = (feature: DetectionFeature) => {
   const loadResults = async () => {
     setIsLoading(true);
     try {
-      // Try to get results from localStorage first
-      const storedResults = localStorage.getItem("detection_results");
-      let result;
-
-      if (storedResults) {
-        const { results: parsedResults } = JSON.parse(storedResults);
-        result = parsedResults[feature.codeName];
+      if (status === "error") {
+        setHasError(true);
+        toast.error(
+          `Error loading results for ${feature.name}: ${error?.message}`
+        );
+        const tree = buildFeatureTree(
+          {},
+          feature.codeName,
+          0,
+          undefined,
+          error?.message
+        );
+        setFeatureTree(tree);
+        setFlattenedNodes(flattenTree(tree));
+        return;
       }
 
-      if (!result) {
-        // Fallback to state if available
-        const stateResults = (window as any).__DETECTION_RESULTS__;
-        if (stateResults) {
-          result = stateResults[feature.codeName];
-        }
-      }
-
+      const result = results[feature.codeName];
       if (!result) {
         setHasError(true);
         toast.error(`No results found for ${feature.name}`);
@@ -228,7 +214,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
 
   useEffect(() => {
     loadResults();
-  }, [feature.codeName]);
+  }, [feature.codeName, results, status, error]);
 
   return {
     isLoading,
@@ -236,5 +222,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     flattenedNodes,
     toggleNode,
     loadResults,
+    refresh,
+    retry,
   };
 };
