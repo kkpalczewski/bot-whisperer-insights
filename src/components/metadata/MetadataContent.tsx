@@ -1,5 +1,5 @@
-import { features } from "@/config/detectionFeatures";
-import { findFeatureInfo } from "@/utils/featureLookup";
+import { features } from "@/detection/config/detectionFeatures";
+import { findFeatureInfo } from "@/detection/utils/featureLookup";
 import React from "react";
 import { FormattedValue } from "../feature/FormattedValue";
 import { ExpandableValue } from "./ExpandableValue";

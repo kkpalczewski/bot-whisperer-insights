@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { DetectionFeature } from "@/config/detectionFeatures";
+import { DetectionFeature } from "@/detection/config/detectionFeatures";
 import { useFeatureTree } from "@/hooks/useFeatureTree";
 import React, { useEffect, useRef, useState } from "react";
 import { CodePreview } from "./CodePreview";

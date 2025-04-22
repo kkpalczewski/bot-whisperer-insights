@@ -1,35 +1,50 @@
-import { features } from "@/config/detectionFeatures";
-import { DetectionResult } from "@/types/detection";
-import { loadDetectionCodes } from "@/utils/detection-codes-manager";
-import { LibraryDependency } from "@/utils/external-libraries/dependency-manager";
-import { safeEvaluate } from "@/utils/library-manager";
+import { LoadingIndicator } from "@/components/LoadingIndicator";
+import { initDetection } from "@/detection";
+import {
+  DetectionInstance,
+  DetectionOptions,
+  DetectionResult,
+} from "@/detection/core/types";
+import type { Storage } from "@/detection/storage/interface";
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 
-const RESULTS_KEY = "detection_results";
-const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+const localStorageImpl: Storage = {
+  getItem: (key: string): string | null => localStorage.getItem(key),
+  setItem: (key: string, value: string): void =>
+    localStorage.setItem(key, value),
+};
 
-interface DetectionConfigState {
+const detectionOptions: DetectionOptions = {
+  storage: localStorageImpl,
+  autoRefresh: true,
+};
+
+interface DetectionConfigContextType {
   results: DetectionResult;
   status: "idle" | "loading" | "error";
   error: Error | null;
+  refresh: () => Promise<void>;
+  retry: () => Promise<void>;
 }
 
-type DetectionConfigAction =
-  | { type: "START_LOADING" }
-  | { type: "SET_RESULTS"; payload: DetectionResult }
-  | { type: "SET_ERROR"; payload: Error }
-  | { type: "CLEAR_ERROR" };
+const DetectionConfigContext = createContext<
+  DetectionConfigContextType | undefined
+>(undefined);
 
-const initialState: DetectionConfigState = {
+const initialState: Omit<DetectionConfigContextType, "refresh" | "retry"> = {
   results: {},
   status: "idle",
   error: null,
 };
 
 function reducer(
-  state: DetectionConfigState,
-  action: DetectionConfigAction
-): DetectionConfigState {
+  state: Omit<DetectionConfigContextType, "refresh" | "retry">,
+  action:
+    | { type: "START_LOADING" }
+    | { type: "SET_RESULTS"; payload: DetectionResult }
+    | { type: "SET_ERROR"; payload: Error }
+    | { type: "CLEAR_ERROR" }
+) {
   switch (action.type) {
     case "START_LOADING":
       return { ...state, status: "loading", error: null };
@@ -44,130 +59,69 @@ function reducer(
   }
 }
 
-interface DetectionConfigContextType extends DetectionConfigState {
-  refresh: () => Promise<void>;
-  retry: () => Promise<void>;
-}
-
-const DetectionConfigContext = createContext<
-  DetectionConfigContextType | undefined
->(undefined);
-
 export const DetectionConfigProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const detection = React.useRef<DetectionInstance | null>(null);
 
   useEffect(() => {
-    // Load detection codes when the component mounts
-    loadDetectionCodes().catch(console.error);
+    detection.current = initDetection(detectionOptions);
+    loadAndEvaluateFeatures();
   }, []);
 
-  const evaluateFeatures = async (): Promise<DetectionResult> => {
-    const evaluationResults: DetectionResult = {};
+  const loadAndEvaluateFeatures = async () => {
+    if (!detection.current) return;
 
-    for (const feature of features) {
-      try {
-        const result = await safeEvaluate(
-          feature.code,
-          feature.type,
-          feature.dependency as LibraryDependency | undefined,
-          feature.outputs
-        );
-
-        const resultValue = result.value || {};
-        evaluationResults[feature.codeName] = {
-          ...(typeof resultValue === "object"
-            ? resultValue
-            : { value: resultValue }),
-          timestamp: new Date().toISOString(),
-          error: result.error,
-        };
-      } catch (err) {
-        console.error(`Failed to evaluate ${feature.codeName}:`, err);
-        evaluationResults[feature.codeName] = {
-          error: err instanceof Error ? err.message : "Evaluation failed",
-          timestamp: new Date().toISOString(),
-        };
-      }
-    }
-
-    return evaluationResults;
-  };
-
-  const loadAndEvaluate = async () => {
     dispatch({ type: "START_LOADING" });
-
     try {
-      // Check for valid cached results
-      const cached = localStorage.getItem(RESULTS_KEY);
-      if (cached) {
-        const { results: cachedResults, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_EXPIRY) {
-          dispatch({ type: "SET_RESULTS", payload: cachedResults });
-          return;
-        }
-      }
-
-      // Evaluate and cache new results
-      const newResults = await evaluateFeatures();
-      const cacheData = {
-        results: newResults,
-        timestamp: Date.now(),
-      };
-
-      localStorage.setItem(RESULTS_KEY, JSON.stringify(cacheData));
-      dispatch({ type: "SET_RESULTS", payload: newResults });
-    } catch (err) {
+      const results = await detection.current.getResults();
+      dispatch({ type: "SET_RESULTS", payload: results });
+    } catch (error) {
       dispatch({
         type: "SET_ERROR",
         payload:
-          err instanceof Error ? err : new Error("Failed to evaluate features"),
+          error instanceof Error ? error : new Error("Failed to get results"),
       });
     }
   };
 
-  useEffect(() => {
-    loadAndEvaluate();
-  }, []);
-
   const refresh = async () => {
+    if (!detection.current) return;
+
     dispatch({ type: "START_LOADING" });
     try {
-      const newResults = await evaluateFeatures();
-      const cacheData = {
-        results: newResults,
-        timestamp: Date.now(),
-      };
-
-      localStorage.setItem(RESULTS_KEY, JSON.stringify(cacheData));
-      dispatch({ type: "SET_RESULTS", payload: newResults });
-    } catch (err) {
+      const results = await detection.current.refresh();
+      dispatch({ type: "SET_RESULTS", payload: results });
+    } catch (error) {
       dispatch({
         type: "SET_ERROR",
         payload:
-          err instanceof Error ? err : new Error("Failed to refresh results"),
+          error instanceof Error
+            ? error
+            : new Error("Failed to refresh results"),
       });
     }
   };
 
   const retry = async () => {
     dispatch({ type: "CLEAR_ERROR" });
-    await loadAndEvaluate();
+    await loadAndEvaluateFeatures();
   };
 
-  // Don't render children until we have results
   if (
     state.status === "loading" ||
     (state.status === "idle" && Object.keys(state.results).length === 0)
   ) {
-    return null;
+    return <LoadingIndicator />;
   }
 
   return (
     <DetectionConfigContext.Provider
       value={{
-        ...state,
+        results: state.results,
+        status: state.status as "idle" | "loading" | "error",
+        error: state.error,
         refresh,
         retry,
       }}

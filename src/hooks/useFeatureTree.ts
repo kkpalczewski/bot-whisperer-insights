@@ -1,4 +1,4 @@
-import { DetectionFeature } from "@/config/detectionFeatures";
+import { DetectionFeature } from "@/detection/config/detectionFeatures";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 

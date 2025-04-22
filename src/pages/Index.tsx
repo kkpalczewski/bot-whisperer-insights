@@ -2,8 +2,8 @@ import { FeaturePill } from "@/components/FeaturePill";
 import { FingerprintData } from "@/components/FingerprintData";
 import { Header } from "@/components/Header";
 import { LibraryCard } from "@/components/LibraryCard";
-import { features } from "@/config/detectionFeatures";
-import { libraries } from "@/config/fingerprintingLibraries";
+import { features } from "@/detection/config/detectionFeatures";
+import { libraries } from "@/detection/config/fingerprintingLibraries";
 
 const Index = () => {
   return (
