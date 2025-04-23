@@ -15,7 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useGlobalDrawer } from "@/hooks/useGlobalDrawer";
 import { Info, X } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback, useMemo } from "react";
 import { MetadataContent } from "./metadata/MetadataContent";
 
 interface MetadataDialogProps {
@@ -49,26 +49,84 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, setIsOpen]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsOpen(false);
-  };
+  }, [setIsOpen]);
+
+  // Memoize the metadata content to prevent unnecessary re-renders
+  const metadataContent = useMemo(() => (
+    <MetadataContent
+      feature={props.feature}
+      value={props.value}
+      parent={props.parent}
+      description={props.description}
+      error={props.error}
+      type={props.type}
+      level={props.level}
+      id={props.id}
+      hasChildren={props.hasChildren}
+      isExpanded={props.isExpanded}
+    />
+  ), [
+    props.feature,
+    props.value,
+    props.parent,
+    props.description,
+    props.error,
+    props.type,
+    props.level,
+    props.id,
+    props.hasChildren,
+    props.isExpanded,
+  ]);
 
   // InfoButton for different contexts
-  const InfoButton = React.forwardRef<
-    HTMLButtonElement,
-    React.ComponentPropsWithoutRef<typeof Button>
-  >((props, ref) => (
-    <Button
-      {...props}
-      ref={ref}
-      variant="ghost"
-      size="icon"
-      className="h-5 w-5 p-0"
-    >
-      <Info className="h-4 w-4 text-gray-400" />
-    </Button>
-  ));
+  const InfoButton = React.memo(
+    React.forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<typeof Button>>(
+      (props, ref) => (
+        <Button
+          {...props}
+          ref={ref}
+          variant="ghost"
+          size="icon"
+          className="h-5 w-5 p-0"
+        >
+          <Info className="h-4 w-4 text-gray-400" />
+        </Button>
+      )
+    )
+  );
   InfoButton.displayName = "InfoButton";
+
+  const renderTooltip = useCallback(() => {
+    if (isMobile) {
+      return <InfoButton onClick={handleOpen} />;
+    }
+
+    if (isOpen) {
+      return <InfoButton onClick={handleOpen} />;
+    }
+
+    return (
+      <HoverCard>
+        <HoverCardTrigger asChild>
+          <InfoButton onClick={handleOpen} />
+        </HoverCardTrigger>
+        <HoverCardContent
+          className="w-80 max-w-[90vw]"
+          side="right"
+          align="start"
+          sideOffset={5}
+          alignOffset={0}
+          avoidCollisions={true}
+        >
+          <div className="max-h-[80vh] overflow-y-auto">
+            {metadataContent}
+          </div>
+        </HoverCardContent>
+      </HoverCard>
+    );
+  }, [isMobile, isOpen, handleOpen, metadataContent]);
 
   return (
     <div className="inline-block" style={{ position: "relative", zIndex: 30 }}>
@@ -78,29 +136,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
         shouldScaleBackground={false}
       >
         <DrawerTrigger asChild>
-          {!isMobile ? (
-            isOpen ? (
-              <InfoButton onClick={handleOpen} />
-            ) : (
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <InfoButton onClick={handleOpen} />
-                </HoverCardTrigger>
-
-                <HoverCardContent
-                  className="w-80 max-w-[90vw]"
-                  side="right"
-                  align="start"
-                >
-                  <div className="max-h-[80vh] overflow-y-auto">
-                    <MetadataContent {...props} />
-                  </div>
-                </HoverCardContent>
-              </HoverCard>
-            )
-          ) : (
-            <InfoButton onClick={handleOpen} />
-          )}
+          {renderTooltip()}
         </DrawerTrigger>
 
         <DrawerContent className="fixed inset-y-0 right-0 left-auto h-full w-[400px] rounded-l-lg rounded-r-none max-w-full">
@@ -117,7 +153,7 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
             </Button>
           </DrawerHeader>
           <ScrollArea className="h-[calc(100vh-120px)] px-4">
-            <MetadataContent {...props} />
+            {metadataContent}
           </ScrollArea>
         </DrawerContent>
       </Drawer>
