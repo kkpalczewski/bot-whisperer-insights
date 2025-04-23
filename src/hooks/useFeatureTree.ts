@@ -1,7 +1,7 @@
 import { useDetectionConfig } from "@/contexts/DetectionConfigContext";
 import { DetectionFeature } from "@/detection/config/detectionFeatures";
 import { DetectionValue } from "@/detection/core/types";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export interface FeatureNode {
@@ -74,6 +74,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
   const [flattenedNodes, setFlattenedNodes] = useState<FeatureNode[]>([]);
   const [hasError, setHasError] = useState(false);
   const { results, status, error, refresh, retry } = useDetectionConfig();
+  const expandedNodesRef = useRef<Set<string>>(new Set());
 
   const buildFeatureTree = (
     data: DetectionValue | Record<string, unknown>,
@@ -84,7 +85,6 @@ export const useFeatureTree = (feature: DetectionFeature) => {
   ): FeatureNode[] => {
     const nodes: FeatureNode[] = [];
 
-    // If data is not an object or is null, return empty array
     if (typeof data !== "object" || data === null) {
       return nodes;
     }
@@ -92,15 +92,16 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     const entries = Object.entries(data);
 
     for (const [key, value] of entries) {
+      const nodeId = level === 0 ? `${feature}.${key}` : `${feature}.${key}`;
       const node: FeatureNode = {
-        id: `${feature}-${key}`,
+        id: nodeId,
         feature: key,
         value: formatValue(value),
         type: getValueType(value),
         parent: feature,
         level,
         children: [],
-        isExpanded: false,
+        isExpanded: expandedNodesRef.current.has(nodeId),
         description: outputs?.[key] as string | undefined,
         error,
       };
@@ -108,7 +109,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
       if (isRecord(value)) {
         node.children = buildFeatureTree(
           value,
-          `${feature}-${key}`,
+          nodeId,
           level + 1,
           outputs?.[key] as Record<string, unknown> | undefined
         );
@@ -133,7 +134,13 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     const updateNodes = (nodes: FeatureNode[]): FeatureNode[] => {
       return nodes.map((node) => {
         if (node.id === id) {
-          return { ...node, isExpanded: !node.isExpanded };
+          const newExpanded = !node.isExpanded;
+          if (newExpanded) {
+            expandedNodesRef.current.add(id);
+          } else {
+            expandedNodesRef.current.delete(id);
+          }
+          return { ...node, isExpanded: newExpanded };
         }
         if (node.children.length) {
           return { ...node, children: updateNodes(node.children) };
@@ -183,7 +190,6 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         return;
       }
 
-      // Extract the value from the result object
       const resultValue = result.value || result;
       const tree = buildFeatureTree(
         resultValue,
