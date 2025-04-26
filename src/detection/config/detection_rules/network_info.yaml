@@ -121,7 +121,7 @@ network_info:
       ISP names containing 'datacenter', 'cloud', or 'hosting' indicate potential automation.
   outputs:
     connection:
-      name: Connection Analysis
+      name: Connection
       type: object
       exemplaryValues:
         - { effectiveType: "4g", rtt: 50, downlink: 25, saveData: false }
@@ -138,7 +138,7 @@ network_info:
           Data saving enabled with 200Mbps bandwidth (should be disabled) indicates automation.
       outputs:
         effectiveType:
-          name: Connection Type Analysis
+          name: Connection Type
           type: string
           exemplaryValues:
             - "4g"
@@ -154,7 +154,7 @@ network_info:
               Reporting slow-2g with 5ms RTT (should be 500-1000ms) indicates automated browser.
               Claiming 4G with 2ms latency and 200Mbps bandwidth (exceeds mobile network capabilities) suggests automated environment.
         rtt:
-          name: Latency Analysis
+          name: Latency
           type: number
           exemplaryValues:
             - 50
@@ -170,7 +170,7 @@ network_info:
               RTT consistently at 5ms (typical for datacenter) indicates automated browser.
               Zero variation in RTT measurements (impossible for residential connections) suggests automated environment.
         downlink:
-          name: Bandwidth Analysis
+          name: Bandwidth
           type: number
           exemplaryValues:
             - 25
@@ -186,7 +186,7 @@ network_info:
               Bandwidth consistently at 100Mbps (typical for datacenter) indicates automated browser.
               Zero variation in bandwidth (impossible for residential connections) suggests automated environment.
         saveData:
-          name: Data Saving Analysis
+          name: Data Saving
           type: boolean
           exemplaryValues:
             - false
@@ -200,7 +200,7 @@ network_info:
               Data saving enabled with 200Mbps bandwidth (should be disabled) indicates automated browser.
               Data saving toggling every 5 seconds (unnatural pattern) suggests automated environment.
     webRTC:
-      name: WebRTC Analysis
+      name: WebRTC
       type: object
       exemplaryValues:
         - { available: true, protocol: "https:" }
@@ -229,7 +229,7 @@ network_info:
               WebRTC missing on Chrome 90+ (should be present) indicates automated environment.
               WebRTC availability changing every 5 seconds suggests automated browser.
         protocol:
-          name: Protocol Analysis
+          name: Protocol
           type: string
           exemplaryValues:
             - "https:"
@@ -243,7 +243,7 @@ network_info:
               Using HTTP on Chrome 90+ (should be HTTPS) indicates automated environment.
               Protocol changing every 10 seconds suggests automated browser.
     timing:
-      name: Navigation Timing Analysis
+      name: Navigation Timing
       type: object
       exemplaryValues:
         - {
@@ -267,7 +267,7 @@ network_info:
           Zero variation in timing patterns (impossible for humans) suggests automated environment.
       outputs:
         navigationStart:
-          name: Navigation Start Analysis
+          name: Navigation Start
           type: number
           exemplaryValues:
             - 1677721600000
@@ -281,7 +281,7 @@ network_info:
               Start time consistently at 0ms (impossible for humans) indicates automated browser.
               Zero variation in initialization (impossible for humans) suggests automated environment.
         loadEventEnd:
-          name: Load Completion Analysis
+          name: Load Completion
           type: number
           exemplaryValues:
             - 1677721602000
@@ -295,7 +295,7 @@ network_info:
               Completion time consistently at 200ms (unrealistic for humans) indicates automated browser.
               Zero variation in end times (impossible for humans) suggests automated environment.
         loadTime:
-          name: Load Duration Analysis
+          name: Load Duration
           type: number
           exemplaryValues:
             - 2000
@@ -309,7 +309,7 @@ network_info:
               Load duration consistently at 200ms (unrealistic for humans) indicates automated browser.
               Zero variation in load times (impossible for humans) suggests automated environment.
     ipInfo:
-      name: IP and ISP Analysis
+      name: IP and ISP
       type: object
       exemplaryValues:
         - {
@@ -342,7 +342,7 @@ network_info:
           ASN belonging to cloud providers (e.g., AS16509 for Amazon) indicates potential automation.
       outputs:
         ip:
-          name: IP Address Analysis
+          name: IP Address
           type: string
           exemplaryValues:
             - "192.168.1.1"
@@ -358,7 +358,7 @@ network_info:
               IP from AWS/GCP/Azure ranges (e.g., 3.0.0.0/8, 34.0.0.0/8) indicates automated browser.
               IP changing every few minutes (unnatural for residential connections) suggests automated environment.
         isp:
-          name: ISP Analysis
+          name: ISP
           type: string
           exemplaryValues:
             - "Comcast Cable"
@@ -374,7 +374,7 @@ network_info:
               ISP name containing 'Amazon', 'Google', 'Microsoft' indicates automated environment.
               ISP name containing 'datacenter', 'hosting', or 'cloud' suggests automated browser.
         asn:
-          name: ASN Analysis
+          name: ASN
           type: string
           exemplaryValues:
             - "AS7922"
@@ -390,7 +390,7 @@ network_info:
               ASN belonging to cloud providers (e.g., AS16509 for Amazon) indicates automated browser.
               ASN changing frequently (unnatural for residential connections) suggests automated environment.
         country:
-          name: Geographic Analysis
+          name: Geographic
           type: string
           exemplaryValues:
             - "United States"
@@ -406,7 +406,7 @@ network_info:
               Country mismatching user's claimed location indicates automated environment.
               Country changing frequently (unnatural for residential connections) suggests automated browser.
         city:
-          name: City Analysis
+          name: City
           type: string
           exemplaryValues:
             - "New York"
@@ -422,7 +422,7 @@ network_info:
               City mismatching user's claimed location indicates automated environment.
               City changing frequently (unnatural for residential connections) suggests automated browser.
         timezone:
-          name: Timezone Analysis
+          name: Timezone
           type: string
           exemplaryValues:
             - "America/New_York"

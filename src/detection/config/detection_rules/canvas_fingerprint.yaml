@@ -136,7 +136,7 @@ canvas_fingerprint:
       Missing WebGL support or generic renderer strings (e.g., 'llvmpipe', 'swiftshader') indicate software-based rendering.
   outputs:
     tests:
-      name: Canvas Rendering Analysis
+      name: Canvas Rendering
       type: object
       exemplaryValues:
         - {
@@ -162,7 +162,7 @@ canvas_fingerprint:
           Generic or missing WebGL renderer information indicates software-based rendering.
       outputs:
         basicText:
-          name: Text Rendering Analysis
+          name: Text Rendering
           type: string
           exemplaryValues:
             - "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff"
@@ -177,7 +177,7 @@ canvas_fingerprint:
               Identical output across different fonts indicates emulated rendering environment.
               Missing or empty output suggests limited text rendering capabilities.
         complexShapes:
-          name: Shape Rendering Analysis
+          name: Shape Rendering
           type: string
           exemplaryValues:
             - "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff"
@@ -192,7 +192,7 @@ canvas_fingerprint:
               Missing or identical output suggests headless browser environment.
               Inconsistent stroke rendering indicates potential automation.
         gradients:
-          name: Gradient Analysis
+          name: Gradient
           type: string
           exemplaryValues:
             - "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAADDhn8LAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAQRSURBVHic7Z1NqM1BFMf/5z3v3Xffu+8+7z3v3Xfffe+++9773n3vvvvefd9997333nvvvffee++9995777333nvvvffee++9995777333nvvvff"
@@ -207,7 +207,7 @@ canvas_fingerprint:
               Empty or missing gradient output indicates limited rendering capabilities.
               Identical gradient patterns suggest emulated environment.
         webGL:
-          name: WebGL Capability Analysis
+          name: WebGL Capability
           type: string
           exemplaryValues:
             - "Google Inc. (NVIDIA) -- NVIDIA GeForce RTX 3080"
@@ -223,7 +223,7 @@ canvas_fingerprint:
               Generic renderer (e.g., 'llvmpipe', 'swiftshader') indicates software-based rendering.
               Missing WebGL support in capable browsers suggests headless mode.
     fontTest:
-      name: Font Rendering Analysis
+      name: Font Rendering
       type: string
       exemplaryValues:
         - "1.25"
@@ -239,7 +239,7 @@ canvas_fingerprint:
           Zero difference (0.00) indicates perfect font rendering, common in headless browsers.
           Unnaturally consistent differences suggest emulated environment.
     imageRendering:
-      name: Display Capability Analysis
+      name: Display Capability
       type: object
       exemplaryValues:
         - { colorDepth: 24, pixelDepth: 24, gamut: "p3" }
@@ -256,7 +256,7 @@ canvas_fingerprint:
           Missing P3 gamut support in modern displays indicates emulated environment.
       outputs:
         colorDepth:
-          name: Color Depth Analysis
+          name: Color Depth
           type: number
           exemplaryValues:
             - 24
@@ -272,7 +272,7 @@ canvas_fingerprint:
               Values below 24 indicate limited color support in virtualized environment.
               Unnatural color depth values suggest emulated display.
         pixelDepth:
-          name: Pixel Depth Analysis
+          name: Pixel Depth
           type: number
           exemplaryValues:
             - 24
@@ -288,7 +288,7 @@ canvas_fingerprint:
               Values below 24 suggest virtualized environment with limited capabilities.
               Inconsistent pixel depth indicates potential automation.
         gamut:
-          name: Color Gamut Analysis
+          name: Color Gamut
           type: string
           exemplaryValues:
             - "p3"
@@ -304,7 +304,7 @@ canvas_fingerprint:
               Missing P3 support in modern displays indicates emulated environment.
               Inconsistent gamut support suggests potential automation.
     anomalies:
-      name: Rendering Anomaly Analysis
+      name: Rendering Anomaly
       type: object
       exemplaryValues:
         - {
@@ -328,7 +328,7 @@ canvas_fingerprint:
           Consistent font rendering (consistentFonts = true) shows perfect font handling, common in automation.
       outputs:
         perfectRendering:
-          name: Rendering Consistency Analysis
+          name: Rendering Consistency
           type: boolean
           exemplaryValues:
             - false
@@ -342,7 +342,7 @@ canvas_fingerprint:
               True value indicates emulated rendering environment with perfect consistency.
               Unnatural rendering patterns suggest automated browser.
         missingGradients:
-          name: Gradient Capability Analysis
+          name: Gradient Capability
           type: boolean
           exemplaryValues:
             - false
@@ -356,7 +356,7 @@ canvas_fingerprint:
               True value suggests limited rendering capabilities in automated environment.
               Missing gradient support indicates potential automation.
         consistentFonts:
-          name: Font Consistency Analysis
+          name: Font Consistency
           type: boolean
           exemplaryValues:
             - false

@@ -52,6 +52,12 @@ export const MetadataContent: React.FC<MetadataContentProps> = ({ node }) => {
     }
   }
 
+  // Defensive: ensure displayAbuseIndication is never null or undefined
+  const displayAbuseIndication = abuseIndication || "";
+  const displayAbuseIndicationString = typeof abuseIndication === "object"
+    ? abuseIndication?.bot ?? ""
+    : String(abuseIndication || "");
+
   return (
     <div className="space-y-3 pr-4">
       <MetadataSection title="Feature">
@@ -70,10 +76,6 @@ export const MetadataContent: React.FC<MetadataContentProps> = ({ node }) => {
         </div>
       </MetadataSection>
 
-      <MetadataSection title="Parent">
-        <p className="text-sm font-mono text-gray-400">{node.parentKey || "—"}</p>
-      </MetadataSection>
-
       {description && (
         <div className="mb-4">
           <h4 className="text-sm font-medium mb-1">Description</h4>
@@ -88,7 +90,7 @@ export const MetadataContent: React.FC<MetadataContentProps> = ({ node }) => {
         </div>
       )}
 
-      {abuseIndication && (
+      {displayAbuseIndicationString && (
         <MetadataSection
           title={
             isUsingParentAbuseIndication
@@ -97,7 +99,7 @@ export const MetadataContent: React.FC<MetadataContentProps> = ({ node }) => {
           }
         >
           <p className="text-sm text-yellow-400">
-            {abuseIndication}
+            {displayAbuseIndicationString}
             {isUsingParentAbuseIndication && (
               <span className="ml-2 text-xs text-gray-500">
                 (inherited from parent)

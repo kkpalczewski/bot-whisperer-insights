@@ -105,7 +105,7 @@ clientjs_fingerprint:
   dependency: clientjs
   outputs:
     browser:
-      name: Browser Analysis
+      name: Browser
       type: object
       exemplaryValues:
         - {
@@ -137,7 +137,7 @@ clientjs_fingerprint:
           Engine version inconsistent with browser version indicates potential automation.
       outputs:
         name:
-          name: Browser Name Analysis
+          name: Browser Name
           type: string
           exemplaryValues:
             - "Chrome"
@@ -155,7 +155,7 @@ clientjs_fingerprint:
               Name containing 'Selenium' or 'WebDriver' suggests automated environment.
               Generic or missing browser name indicates potential automation.
         version:
-          name: Version Analysis
+          name: Version
           type: string
           exemplaryValues:
             - "120.0.6099.130"
@@ -173,7 +173,7 @@ clientjs_fingerprint:
               Version inconsistent with engine version suggests automated environment.
               Missing or invalid version format indicates potential automation.
         engine:
-          name: Engine Analysis
+          name: Engine
           type: string
           exemplaryValues:
             - "Blink"
@@ -191,7 +191,7 @@ clientjs_fingerprint:
               Engine inconsistent with browser name suggests automated environment.
               Generic or missing engine name indicates potential automation.
         engineVersion:
-          name: Engine Version Analysis
+          name: Engine Version
           type: string
           exemplaryValues:
             - "120.0.6099.130"
@@ -209,7 +209,7 @@ clientjs_fingerprint:
               Version claiming WebKit 537.36 with Chrome 100+ suggests automated environment.
               Missing or invalid version format indicates potential automation.
     device:
-      name: Device Analysis
+      name: Device
       type: object
       exemplaryValues:
         - {
@@ -244,7 +244,7 @@ clientjs_fingerprint:
           Generic vendor information indicates potential automation.
       outputs:
         os:
-          name: OS Analysis
+          name: OS
           type: string
           exemplaryValues:
             - "Windows"
@@ -263,7 +263,7 @@ clientjs_fingerprint:
               OS inconsistent with browser version suggests automated environment.
               Generic or missing OS name indicates potential automation.
         osVersion:
-          name: OS Version Analysis
+          name: OS Version
           type: string
           exemplaryValues:
             - "10.0"
@@ -281,7 +281,7 @@ clientjs_fingerprint:
               Version inconsistent with hardware capabilities suggests automated environment.
               Missing or invalid version format indicates potential automation.
         device:
-          name: Device Analysis
+          name: Device
           type: string
           exemplaryValues:
             - "Desktop"
@@ -299,7 +299,7 @@ clientjs_fingerprint:
               Device inconsistent with capabilities suggests automated environment.
               Missing or invalid device information indicates potential automation.
         deviceType:
-          name: Device Type Analysis
+          name: Device Type
           type: string
           exemplaryValues:
             - "desktop"
@@ -317,7 +317,7 @@ clientjs_fingerprint:
               Type inconsistent with screen characteristics suggests automated environment.
               Generic or missing type information indicates potential automation.
         deviceVendor:
-          name: Vendor Analysis
+          name: Vendor
           type: string
           exemplaryValues:
             - "Dell"
@@ -335,7 +335,7 @@ clientjs_fingerprint:
               Vendor inconsistent with device type suggests automated environment.
               Unsupported vendor for claimed device indicates potential automation.
     fingerprint:
-      name: Fingerprint Analysis
+      name: Fingerprint
       type: number
       exemplaryValues:
         - 1922925364
@@ -352,7 +352,7 @@ clientjs_fingerprint:
           Generic or missing fingerprint indicates potential automation.
       outputs:
         hashStability:
-          name: Hash Stability Analysis
+          name: Hash Stability
           type: boolean
           exemplaryValues:
             - true
@@ -383,7 +383,7 @@ clientjs_fingerprint:
               Pattern matching 'selenium' or 'puppeteer' indicates automated browser.
               Generic pattern matching suggests automated environment.
     browserSpoofed:
-      name: Browser Spoofing Analysis
+      name: Browser Spoofing
       type: boolean
       exemplaryValues:
         - false
@@ -413,7 +413,7 @@ clientjs_fingerprint:
               Version inconsistencies indicate automated browser.
               Perfect version consistency suggests automated environment.
         featureMatch:
-          name: Feature Support Analysis
+          name: Feature Support
           type: boolean
           exemplaryValues:
             - true
