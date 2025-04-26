@@ -79,7 +79,7 @@ browser_features:
       Missing WebGL support (canvas.getContext('webgl')) combined with navigator.webdriver = true confirms Selenium automation with limited capabilities.
   outputs:
     automated_flags:
-      name: Automation Framework Analysis
+      name: Automation Framework
       type: object
       description: |
         Sophisticated automation framework detection system analyzing runtime artifacts and configuration.
@@ -121,7 +121,7 @@ browser_features:
           }
       outputs:
         selenium:
-          name: Selenium WebDriver Analysis
+          name: Selenium WebDriver
           type: boolean
           description: |
             Advanced Selenium detection through webdriver property analysis (navigator.webdriver).
@@ -133,7 +133,7 @@ browser_features:
               Property presence suggests automated browser environment.
           exemplaryValues: [false, true]
         phantom:
-          name: PhantomJS Analysis
+          name: PhantomJS
           type: boolean
           description: |
             Sophisticated PhantomJS detection through global variable analysis (window._phantom, window.callPhantom).
@@ -145,7 +145,7 @@ browser_features:
               Global variable presence confirms automated environment.
           exemplaryValues: [false, true]
         nightmare:
-          name: Nightmare.js Analysis
+          name: Nightmare.js
           type: boolean
           description: |
             Advanced Nightmare.js detection through framework marker analysis (window.__nightmare).
@@ -157,7 +157,7 @@ browser_features:
               Global variable presence confirms automated environment.
           exemplaryValues: [false, true]
         chromedp:
-          name: ChromeDP Analysis
+          name: ChromeDP
           type: boolean
           description: |
             Sophisticated ChromeDP detection through runtime configuration analysis (chrome.app, chrome.runtime).
@@ -169,7 +169,7 @@ browser_features:
               Configuration mismatch suggests automated environment.
           exemplaryValues: [false, true]
         puppeteer:
-          name: Puppeteer/TestCafe Analysis
+          name: Puppeteer/TestCafe
           type: boolean
           description: |
             Advanced Puppeteer and TestCafe detection through framework marker analysis (navigator.webdriver, window._TESTCAFE_DRIVER).
@@ -181,7 +181,7 @@ browser_features:
               Global variable presence confirms automated environment.
           exemplaryValues: [false, true]
         webdriver:
-          name: WebDriver Flag Analysis
+          name: WebDriver Flag
           type: boolean
           description: |
             Advanced WebDriver detection through navigator.webdriver analysis.
@@ -205,7 +205,7 @@ browser_features:
               Runtime configuration confirms automated environment.
           exemplaryValues: [false, true]
     permissions:
-      name: Browser Permission Analysis
+      name: Browser Permission
       type: object
       description: |
         Comprehensive permission and API availability analysis system.
@@ -247,7 +247,7 @@ browser_features:
           }
       outputs:
         notifications:
-          name: Notification API Analysis
+          name: Notification API
           type: string
           description: |
             Advanced Notification API state analysis (Notification.permission).
@@ -259,7 +259,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: ["granted", "denied", "default", "not_supported"]
         geolocation:
-          name: Geolocation API Analysis
+          name: Geolocation API
           type: boolean
           description: |
             Sophisticated Geolocation API availability analysis (navigator.geolocation).
@@ -271,7 +271,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: [true, false]
         midi:
-          name: MIDI API Analysis
+          name: MIDI API
           type: boolean
           description: |
             Advanced MIDI API availability analysis (navigator.requestMIDIAccess).
@@ -283,7 +283,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: [true, false]
         bluetooth:
-          name: Bluetooth API Analysis
+          name: Bluetooth API
           type: boolean
           description: |
             Sophisticated Bluetooth API availability analysis (navigator.bluetooth).
@@ -295,7 +295,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: [true, false]
         clipboard:
-          name: Clipboard API Analysis
+          name: Clipboard API
           type: boolean
           description: |
             Advanced Clipboard API availability analysis (navigator.clipboard).
@@ -307,7 +307,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: [true, false]
         credentials:
-          name: Credentials API Analysis
+          name: Credentials API
           type: boolean
           description: |
             Sophisticated Credentials API availability analysis (navigator.credentials).
@@ -319,7 +319,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: [true, false]
         orientation:
-          name: Device Orientation API Analysis
+          name: Device Orientation API
           type: boolean
           description: |
             Advanced Device Orientation API availability analysis (DeviceOrientationEvent).
@@ -331,7 +331,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: [true, false]
     memory:
-      name: Hardware Capability Analysis
+      name: Hardware Capability
       type: object
       description: |
         Sophisticated hardware characteristic analysis system.
@@ -349,7 +349,7 @@ browser_features:
         - { deviceMemory: 0, hardwareConcurrency: 1, maxTouchPoints: 0 }
       outputs:
         deviceMemory:
-          name: Device Memory Analysis
+          name: Device Memory
           type: number
           description: |
             Advanced device memory analysis measuring available RAM (navigator.deviceMemory).
@@ -361,7 +361,7 @@ browser_features:
               Unnatural memory values suggest automated environment.
           exemplaryValues: [0, 4, 8, 16]
         hardwareConcurrency:
-          name: CPU Core Analysis
+          name: CPU Core
           type: number
           description: |
             Sophisticated CPU core count analysis (navigator.hardwareConcurrency).
@@ -373,7 +373,7 @@ browser_features:
               Unnatural core count suggests automated environment.
           exemplaryValues: [1, 2, 4, 8]
         maxTouchPoints:
-          name: Touch Capability Analysis
+          name: Touch Capability
           type: number
           description: |
             Advanced touch point capability analysis (navigator.maxTouchPoints).
@@ -385,7 +385,7 @@ browser_features:
               Unnatural touch point count suggests automated environment.
           exemplaryValues: [0, 5, 10]
     features:
-      name: Browser Capability Analysis
+      name: Browser Capability
       type: object
       description: |
         Comprehensive browser feature and capability analysis system.
@@ -417,7 +417,7 @@ browser_features:
           }
       outputs:
         serviceWorker:
-          name: Service Worker Analysis
+          name: Service Worker
           type: boolean
           description: |
             Advanced Service Worker API availability analysis (navigator.serviceWorker).
@@ -429,7 +429,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: [true, false]
         webGL:
-          name: WebGL Capability Analysis
+          name: WebGL Capability
           type: boolean
           description: |
             Sophisticated WebGL support analysis (canvas.getContext('webgl')).
@@ -441,7 +441,7 @@ browser_features:
               Missing support suggests limited capabilities.
           exemplaryValues: [true, false]
         webRTC:
-          name: WebRTC Capability Analysis
+          name: WebRTC Capability
           type: boolean
           description: |
             Advanced WebRTC API availability analysis (RTCPeerConnection).
@@ -453,7 +453,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: [true, false]
         battery:
-          name: Battery API Analysis
+          name: Battery API
           type: boolean
           description: |
             Sophisticated Battery API availability analysis (navigator.getBattery).
@@ -465,7 +465,7 @@ browser_features:
               Missing API suggests modified browser environment.
           exemplaryValues: [true, false]
         cookies:
-          name: Cookie Capability Analysis
+          name: Cookie Capability
           type: boolean
           description: |
             Advanced cookie handling capability analysis (navigator.cookieEnabled).
@@ -477,7 +477,7 @@ browser_features:
               Missing support suggests automation or privacy mode.
           exemplaryValues: [true, false]
         localStorage:
-          name: Local Storage Analysis
+          name: Local Storage
           type: boolean
           description: |
             Sophisticated local storage capability analysis (window.localStorage).
@@ -489,7 +489,7 @@ browser_features:
               Missing support suggests automation or privacy mode.
           exemplaryValues: [true, false]
     userAgent:
-      name: User Agent Analysis
+      name: User Agent
       type: string
       description: |
         Advanced user agent string analysis (navigator.userAgent).
@@ -506,7 +506,7 @@ browser_features:
         - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         - "Mozilla/5.0 (Linux; Android 10; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Mobile Safari/537.36"
     platform:
-      name: Platform Analysis
+      name: Platform
       type: string
       description: |
         Sophisticated platform detection analysis (navigator.platform).
@@ -520,7 +520,7 @@ browser_features:
           Missing or malformed platform information indicates potential automation.
       exemplaryValues: ["MacIntel", "Win32", "Linux x86_64", "Unknown"]
     languages:
-      name: Language Preference Analysis
+      name: Language Preference
       type: array
       description: |
         Advanced language preference analysis (navigator.languages).
@@ -538,7 +538,7 @@ browser_features:
         - ["de-DE", "de", "en-US", "en"]
         - []
     timezone:
-      name: Timezone Analysis
+      name: Timezone
       type: string
       description: |
         Sophisticated timezone detection analysis (Intl.DateTimeFormat().resolvedOptions().timeZone).
@@ -553,7 +553,7 @@ browser_features:
       exemplaryValues:
         ["America/New_York", "Europe/London", "Asia/Tokyo", "UTC"]
     plugins:
-      name: Plugin Analysis
+      name: Plugin
       type: array
       description: |
         Advanced plugin enumeration and analysis (Array.from(navigator.plugins)).
@@ -583,7 +583,7 @@ browser_features:
         - []
       outputs:
         name:
-          name: Plugin Name Analysis
+          name: Plugin Name
           type: string
           description: |
             Advanced plugin name analysis (plugin.name).
@@ -596,7 +596,7 @@ browser_features:
           exemplaryValues:
             ["Chrome PDF Viewer", "Native Client", "Default Browser Helper"]
         description:
-          name: Plugin Description Analysis
+          name: Plugin Description
           type: string
           description: |
             Sophisticated plugin description analysis (plugin.description).
@@ -613,7 +613,7 @@ browser_features:
               "Default Browser Helper",
             ]
         filename:
-          name: Plugin Filename Analysis
+          name: Plugin Filename
           type: string
           description: |
             Advanced plugin filename analysis (plugin.filename).

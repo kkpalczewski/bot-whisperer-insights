@@ -9,7 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { AlertTriangle, Info, Package } from "lucide-react";
 import React from "react";
 
-interface FeatureHeaderProps {
+interface RootFeatureHeaderProps {
   name: string;
   dependency?: string;
   description?: string;
@@ -18,7 +18,7 @@ interface FeatureHeaderProps {
   codeVisible: boolean;
 }
 
-export const RootFeatureHeader: React.FC<FeatureHeaderProps> = ({
+export const RootFeatureHeader: React.FC<RootFeatureHeaderProps> = ({
   name,
   dependency,
   description,
