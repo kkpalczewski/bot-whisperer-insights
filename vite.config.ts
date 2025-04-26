@@ -1,6 +1,8 @@
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
+import pkg from './package.json' assert { type: 'json' }
+
 
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
@@ -26,5 +28,7 @@ export default defineConfig(({ mode }) => ({
     "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(
       process.env.SUPABASE_ANON_KEY || "ANON_KEY_PLACEHOLDER"
     ),
+    "import.meta.env.VITE_VERSION": JSON.stringify(pkg.version),
+    __APP_VERSION__: JSON.stringify(pkg.version)
   },
 }));
