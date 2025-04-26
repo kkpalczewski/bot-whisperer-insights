@@ -1,24 +1,26 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { DetectionFeature } from "@/detection/config/detectionFeatures";
+import { DetectionFeatureSchema, RootDetectionFeatureSchema } from "@/detection/types/detectionSchema";
 import { DetectionResult } from "@/detection/core/types";
 import { useFeatureTree } from "@/hooks/useFeatureTree";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { CodePreview } from "./CodePreview";
-import { FeatureHeader } from "./FeatureHeader";
+import { RootFeatureHeader } from "./RootFeatureHeader";
 import { FeatureTable } from "./FeatureTable";
+import { detectionFeaturesFlatSchema } from "@/detection/config/detectionSchemaLoader";
 
 interface FeaturePillProps {
-  feature: DetectionFeature;
+  rootFeature: RootDetectionFeatureSchema;
   result?: DetectionResult[string];
 }
 
+
 export const FeaturePill: React.FC<FeaturePillProps> = ({
-  feature,
+  rootFeature,
   result,
 }) => {
   const [codeVisible, setCodeVisible] = useState(false);
-  const { isLoading, hasError, flattenedNodes, toggleNode, loadResults } =
-    useFeatureTree(feature);
+  const { isLoading, hasError, flattenedNodes, toggleNode, loadResults, featureTree } =
+    useFeatureTree(rootFeature as RootDetectionFeatureSchema);
   const codeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,10 +39,10 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({
   return (
     <Card className="border-b border-gray-800 rounded-none first:rounded-t-lg last:rounded-b-lg">
       <CardHeader className="p-2 space-y-0">
-        <FeatureHeader
-          name={feature.name}
-          dependency={feature.dependency}
-          description={feature.description}
+        <RootFeatureHeader
+          name={rootFeature.name}
+          dependency={rootFeature.dependency}
+          description={rootFeature.description}
           hasError={hasError}
           onToggleCode={() => setCodeVisible(!codeVisible)}
           codeVisible={codeVisible}
@@ -49,14 +51,14 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({
 
       <CardContent className="px-2 pb-2 pt-0 space-y-2">
         <FeatureTable
-          nodes={flattenedNodes}
+          nodes={featureTree}
           isLoading={isLoading}
           onToggleNode={toggleNode}
         />
 
         {codeVisible && (
           <div ref={codeRef}>
-            <CodePreview code={feature.code} hasError={hasError} />
+            <CodePreview code={rootFeature.code} hasError={hasError} />
           </div>
         )}
       </CardContent>

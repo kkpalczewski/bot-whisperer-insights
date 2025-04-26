@@ -93,21 +93,20 @@ Add new detection rules in `src/detection/config/detection_rules/`:
 ```yaml
 - id: "custom_feature"
   name: "Custom Feature Detection"
-  codeName: "customFeature"
   type: "object"
   code: |
     (async () => {
       // Your detection logic here
     })()
   description: "Custom feature detection"
-  abuse_indication:
+  abuseIndication:
     bot: "Indicates potential bot activity"
   outputs:
     result:
       name: "Detection Result"
       type: "boolean"
       description: "Custom detection result"
-  exemplary_values:
+  exemplaryValues:
     - { result: true }
     - { result: false }
 ```

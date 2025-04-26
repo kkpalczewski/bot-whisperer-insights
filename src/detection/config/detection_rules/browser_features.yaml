@@ -1,6 +1,5 @@
-- id: browser_features
+browser_features:
   name: Browser Features
-  codeName: browser_features
   type: object
   code: |
     {
@@ -70,7 +69,7 @@
     5) Plugin enumeration and analysis through Array.from(navigator.plugins) with property extraction (name, description, filename)
     6) Timezone and language preference analysis (Intl.DateTimeFormat, navigator.languages) for behavioral fingerprinting
     All checks are performed synchronously in the main thread to prevent timing-based evasion techniques and ensure reliable detection.
-  abuse_indication:
+  abuseIndication:
     bot: |
       Automated environments typically exhibit specific patterns that differ from legitimate browsers.
       The presence of navigator.webdriver = true combined with Notification.permission = 'not_supported' indicates Selenium automation.
@@ -86,13 +85,13 @@
         Sophisticated automation framework detection system analyzing runtime artifacts and configuration.
         Verifies webdriver flags (navigator.webdriver), framework-specific globals (window._phantom), and runtime inconsistencies.
         Combines multiple detection methods for maximum reliability in identifying automation tools.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Detection of navigator.webdriver = true with window._phantom = true indicates PhantomJS automation.
           Presence of window.__nightmare confirms Nightmare.js framework usage.
           ChromeDP automation is indicated by chrome.app.isInstalled = true without chrome.runtime.
           The _TESTCAFE_DRIVER global variable confirms TestCafe framework usage.
-      exemplary_values:
+      exemplaryValues:
         - {
             selenium: false,
             phantom: false,
@@ -128,11 +127,11 @@
             Advanced Selenium detection through webdriver property analysis (navigator.webdriver).
             Verifies property existence and configuration state.
             Expected: false for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               True value indicates Selenium automation with webdriver flag enabled.
               Property presence suggests automated browser environment.
-          exemplary_values: [false, true]
+          exemplaryValues: [false, true]
         phantom:
           name: PhantomJS Analysis
           type: boolean
@@ -140,11 +139,11 @@
             Sophisticated PhantomJS detection through global variable analysis (window._phantom, window.callPhantom).
             Verifies _phantom and callPhantom existence.
             Expected: false for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               True value indicates PhantomJS automation with global markers present.
               Global variable presence confirms automated environment.
-          exemplary_values: [false, true]
+          exemplaryValues: [false, true]
         nightmare:
           name: Nightmare.js Analysis
           type: boolean
@@ -152,11 +151,11 @@
             Advanced Nightmare.js detection through framework marker analysis (window.__nightmare).
             Verifies __nightmare global existence.
             Expected: false for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               True value indicates Nightmare.js automation with framework marker present.
               Global variable presence confirms automated environment.
-          exemplary_values: [false, true]
+          exemplaryValues: [false, true]
         chromedp:
           name: ChromeDP Analysis
           type: boolean
@@ -164,11 +163,11 @@
             Sophisticated ChromeDP detection through runtime configuration analysis (chrome.app, chrome.runtime).
             Verifies chrome.app and chrome.runtime consistency.
             Expected: false for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               True value indicates ChromeDP automation with inconsistent runtime configuration.
               Configuration mismatch suggests automated environment.
-          exemplary_values: [false, true]
+          exemplaryValues: [false, true]
         puppeteer:
           name: Puppeteer/TestCafe Analysis
           type: boolean
@@ -176,11 +175,11 @@
             Advanced Puppeteer and TestCafe detection through framework marker analysis (navigator.webdriver, window._TESTCAFE_DRIVER).
             Verifies webdriver flag and framework-specific globals.
             Expected: false for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               True value indicates Puppeteer or TestCafe automation with framework markers present.
               Global variable presence confirms automated environment.
-          exemplary_values: [false, true]
+          exemplaryValues: [false, true]
         webdriver:
           name: WebDriver Flag Analysis
           type: boolean
@@ -188,11 +187,11 @@
             Advanced WebDriver detection through navigator.webdriver analysis.
             Verifies property existence and configuration state.
             Expected: false for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               True value indicates automated browser with webdriver flag enabled.
               Property presence confirms automated environment.
-          exemplary_values: [false, true]
+          exemplaryValues: [false, true]
         headless:
           name: Headless Browser Detection
           type: boolean
@@ -200,11 +199,11 @@
             Advanced headless browser detection through runtime configuration analysis.
             Verifies chrome.runtime presence and consistency.
             Expected: false for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               True value indicates headless browser automation.
               Runtime configuration confirms automated environment.
-          exemplary_values: [false, true]
+          exemplaryValues: [false, true]
     permissions:
       name: Browser Permission Analysis
       type: object
@@ -213,12 +212,12 @@
         Verifies Notification (Notification.permission), Geolocation (navigator.geolocation), MIDI (navigator.requestMIDIAccess),
         Bluetooth (navigator.bluetooth), Clipboard (navigator.clipboard), Credentials (navigator.credentials), and DeviceOrientation APIs.
         Analyzes permission states and API support patterns.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Missing Notification API (Notification.permission) with navigator.permissions undefined indicates headless Chrome automation.
           Inconsistent permission states (geolocation = true, notifications = not_supported) suggest modified browser environment.
           Absence of MIDI API (navigator.requestMIDIAccess) in Chrome indicates automation framework with limited capabilities.
-      exemplary_values:
+      exemplaryValues:
         - {
             notifications: "granted",
             geolocation: true,
@@ -254,11 +253,11 @@
             Advanced Notification API state analysis (Notification.permission).
             Verifies API availability and permission state.
             Expected: 'default' or 'denied' for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               'not_supported' value in Chrome indicates headless mode automation.
               Missing API suggests modified browser environment.
-          exemplary_values: ["granted", "denied", "default", "not_supported"]
+          exemplaryValues: ["granted", "denied", "default", "not_supported"]
         geolocation:
           name: Geolocation API Analysis
           type: boolean
@@ -266,11 +265,11 @@
             Sophisticated Geolocation API availability analysis (navigator.geolocation).
             Verifies API existence and support state.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         midi:
           name: MIDI API Analysis
           type: boolean
@@ -278,11 +277,11 @@
             Advanced MIDI API availability analysis (navigator.requestMIDIAccess).
             Verifies API existence and support state.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         bluetooth:
           name: Bluetooth API Analysis
           type: boolean
@@ -290,11 +289,11 @@
             Sophisticated Bluetooth API availability analysis (navigator.bluetooth).
             Verifies API existence and support state.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         clipboard:
           name: Clipboard API Analysis
           type: boolean
@@ -302,11 +301,11 @@
             Advanced Clipboard API availability analysis (navigator.clipboard).
             Verifies API existence and support state.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         credentials:
           name: Credentials API Analysis
           type: boolean
@@ -314,11 +313,11 @@
             Sophisticated Credentials API availability analysis (navigator.credentials).
             Verifies API existence and support state.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         orientation:
           name: Device Orientation API Analysis
           type: boolean
@@ -326,11 +325,11 @@
             Advanced Device Orientation API availability analysis (DeviceOrientationEvent).
             Verifies API existence and support state.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
     memory:
       name: Hardware Capability Analysis
       type: object
@@ -339,12 +338,12 @@
         Verifies device memory (navigator.deviceMemory), CPU core count (navigator.hardwareConcurrency),
         and touch point capabilities (navigator.maxTouchPoints).
         Analyzes hardware configuration patterns and virtualization indicators.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Device memory of 0 GB (navigator.deviceMemory) combined with single CPU core (hardwareConcurrency = 1) indicates virtualized environment.
           Zero touch points (maxTouchPoints = 0) in mobile user agent suggests emulated device.
           Hardware configuration showing 4 CPU cores with 8 GB memory in headless Chrome indicates Puppeteer default settings.
-      exemplary_values:
+      exemplaryValues:
         - { deviceMemory: 8, hardwareConcurrency: 4, maxTouchPoints: 5 }
         - { deviceMemory: 16, hardwareConcurrency: 8, maxTouchPoints: 10 }
         - { deviceMemory: 0, hardwareConcurrency: 1, maxTouchPoints: 0 }
@@ -356,11 +355,11 @@
             Advanced device memory analysis measuring available RAM (navigator.deviceMemory).
             Verifies memory allocation and hardware capabilities.
             Expected: 4-16 GB for modern devices.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Value of 0 indicates virtualized environment with limited memory.
               Unnatural memory values suggest automated environment.
-          exemplary_values: [0, 4, 8, 16]
+          exemplaryValues: [0, 4, 8, 16]
         hardwareConcurrency:
           name: CPU Core Analysis
           type: number
@@ -368,11 +367,11 @@
             Sophisticated CPU core count analysis (navigator.hardwareConcurrency).
             Verifies processor capabilities and virtualization status.
             Expected: 2-8 cores for modern devices.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Value of 1 or 0 indicates virtualized environment with limited CPU.
               Unnatural core count suggests automated environment.
-          exemplary_values: [1, 2, 4, 8]
+          exemplaryValues: [1, 2, 4, 8]
         maxTouchPoints:
           name: Touch Capability Analysis
           type: number
@@ -380,11 +379,11 @@
             Advanced touch point capability analysis (navigator.maxTouchPoints).
             Verifies device input capabilities and emulation status.
             Expected: 5-10 points for modern touch devices.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Value of 0 in mobile user agent indicates emulated device.
               Unnatural touch point count suggests automated environment.
-          exemplary_values: [0, 5, 10]
+          exemplaryValues: [0, 5, 10]
     features:
       name: Browser Capability Analysis
       type: object
@@ -394,12 +393,12 @@
         WebRTC (RTCPeerConnection), Battery API (navigator.getBattery), cookie handling (navigator.cookieEnabled),
         and localStorage support (window.localStorage).
         Analyzes feature availability patterns and capability limitations.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Missing WebGL support (canvas.getContext('webgl')) combined with navigator.webdriver = true confirms Selenium automation.
           Absence of Service Worker API (navigator.serviceWorker) in Chrome indicates headless mode automation.
           Undefined Battery API (navigator.getBattery) with empty plugin list (navigator.plugins.length = 0) suggests Puppeteer with default flags.
-      exemplary_values:
+      exemplaryValues:
         - {
             serviceWorker: true,
             webGL: true,
@@ -424,11 +423,11 @@
             Advanced Service Worker API availability analysis (navigator.serviceWorker).
             Verifies API existence and support state.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value in Chrome indicates headless mode automation.
               Missing API suggests modified browser environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         webGL:
           name: WebGL Capability Analysis
           type: boolean
@@ -436,11 +435,11 @@
             Sophisticated WebGL support analysis (canvas.getContext('webgl')).
             Verifies context creation and hardware acceleration.
             Expected: true for capable devices.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value with navigator.webdriver = true indicates Selenium automation.
               Missing support suggests limited capabilities.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         webRTC:
           name: WebRTC Capability Analysis
           type: boolean
@@ -448,11 +447,11 @@
             Advanced WebRTC API availability analysis (RTCPeerConnection).
             Verifies API existence and support state.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value in Chrome indicates automation with limited capabilities.
               Missing API suggests modified browser environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         battery:
           name: Battery API Analysis
           type: boolean
@@ -460,11 +459,11 @@
             Sophisticated Battery API availability analysis (navigator.getBattery).
             Verifies API existence and support state.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value with empty plugin list indicates Puppeteer automation.
               Missing API suggests modified browser environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         cookies:
           name: Cookie Capability Analysis
           type: boolean
@@ -472,11 +471,11 @@
             Advanced cookie handling capability analysis (navigator.cookieEnabled).
             Verifies cookie support and storage capabilities.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value indicates modified browser environment.
               Missing support suggests automation or privacy mode.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         localStorage:
           name: Local Storage Analysis
           type: boolean
@@ -484,11 +483,11 @@
             Sophisticated local storage capability analysis (window.localStorage).
             Verifies storage access and persistence capabilities.
             Expected: true for modern browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value indicates modified browser environment.
               Missing support suggests automation or privacy mode.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
     userAgent:
       name: User Agent Analysis
       type: string
@@ -497,12 +496,12 @@
         Verifies browser identification, version information, and platform details.
         Analyzes string patterns, version numbers, and platform markers.
         Expected: Standard format with browser name, version, and platform information.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Generic user agent strings (e.g., 'Mozilla/5.0') without specific browser details indicate automation.
           Version numbers inconsistent with platform capabilities suggest automated environment.
           Missing or malformed platform information indicates potential automation.
-      exemplary_values:
+      exemplaryValues:
         - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         - "Mozilla/5.0 (Linux; Android 10; SM-G981B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Mobile Safari/537.36"
@@ -514,12 +513,12 @@
         Verifies operating system and hardware platform information.
         Analyzes platform string patterns and consistency with other browser characteristics.
         Expected: Standard platform identifiers (e.g., 'MacIntel', 'Win32', 'Linux x86_64').
-      abuse_indication:
+      abuseIndication:
         bot: |
           Generic platform strings (e.g., 'Unknown') indicate automated environment.
           Platform inconsistent with user agent claims suggests automation.
           Missing or malformed platform information indicates potential automation.
-      exemplary_values: ["MacIntel", "Win32", "Linux x86_64", "Unknown"]
+      exemplaryValues: ["MacIntel", "Win32", "Linux x86_64", "Unknown"]
     languages:
       name: Language Preference Analysis
       type: array
@@ -528,12 +527,12 @@
         Verifies browser language settings and regional preferences.
         Analyzes language code patterns and consistency with other locale information.
         Expected: Array of BCP 47 language tags (e.g., ['en-US', 'en']).
-      abuse_indication:
+      abuseIndication:
         bot: |
           Empty language array (navigator.languages.length = 0) indicates automated environment.
           Inconsistent language preferences with timezone suggest automation.
           Missing or malformed language codes indicate potential automation.
-      exemplary_values:
+      exemplaryValues:
         - ["en-US", "en"]
         - ["en-GB", "en"]
         - ["de-DE", "de", "en-US", "en"]
@@ -546,12 +545,12 @@
         Verifies system timezone settings and regional information.
         Analyzes timezone patterns and consistency with other locale data.
         Expected: IANA timezone database format (e.g., 'America/New_York', 'Europe/London').
-      abuse_indication:
+      abuseIndication:
         bot: |
           Generic timezone (e.g., 'UTC') in desktop environment indicates automation.
           Timezone inconsistent with language preferences suggests automated environment.
           Missing or malformed timezone information indicates potential automation.
-      exemplary_values:
+      exemplaryValues:
         ["America/New_York", "Europe/London", "Asia/Tokyo", "UTC"]
     plugins:
       name: Plugin Analysis
@@ -561,12 +560,12 @@
         Verifies plugin availability, names, and descriptions.
         Analyzes plugin patterns and consistency with browser capabilities.
         Expected: Array of plugin objects with name, description, and filename properties.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Empty plugin array (navigator.plugins.length = 0) in desktop Chrome indicates automation.
           Generic plugin names (e.g., 'Default Browser Helper') suggest automated environment.
           Missing or malformed plugin information indicates potential automation.
-      exemplary_values:
+      exemplaryValues:
         - [
             {
               name: "Chrome PDF Viewer",
@@ -590,11 +589,11 @@
             Advanced plugin name analysis (plugin.name).
             Verifies plugin identification and naming patterns.
             Expected: Specific plugin names (e.g., 'Chrome PDF Viewer', 'Native Client').
-          abuse_indication:
+          abuseIndication:
             bot: |
               Generic plugin names indicate automated environment.
               Missing or malformed names suggest automation.
-          exemplary_values:
+          exemplaryValues:
             ["Chrome PDF Viewer", "Native Client", "Default Browser Helper"]
         description:
           name: Plugin Description Analysis
@@ -603,11 +602,11 @@
             Sophisticated plugin description analysis (plugin.description).
             Verifies plugin details and capability information.
             Expected: Detailed descriptions of plugin functionality.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Generic descriptions indicate automated environment.
               Missing or malformed descriptions suggest automation.
-          exemplary_values:
+          exemplaryValues:
             [
               "Portable Document Format",
               "Native Client Executable",
@@ -620,11 +619,11 @@
             Advanced plugin filename analysis (plugin.filename).
             Verifies plugin file identification and path patterns.
             Expected: Specific filenames matching plugin functionality.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Generic filenames indicate automated environment.
               Missing or malformed filenames suggest automation.
-          exemplary_values:
+          exemplaryValues:
             [
               "internal-pdf-viewer",
               "internal-nacl-plugin",

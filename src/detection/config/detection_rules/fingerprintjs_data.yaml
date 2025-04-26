@@ -1,8 +1,7 @@
-- id: fingerprintjs_data
+fingerprintjs_data:
   name: FingerprintJS Data
-  codeName: fingerprintjs_data
   type: object
-  exemplary_values:
+  exemplaryValues:
     - {
         visitorId: "a1b2c3d4e5f6g7h8i9j0",
         confidence: 0.95,
@@ -82,7 +81,7 @@
     5) WebGL capabilities and extensions analysis
     6) Visitor ID generation and persistence tracking across sessions
     All checks are performed asynchronously with proper error handling and fallback mechanisms.
-  abuse_indication:
+  abuseIndication:
     bot: |
       Automated environments typically exhibit specific fingerprint patterns that differ from legitimate browsers.
       Confidence scores below 0.5 with inconsistent component behavior indicate sophisticated automation.
@@ -96,7 +95,7 @@
     visitorId:
       name: Visitor ID Analysis
       type: string
-      exemplary_values:
+      exemplaryValues:
         - "a1b2c3d4e5f6g7h8i9j0"
         - "p0o9n8m7l6k5j4i3h2g1f0"
         - "selenium_fingerprint_123"
@@ -105,7 +104,7 @@
         Sophisticated visitor identification system generating unique fingerprints from multiple browser characteristics.
         Combines extended fingerprinting (browser, OS, device), system capabilities, browser configuration, and hardware information.
         Expected to remain stable across sessions for legitimate browsers, with natural variation patterns (changes every 24-48 hours).
-      abuse_indication:
+      abuseIndication:
         bot: |
           Visitor ID changing more frequently than every 5 minutes indicates automated browser.
           ID pattern matching known automation tools (e.g., 'selenium', 'puppeteer') suggests automated environment.
@@ -113,7 +112,7 @@
     confidence:
       name: Confidence Score Analysis
       type: number
-      exemplary_values:
+      exemplaryValues:
         - 0.95
         - 0.7
         - 0.3
@@ -121,7 +120,7 @@
         Sophisticated confidence scoring system based on component consistency and behavioral patterns.
         Scores range from 0.0 to 1.0, with higher values indicating more legitimate browser characteristics.
         Combines component consistency (browser, OS, device), feature support verification, property value stability, and pattern recognition.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Confidence score below 0.5 (high automation likelihood) indicates automated browser.
           Score between 0.5-0.7 (suspicious) suggests browser manipulation.
@@ -129,14 +128,14 @@
     incognito:
       name: Incognito Mode Detection
       type: boolean
-      exemplary_values:
+      exemplaryValues:
         - false
         - true
       description: |
         Advanced privacy mode detection system.
         Identifies incognito/private browsing mode, browser privacy settings, and session isolation.
         Combines multiple detection methods for maximum reliability.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Incognito mode in desktop browser indicates automated browser.
           Privacy settings inconsistent with browser type suggest automated environment.
@@ -144,7 +143,7 @@
     fonts:
       name: Font Fingerprinting
       type: array
-      exemplary_values:
+      exemplaryValues:
         - ["Arial", "Helvetica", "Times New Roman", "Courier New"]
         - ["Arial"]
         - ["Default Font"]
@@ -152,7 +151,7 @@
         Advanced font fingerprinting system analyzing installed fonts and rendering characteristics.
         Verifies font availability, rendering consistency, and system font configuration.
         Expected: rich, consistent font sets for legitimate browsers.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Limited or minimal font sets indicate automated browser.
           Unusual font combinations suggest automated environment.
@@ -160,14 +159,14 @@
     canvas:
       name: Canvas Fingerprinting
       type: object
-      exemplary_values:
+      exemplaryValues:
         - { winding: true, geometry: "data:image/png;base64,..." }
         - { winding: false, geometry: "data:image/png;base64,..." }
       description: |
         Sophisticated canvas fingerprinting system.
         Analyzes canvas rendering capabilities, geometry, and image data generation.
         Expected: consistent canvas fingerprints for legitimate browsers.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Inconsistent canvas fingerprints indicate automated browser.
           Missing or manipulated canvas data suggests automated environment.
@@ -180,11 +179,11 @@
             Advanced canvas winding rule analysis.
             Verifies the non-zero winding rule implementation in canvas rendering.
             Expected: true for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               False value indicates automated browser with modified canvas implementation.
               Inconsistent winding behavior suggests automated environment.
-          exemplary_values: [true, false]
+          exemplaryValues: [true, false]
         geometry:
           name: Canvas Geometry Analysis
           type: string
@@ -192,15 +191,15 @@
             Sophisticated canvas geometry fingerprinting.
             Analyzes canvas rendering patterns and geometric transformations.
             Expected: consistent base64-encoded image data for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Missing or manipulated geometry data indicates automated browser.
               Inconsistent rendering patterns suggest automated environment.
-          exemplary_values: ["data:image/png;base64,...", ""]
+          exemplaryValues: ["data:image/png;base64,...", ""]
     webGlBasics:
       name: WebGL Basic Capabilities
       type: object
-      exemplary_values:
+      exemplaryValues:
         - { version: "WebGL 1.0", vendor: "WebKit", renderer: "WebKit WebGL" }
         - {
             version: "WebGL 1.0",
@@ -211,7 +210,7 @@
         Advanced WebGL capabilities analysis system.
         Verifies WebGL version, vendor, and renderer information.
         Expected: complete WebGL support for legitimate browsers.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Missing or limited WebGL capabilities indicate automated browser.
           Inconsistent vendor/renderer information suggests automated environment.
@@ -224,11 +223,11 @@
             Advanced WebGL version detection.
             Verifies WebGL implementation version and compatibility.
             Expected: "WebGL 1.0" or "WebGL 2.0" for legitimate browsers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Missing or incorrect version indicates automated browser.
               Version inconsistent with browser capabilities suggests automation.
-          exemplary_values: ["WebGL 1.0", "WebGL 2.0", ""]
+          exemplaryValues: ["WebGL 1.0", "WebGL 2.0", ""]
         vendor:
           name: WebGL Vendor Analysis
           type: string
@@ -236,11 +235,11 @@
             Sophisticated WebGL vendor detection.
             Analyzes graphics driver vendor and implementation details.
             Expected: Standard vendor names (e.g., "WebKit", "Google Inc.").
-          abuse_indication:
+          abuseIndication:
             bot: |
               Generic or missing vendor information indicates automated browser.
               Vendor inconsistent with browser type suggests automation.
-          exemplary_values: ["WebKit", "Google Inc.", "HeadlessChrome"]
+          exemplaryValues: ["WebKit", "Google Inc.", "HeadlessChrome"]
         renderer:
           name: WebGL Renderer Analysis
           type: string
@@ -248,11 +247,11 @@
             Advanced WebGL renderer detection.
             Verifies graphics driver renderer and capabilities.
             Expected: Standard renderer names matching browser and vendor.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Generic or missing renderer information indicates automated browser.
               Renderer inconsistent with vendor suggests automation.
-          exemplary_values:
+          exemplaryValues:
             [
               "WebKit WebGL",
               "ANGLE (Intel, Intel(R) UHD Graphics Direct3D11 vs_5_0 ps_5_0)",
@@ -261,7 +260,7 @@
     webGlExtensions:
       name: WebGL Extensions Analysis
       type: object
-      exemplary_values:
+      exemplaryValues:
         - {
             extensions: ["ANGLE_instanced_arrays", "EXT_blend_minmax"],
             parameters:
@@ -272,7 +271,7 @@
         Sophisticated WebGL extensions analysis system.
         Verifies available WebGL extensions and parameters.
         Expected: rich set of WebGL extensions for legitimate browsers.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Missing or limited WebGL extensions indicate automated browser.
           Inconsistent extension patterns suggest automated environment.
@@ -285,11 +284,11 @@
             Advanced WebGL extensions enumeration.
             Verifies available WebGL extensions and their support.
             Expected: Array of supported WebGL extension names.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Empty or minimal extensions list indicates automated browser.
               Missing standard extensions suggests automated environment.
-          exemplary_values:
+          exemplaryValues:
             - [
                 "ANGLE_instanced_arrays",
                 "EXT_blend_minmax",
@@ -304,11 +303,11 @@
             Sophisticated WebGL parameter analysis.
             Analyzes WebGL implementation limits and capabilities.
             Expected: Array of parameter strings with standard values.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Missing or incorrect parameters indicate automated browser.
               Parameter values inconsistent with hardware suggest automation.
-          exemplary_values:
+          exemplaryValues:
             - [
                 "MAX_TEXTURE_SIZE=16384",
                 "MAX_VIEWPORT_DIMS=16384,16384",
@@ -319,7 +318,7 @@
     consistentId:
       name: Consistent Visitor ID
       type: string
-      exemplary_values:
+      exemplaryValues:
         - "a1b2c3d4e5f6g7h8i9j0"
         - "p0o9n8m7l6k5j4i3h2g1f0"
         - "selenium_fingerprint_123"
@@ -328,7 +327,7 @@
         Tracks cross-session consistency, browser fingerprint stability, component behavior, and pattern persistence.
         Detects anomalies in ID generation and session boundary behavior.
         Expected: stable across sessions with natural variation (changes every 24-48 hours).
-      abuse_indication:
+      abuseIndication:
         bot: |
           ID remaining identical across different browsers indicates automated browser.
           Unusual persistence patterns (e.g., perfect stability) suggest automated environment.

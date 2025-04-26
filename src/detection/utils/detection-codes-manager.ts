@@ -1,17 +1,6 @@
 import { Storage } from "../storage/interface";
 
-interface DetectionFeature {
-  codeName: string;
-  code: string;
-}
-
 const DETECTION_CODES_KEY = "detection_codes";
-
-// Import all YAML files from the detection_rules directory
-const modules = import.meta.glob("../config/detection_rules/*.yaml", {
-  eager: true,
-  as: "raw",
-});
 
 export async function loadDetectionCodes(
   storage: Storage

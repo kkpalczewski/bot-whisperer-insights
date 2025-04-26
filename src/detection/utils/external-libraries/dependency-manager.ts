@@ -2,8 +2,7 @@ import { getClientJS } from './clientjs-manager';
 import { getFingerprintJS } from './fingerprintjs-manager';
 import { getCreepJS } from './creepjs-manager';
 import { getDeviceDetector } from './device-detector-manager';
-
-export type LibraryDependency = 'clientjs' | 'fingerprintjs' | 'creepjs' | 'deviceDetector';
+import { LibraryDependency } from './types';
 
 /**
  * Checks if a required library dependency is available

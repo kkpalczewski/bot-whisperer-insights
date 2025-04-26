@@ -2,11 +2,10 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import React, { useState } from "react";
 import { FormattedValue } from "./FormattedValue";
+import { FeatureValue } from "@/detection/types/detectionSchema";
 
-interface ValueCellProps {
-  value: string | boolean | undefined;
+interface ValueCellProps extends FeatureValue {
   type?: string;
-  error?: string;
   parseValue?: boolean;
   isMobileOptimized?: boolean;
 }
@@ -21,7 +20,7 @@ export const ValueCell: React.FC<ValueCellProps> = ({
   const [isValueExpanded, setIsValueExpanded] = useState(false);
 
   const parseTypedValue = (
-    val: string | boolean | undefined,
+    val: FeatureValue["value"],
     type?: string
   ) => {
     if (val === undefined) return undefined;

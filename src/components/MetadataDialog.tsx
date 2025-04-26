@@ -17,23 +17,14 @@ import { useGlobalDrawer } from "@/hooks/useGlobalDrawer";
 import { Info, X } from "lucide-react";
 import React, { useEffect, useCallback, useMemo } from "react";
 import { MetadataContent } from "./metadata/MetadataContent";
+import { FeatureNode } from "@/hooks/types";
 
 interface MetadataDialogProps {
-  feature: string;
-  value: string | boolean | undefined;
-  parent: string;
-  description?: string;
-  error?: string;
-  exemplary_values?: Array<string | boolean | number | object | Array<unknown>>;
-  type: "string" | "boolean" | "array" | "object" | "number";
-  level: number;
-  id: string;
-  hasChildren: boolean;
-  isExpanded: boolean;
+  node: FeatureNode;
 }
 
-export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
-  const drawerId = `drawer-${props.id}`;
+export const MetadataDialog: React.FC<MetadataDialogProps> = ({ node }) => {
+  const drawerId = `drawer-${node.parentKey}`;
   const { isOpen, setIsOpen, handleOpen } = useGlobalDrawer(drawerId);
   const isMobile = useIsMobile();
 
@@ -55,30 +46,8 @@ export const MetadataDialog: React.FC<MetadataDialogProps> = (props) => {
 
   // Memoize the metadata content to prevent unnecessary re-renders
   const metadataContent = useMemo(() => (
-    <MetadataContent
-      feature={props.feature}
-      value={props.value}
-      parent={props.parent}
-      description={props.description}
-      error={props.error}
-      type={props.type}
-      level={props.level}
-      id={props.id}
-      hasChildren={props.hasChildren}
-      isExpanded={props.isExpanded}
-    />
-  ), [
-    props.feature,
-    props.value,
-    props.parent,
-    props.description,
-    props.error,
-    props.type,
-    props.level,
-    props.id,
-    props.hasChildren,
-    props.isExpanded,
-  ]);
+    <MetadataContent node={node}/>
+  ), [node]);
 
   // InfoButton for different contexts
   const InfoButton = React.memo(

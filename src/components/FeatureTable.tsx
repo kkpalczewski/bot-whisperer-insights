@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { FeatureNode } from "@/hooks/useFeatureTree";
+import { FeatureNode } from "@/hooks/types";
 import React from "react";
 import { FeatureTableRow } from "./FeatureTableRow";
 
@@ -23,6 +23,22 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
   onToggleNode,
 }) => {
   const isMobile = useIsMobile();
+
+  // Recursive rendering of tree rows
+  const renderRows = (nodes: FeatureNode[]) => (
+    nodes.map(node => (
+      <React.Fragment key={node.fullKey}>
+        <FeatureTableRow
+          node={node}
+          onToggle={() => onToggleNode(node.fullKey)}
+          hasChildren={node.children.length > 0}
+          isExpanded={node.isExpanded}
+          level={node.level}
+        />
+        {node.isExpanded && node.children.length > 0 && renderRows(node.children)}
+      </React.Fragment>
+    ))
+  );
 
   return (
     <Table>
@@ -48,22 +64,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {nodes.map((node) => (
-          <FeatureTableRow
-            key={node.id}
-            feature={node.feature}
-            value={node.value}
-            type={node.type}
-            parent={node.parent}
-            isExpanded={node.isExpanded}
-            hasChildren={node.children.length > 0}
-            onToggle={() => onToggleNode(node.id)}
-            level={node.level}
-            error={node.error}
-            description={node.description}
-            isTruncated={node.isTruncated}
-          />
-        ))}
+        {renderRows(nodes)}
         {nodes.length === 0 && (
           <TableRow>
             <TableCell colSpan={3} className="text-center py-4 text-gray-400">

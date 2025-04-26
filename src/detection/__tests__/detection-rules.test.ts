@@ -17,17 +17,25 @@ describe('Detection Rules Configuration', () => {
 
   yamlFiles.forEach(file => {
     it(`should load and validate ${file}`, () => {
-      const config = window.loadYaml(`./config/detection_rules/${file}`) as unknown as DetectionRule[];
+      const config = window.loadYaml(`./config/detection_rules/${file}`) as unknown as Record<string, DetectionRule>;
+      
+      // Check that config is an object
+      expect(typeof config).toBe('object');
+      expect(Array.isArray(config)).toBe(false);
+      
+      // Get the first rule (there should be only one)
+      const ruleId = Object.keys(config)[0];
+      const rule = config[ruleId];
       
       // Check required fields
-      expect(Array.isArray(config)).toBe(true);
-      const rule = config[0];
       expect(rule).toHaveProperty('id');
       expect(rule).toHaveProperty('name');
       expect(rule).toHaveProperty('description');
       expect(rule).toHaveProperty('code');
       expect(rule).toHaveProperty('outputs');
       
+      // Verify that the rule ID matches the key
+      expect(rule.id).toBe(ruleId);
     });
   });
 }); 

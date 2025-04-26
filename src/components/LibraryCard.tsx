@@ -7,11 +7,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { LibraryInfo } from "@/detection/config/fingerprintingLibraries";
-import {
-  getClientJS,
-  getCreepJS,
-  getFingerprintJS,
-} from "@/detection/utils/library-manager";
+import { getClientJS } from '@/detection/utils/external-libraries/clientjs-manager';
+import { getFingerprintJS } from '@/detection/utils/external-libraries/fingerprintjs-manager';
+import { getCreepJS } from '@/detection/utils/external-libraries/creepjs-manager';
+import { getDeviceDetector } from '@/detection/utils/external-libraries/device-detector-manager';
+
 import { ExternalLink, Fingerprint } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
