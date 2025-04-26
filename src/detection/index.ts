@@ -32,11 +32,11 @@ export interface DetectionContextActions {
 
 export interface DetectionModule {
   loadAndEvaluate: (storage: Storage) => Promise<{
-    results: EvaluationState["results"];
+    results: EvaluationState;
     error: Error | null;
   }>;
   refreshResults: (storage: Storage) => Promise<{
-    results: EvaluationState["results"];
+    results: EvaluationState;
     error: Error | null;
   }>;
   loadDetectionCodes: (storage: Storage) => Promise<Record<string, string>>;
