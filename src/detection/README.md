@@ -63,14 +63,14 @@ Features are defined in YAML files with the following structure:
       // Detection logic
     })()
   description: "Detects browser features and capabilities"
-  abuse_indication:
+  abuseIndication:
     bot: "Indicates automated browser environment"
   outputs:
     webgl:
       name: "WebGL Support"
       type: "boolean"
       description: "WebGL support detection"
-  exemplary_values:
+  exemplaryValues:
     - { webgl: true }
     - { webgl: false }
 ```
@@ -145,7 +145,7 @@ await actions.retry();
       };
     })()
   description: "Custom detection feature"
-  abuse_indication:
+  abuseIndication:
     bot: "Indicates potential bot activity"
   outputs:
     result:

@@ -108,7 +108,7 @@ hardware_info:
       Inconsistent hardware capability combinations across different APIs reveal automated browsers.
   outputs:
     cpuCores:
-      name: CPU Core Analysis
+      name: CPU Core
       type: object
       exemplaryValues:
         - { logicalCores: 16, hyperThreading: true }
@@ -144,7 +144,7 @@ hardware_info:
               Consistent value of 2, 4, or 8 (VM standard) indicates automated browser.
               Zero variation across requests suggests automated environment.
         hyperThreading:
-          name: Hyper-Threading Analysis
+          name: Hyper-Threading
           type: boolean
           exemplaryValues:
             - true
@@ -158,7 +158,7 @@ hardware_info:
               Hyper-threading enabled on mobile device indicates automated browser.
               Inconsistent hyper-threading state suggests automated environment.
     deviceMemory:
-      name: Memory Analysis
+      name: Memory
       type: object
       exemplaryValues:
         - { totalMemory: 16, memoryPattern: "natural_variation" }
@@ -209,7 +209,7 @@ hardware_info:
               Perfectly aligned memory blocks indicate automated browser.
               Consistent allocation patterns suggest automated environment.
     batteryApi:
-      name: Battery API Analysis
+      name: Battery API
       type: object
       exemplaryValues:
         - true
@@ -256,7 +256,7 @@ hardware_info:
               Perfect state consistency indicates automated browser.
               Unnatural state changes suggest automated environment.
     webglRenderer:
-      name: WebGL Renderer Analysis
+      name: WebGL Renderer
       type: object
       exemplaryValues:
         - "NVIDIA GeForce RTX 3080/PCIe/SSE2"

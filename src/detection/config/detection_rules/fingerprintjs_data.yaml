@@ -93,7 +93,7 @@ fingerprintjs_data:
   dependency: fingerprintjs
   outputs:
     visitorId:
-      name: Visitor ID Analysis
+      name: Visitor ID
       type: string
       exemplaryValues:
         - "a1b2c3d4e5f6g7h8i9j0"
@@ -110,7 +110,7 @@ fingerprintjs_data:
           ID pattern matching known automation tools (e.g., 'selenium', 'puppeteer') suggests automated environment.
           Inconsistent ID generation patterns across components indicate potential automation.
     confidence:
-      name: Confidence Score Analysis
+      name: Confidence Score
       type: number
       exemplaryValues:
         - 0.95
@@ -173,7 +173,7 @@ fingerprintjs_data:
           Unusual rendering patterns indicate potential automation.
       outputs:
         winding:
-          name: Canvas Winding Analysis
+          name: Canvas Winding
           type: boolean
           description: |
             Advanced canvas winding rule analysis.
@@ -185,7 +185,7 @@ fingerprintjs_data:
               Inconsistent winding behavior suggests automated environment.
           exemplaryValues: [true, false]
         geometry:
-          name: Canvas Geometry Analysis
+          name: Canvas Geometry
           type: string
           description: |
             Sophisticated canvas geometry fingerprinting.
@@ -217,7 +217,7 @@ fingerprintjs_data:
           Unusual WebGL configurations indicate potential automation.
       outputs:
         version:
-          name: WebGL Version Analysis
+          name: WebGL Version
           type: string
           description: |
             Advanced WebGL version detection.
@@ -229,7 +229,7 @@ fingerprintjs_data:
               Version inconsistent with browser capabilities suggests automation.
           exemplaryValues: ["WebGL 1.0", "WebGL 2.0", ""]
         vendor:
-          name: WebGL Vendor Analysis
+          name: WebGL Vendor
           type: string
           description: |
             Sophisticated WebGL vendor detection.
@@ -241,7 +241,7 @@ fingerprintjs_data:
               Vendor inconsistent with browser type suggests automation.
           exemplaryValues: ["WebKit", "Google Inc.", "HeadlessChrome"]
         renderer:
-          name: WebGL Renderer Analysis
+          name: WebGL Renderer
           type: string
           description: |
             Advanced WebGL renderer detection.
@@ -258,7 +258,7 @@ fingerprintjs_data:
               "HeadlessChrome WebGL",
             ]
     webGlExtensions:
-      name: WebGL Extensions Analysis
+      name: WebGL Extensions
       type: object
       exemplaryValues:
         - {
@@ -297,7 +297,7 @@ fingerprintjs_data:
             - ["ANGLE_instanced_arrays"]
             - []
         parameters:
-          name: WebGL Parameters Analysis
+          name: WebGL Parameters
           type: array
           description: |
             Sophisticated WebGL parameter analysis.
