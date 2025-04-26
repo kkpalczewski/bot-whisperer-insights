@@ -1,15 +1,16 @@
 import { FeaturePill } from "@/components/FeaturePill";
-import { DetectionFeature } from "@/detection/config/detectionFeatures";
+import { RootDetectionFeatureSchema, DetectionFeatureSchema } from "@/detection/types/detectionSchema";
+import { detectionFeaturesMapSchema } from "@/detection/config/detectionSchemaLoader";
 import { DetectionResult } from "@/detection/core/types";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 interface FeatureSectionProps {
-  features: DetectionFeature[];
+  detectionFeaturesMapSchema: typeof detectionFeaturesMapSchema;
   results: DetectionResult;
 }
 
 export const FeatureSection: React.FC<FeatureSectionProps> = ({
-  features,
+  detectionFeaturesMapSchema,
   results,
 }) => {
   return (
@@ -23,11 +24,11 @@ export const FeatureSection: React.FC<FeatureSectionProps> = ({
           </h2>
         </div>
         <div className="space-y-0">
-          {features.map((feature) => (
+          {Object.values(detectionFeaturesMapSchema).map((rootFeature) => (
             <FeaturePill
-              key={feature.id}
-              feature={feature}
-              result={results[feature.codeName]}
+              key={rootFeature.fullKey}
+              rootFeature={rootFeature}
+              result={results[rootFeature.fullKey]}
             />
           ))}
         </div>

@@ -1,8 +1,7 @@
-import { FeatureValue } from "@/detection/config/detectionFeatures";
+import { RootDetectionFeatureSchema, DetectionFeatureSchema } from "@/detection/types/detectionSchema";
 import {
   checkDependency,
   getDependencyFunctions,
-  LibraryDependency,
 } from "./external-libraries/dependency-manager";
 
 interface ParsedValue<T> {
@@ -21,7 +20,7 @@ type NestedValue = Record<string, unknown> | unknown[];
 const validateAndParseValue = <T>(
   value: PrimitiveValue | NestedValue,
   expectedType: string,
-  outputs?: Record<string, FeatureValue>
+  outputs?: Record<string, DetectionFeatureSchema>
 ): ParsedValue<T> => {
   // Handle null/undefined values
   if (value === null || value === undefined) {
@@ -168,10 +167,7 @@ const validateAndParseValue = <T>(
  * Safe evaluation function with proper error handling and type validation
  */
 export const safeEvaluate = async <T>(
-  code: string,
-  expectedType: string,
-  dependency?: LibraryDependency,
-  outputs?: Record<string, FeatureValue>
+  rootDetectionFeature: RootDetectionFeatureSchema
 ): Promise<{
   value: T | null;
   error?: string;
@@ -179,8 +175,8 @@ export const safeEvaluate = async <T>(
 }> => {
   try {
     // Check for dependencies first
-    if (dependency) {
-      const { available, error } = await checkDependency(dependency);
+    if (rootDetectionFeature.dependency) {
+      const { available, error } = await checkDependency(rootDetectionFeature.dependency);
       if (!available) {
         return { value: null, error };
       }
@@ -194,7 +190,7 @@ export const safeEvaluate = async <T>(
     const wrappedCode = `
       async function evaluateFeature() {
         try {
-          const fn = ${code};
+          const fn = ${rootDetectionFeature.code};
           return typeof fn === 'function' ? await fn() : fn;
         } catch (e) {
           console.error("Error evaluating feature code:", e);
@@ -213,7 +209,11 @@ export const safeEvaluate = async <T>(
     )(getClientJS, getFingerprintJS, getCreepJS);
 
     // Validate and parse the result
-    const parsedValue = validateAndParseValue<T>(result, expectedType, outputs);
+    const parsedValue = validateAndParseValue<T>(
+      result, 
+      rootDetectionFeature.type, 
+      rootDetectionFeature.outputs
+    );
 
     if (!parsedValue.isValid) {
       return {

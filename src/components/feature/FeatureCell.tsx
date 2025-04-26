@@ -10,7 +10,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import React from "react";
 
 interface FeatureCellProps {
-  feature: string;
+  featureKey: string;
   level: number;
   hasChildren: boolean;
   isExpanded: boolean;
@@ -18,7 +18,7 @@ interface FeatureCellProps {
 }
 
 export const FeatureCell: React.FC<FeatureCellProps> = ({
-  feature,
+  featureKey,
   level,
   hasChildren,
   isExpanded,
@@ -51,11 +51,11 @@ export const FeatureCell: React.FC<FeatureCellProps> = ({
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="text-sm font-mono text-gray-200 font-medium truncate block">
-                {feature}
+                {featureKey}
               </span>
             </TooltipTrigger>
             <TooltipContent side="bottom" align="start">
-              <p className="text-sm font-mono">{feature}</p>
+              <p className="text-sm font-mono">{featureKey}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

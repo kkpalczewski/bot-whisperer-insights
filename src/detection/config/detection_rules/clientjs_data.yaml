@@ -1,8 +1,8 @@
-- id: clientjs_fingerprint
+clientjs_fingerprint:
   name: ClientJS Fingerprint
   codeName: clientjs_fingerprint
   type: object
-  exemplary_values:
+  exemplaryValues:
     - {
         browser:
           {
@@ -94,7 +94,7 @@
     5) Multi-component fingerprint generation combining browser, device, and system characteristics
     6) Browser spoofing detection through version comparison (parseInt vs split), engine verification, and feature consistency analysis
     All checks are performed synchronously to prevent timing-based evasion and ensure maximum detection reliability.
-  abuse_indication:
+  abuseIndication:
     bot: |
       Automated environments typically exhibit specific patterns that differ from legitimate browsers.
       Browser version mismatches with engine version (browserSpoofed = true) indicate sophisticated automation.
@@ -107,7 +107,7 @@
     browser:
       name: Browser Analysis
       type: object
-      exemplary_values:
+      exemplaryValues:
         - {
             name: "Chrome",
             version: "120.0.6099.130",
@@ -130,7 +130,7 @@
         Sophisticated browser identification and analysis system.
         Combines user agent parsing (navigator.userAgent), feature detection (navigator.platform), and engine verification for comprehensive browser fingerprinting.
         Verifies version consistency (major.minor.build), engine compatibility, and feature support claims.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Browser name containing 'PhantomJS' or 'HeadlessChrome' indicates automated browser.
           Version claiming Chrome 100+ on unsupported platforms suggests automated environment.
@@ -139,7 +139,7 @@
         name:
           name: Browser Name Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "Chrome"
             - "Firefox"
             - "Safari"
@@ -149,7 +149,7 @@
             Advanced browser name extraction and verification system.
             Combines user agent parsing (navigator.userAgent), feature detection (navigator.vendor), and engine identification.
             Expected to match known browser patterns (Chrome, Firefox, Safari) with natural variations.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Browser name containing 'PhantomJS' or 'HeadlessChrome' indicates automated browser.
               Name containing 'Selenium' or 'WebDriver' suggests automated environment.
@@ -157,7 +157,7 @@
         version:
           name: Version Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "120.0.6099.130"
             - "122.0"
             - "17.2.1"
@@ -167,7 +167,7 @@
             Sophisticated version extraction and verification system.
             Analyzes major and minor version components (major.minor.build), build numbers, and release channels.
             Expected to show natural version progression and platform compatibility.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Version claiming Chrome 100+ on Windows 7 indicates automated browser.
               Version inconsistent with engine version suggests automated environment.
@@ -175,7 +175,7 @@
         engine:
           name: Engine Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "Blink"
             - "Gecko"
             - "WebKit"
@@ -185,7 +185,7 @@
             Advanced rendering engine identification system.
             Combines user agent parsing, feature detection (navigator.vendor), and engine-specific API validation.
             Expected to match known engine patterns (WebKit, Gecko, Blink) with platform-specific variations.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Engine claiming 'WebKit' with Chrome browser indicates automated browser.
               Engine inconsistent with browser name suggests automated environment.
@@ -193,7 +193,7 @@
         engineVersion:
           name: Engine Version Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "120.0.6099.130"
             - "20240201"
             - "612.1.29"
@@ -203,7 +203,7 @@
             Sophisticated engine version verification system.
             Analyzes version components (major.minor.build), compatibility markers, and feature support.
             Expected to show natural version progression and browser compatibility.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Engine version inconsistent with browser version indicates automated browser.
               Version claiming WebKit 537.36 with Chrome 100+ suggests automated environment.
@@ -211,7 +211,7 @@
     device:
       name: Device Analysis
       type: object
-      exemplary_values:
+      exemplaryValues:
         - {
             os: "Windows",
             osVersion: "10.0",
@@ -237,7 +237,7 @@
         Comprehensive device and operating system analysis system.
         Combines platform detection (navigator.platform), hardware information (navigator.hardwareConcurrency), and capability verification.
         Verifies device type consistency, vendor information, and OS compatibility.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Operating system claiming Linux with desktop browser indicates automated browser.
           Device type inconsistent with capabilities suggests automated environment.
@@ -246,7 +246,7 @@
         os:
           name: OS Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "Windows"
             - "macOS"
             - "Linux"
@@ -257,7 +257,7 @@
             Advanced operating system identification system.
             Combines user agent parsing, platform detection (navigator.platform), and OS-specific API validation.
             Expected to show natural OS patterns (Windows, macOS, Linux) with version-specific variations.
-          abuse_indication:
+          abuseIndication:
             bot: |
               OS claiming Linux with desktop browser indicates automated browser.
               OS inconsistent with browser version suggests automated environment.
@@ -265,7 +265,7 @@
         osVersion:
           name: OS Version Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "10.0"
             - "14.2.1"
             - "5.15.0"
@@ -275,7 +275,7 @@
             Sophisticated OS version verification system.
             Analyzes version components (major.minor.build), build numbers, and platform capabilities.
             Expected to show natural version progression and hardware compatibility.
-          abuse_indication:
+          abuseIndication:
             bot: |
               OS version claiming Windows 7 with Chrome 100+ indicates automated browser.
               Version inconsistent with hardware capabilities suggests automated environment.
@@ -283,7 +283,7 @@
         device:
           name: Device Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "Desktop"
             - "MacBook Pro"
             - "iPhone"
@@ -293,7 +293,7 @@
             Advanced device identification system.
             Combines hardware information (navigator.hardwareConcurrency), screen characteristics (screen.width/height), and capability detection.
             Expected to show specific device patterns with natural variations.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Device name containing 'Generic' or 'VMware' indicates automated browser.
               Device inconsistent with capabilities suggests automated environment.
@@ -301,7 +301,7 @@
         deviceType:
           name: Device Type Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "desktop"
             - "mobile"
             - "tablet"
@@ -311,7 +311,7 @@
             Sophisticated device type classification system.
             Analyzes screen characteristics (screen.width/height), touch support (navigator.maxTouchPoints), and input capabilities.
             Expected to show natural device type patterns (desktop, mobile, tablet) with capability-specific variations.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Device type claiming desktop with touch support indicates automated browser.
               Type inconsistent with screen characteristics suggests automated environment.
@@ -319,7 +319,7 @@
         deviceVendor:
           name: Vendor Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "Dell"
             - "Apple"
             - "Samsung"
@@ -329,7 +329,7 @@
             Advanced device vendor identification system.
             Combines hardware information (navigator.vendor), platform detection, and vendor-specific checks.
             Expected to show specific vendor patterns (Apple, Samsung, Dell) with device-specific variations.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Vendor name containing 'Generic' or missing information indicates automated browser.
               Vendor inconsistent with device type suggests automated environment.
@@ -337,7 +337,7 @@
     fingerprint:
       name: Fingerprint Analysis
       type: number
-      exemplary_values:
+      exemplaryValues:
         - 1922925364
         - 1922925364
         - 1333925364
@@ -345,7 +345,7 @@
         Sophisticated fingerprint generation system creating unique identifiers from multiple browser characteristics.
         Combines browser information (navigator.userAgent), device details (screen.width/height), system capabilities, and feature support.
         Expected to show natural variation patterns across different browsers and devices (changes every 24-48 hours).
-      abuse_indication:
+      abuseIndication:
         bot: |
           Fingerprint changing more frequently than every 5 minutes indicates automated browser.
           Fingerprint pattern matching known automation tools suggests automated environment.
@@ -354,21 +354,21 @@
         hashStability:
           name: Hash Stability Analysis
           type: boolean
-          exemplary_values:
+          exemplaryValues:
             - true
             - false
           description: |
             Indicates if fingerprint hash remains stable across sessions.
             Expected: natural variation for legitimate browsers (changes every 24-48 hours).
             Virtual machines often show perfect stability or frequent changes.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Perfect hash stability across different browsers indicates automated browser.
               Unnatural variation patterns suggest automated environment.
         componentMatch:
           name: Component Pattern Matching
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "legitimate_browser"
             - "selenium_automation"
             - "puppeteer_automation"
@@ -378,21 +378,21 @@
             Matches fingerprint patterns against known automation tools.
             Expected: no matches for legitimate browsers.
             Common patterns include 'selenium', 'puppeteer', 'playwright', and 'cypress'.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Pattern matching 'selenium' or 'puppeteer' indicates automated browser.
               Generic pattern matching suggests automated environment.
     browserSpoofed:
       name: Browser Spoofing Analysis
       type: boolean
-      exemplary_values:
+      exemplaryValues:
         - false
         - true
       description: |
         Advanced browser spoofing detection system.
         Analyzes version consistency (parseInt vs split), engine compatibility, and feature support claims.
         Combines multiple detection methods (navigator.userAgent, navigator.vendor) for maximum reliability.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Browser version inconsistent with user agent claims indicates automated browser.
           Engine version mismatches with browser version suggest automated environment.
@@ -401,28 +401,28 @@
         versionMatch:
           name: Version Consistency
           type: boolean
-          exemplary_values:
+          exemplaryValues:
             - true
             - false
           description: |
             Verifies version consistency across browser components.
             Expected: true for legitimate browsers.
             Checks major.minor.build format and compatibility.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Version inconsistencies indicate automated browser.
               Perfect version consistency suggests automated environment.
         featureMatch:
           name: Feature Support Analysis
           type: boolean
-          exemplary_values:
+          exemplaryValues:
             - true
             - false
           description: |
             Verifies feature support claims with browser version.
             Expected: true for legitimate browsers.
             Checks API availability and compatibility.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Feature support inconsistent with version indicates automated browser.
               Unnatural feature patterns suggest automated environment.

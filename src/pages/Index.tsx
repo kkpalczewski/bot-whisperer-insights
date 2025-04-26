@@ -5,11 +5,12 @@ import { LibrarySection } from "@/components/LibrarySection";
 import { useDetectionConfig } from "@/contexts/DetectionConfigContext";
 import { detectionModule } from "@/detection";
 import { useMemo } from "react";
+//import { detectionFeaturesFlatSchema } from "@/detection/config/detectionSchemaLoader";
 
 const Index = () => {
   const { results, status, error } = useDetectionConfig();
 
-  const features = useMemo(() => detectionModule.getFeatures(), []);
+  const detectionFeaturesMapSchema = useMemo(() => detectionModule.getFeatures(), []);
   const libraries = useMemo(() => detectionModule.getLibraries(), []);
 
   if (status === "error") {
@@ -30,7 +31,9 @@ const Index = () => {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <FeatureSection features={features} results={results} />
+          <FeatureSection 
+            detectionFeaturesMapSchema={detectionFeaturesMapSchema} 
+            results={results} />
           <LibrarySection libraries={libraries} />
           <FingerprintData />
         </div>

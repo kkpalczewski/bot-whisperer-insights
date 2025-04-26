@@ -1,8 +1,7 @@
-- id: network_info
+network_info:
   name: Network Information
-  codeName: network_info
   type: object
-  exemplary_values:
+  exemplaryValues:
     - {
         connection:
           { effectiveType: "4g", rtt: 50, downlink: 25, saveData: false },
@@ -111,7 +110,7 @@
     WebRTC (Web Real-Time Communication) is a browser API enabling peer-to-peer communication, often used for IP leak detection.
     The system performs comprehensive analysis of network characteristics including connection type classification (4G, 3G, slow-2g),
     bandwidth capacity in Mbps (Megabits per second), and timing metrics for page load performance.
-  abuse_indication:
+  abuseIndication:
     bot: |
       RTT consistently below 10ms indicates datacenter-like latency, impossible for residential connections (expected: 20-100ms).
       WebRTC disabled on Chrome 90+ (where it's enabled by default) suggests IP masking attempts.
@@ -124,7 +123,7 @@
     connection:
       name: Connection Analysis
       type: object
-      exemplary_values:
+      exemplaryValues:
         - { effectiveType: "4g", rtt: 50, downlink: 25, saveData: false }
         - { effectiveType: "4g", rtt: 5, downlink: 100, saveData: true }
       description: |
@@ -132,7 +131,7 @@
         Residential networks show natural variation in metrics (RTT: 20-100ms, bandwidth: 10-100Mbps),
         while datacenter connections exhibit unnaturally stable patterns (RTT: <10ms, bandwidth: >100Mbps).
         Data saving mode is typically enabled on slow connections (<10Mbps) and disabled on fast connections.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Bandwidth consistently at 100Mbps with zero variation (typical for datacenter) indicates automated browser.
           Claiming 4G connection with 5ms latency (impossible for mobile networks, expected: 20-100ms) suggests automated environment.
@@ -141,7 +140,7 @@
         effectiveType:
           name: Connection Type Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "4g"
             - "3g"
             - "slow-2g"
@@ -150,14 +149,14 @@
             4G: Modern mobile network (20-100ms RTT, 10-100Mbps bandwidth).
             3G: Legacy mobile network (100-300ms RTT, 1-10Mbps bandwidth).
             slow-2g: Legacy network with significant limitations (500-1000ms RTT, <1Mbps bandwidth).
-          abuse_indication:
+          abuseIndication:
             bot: |
               Reporting slow-2g with 5ms RTT (should be 500-1000ms) indicates automated browser.
               Claiming 4G with 2ms latency and 200Mbps bandwidth (exceeds mobile network capabilities) suggests automated environment.
         rtt:
           name: Latency Analysis
           type: number
-          exemplary_values:
+          exemplaryValues:
             - 50
             - 5
             - 200
@@ -166,14 +165,14 @@
             Residential connections: 20-100ms with natural variation.
             Mobile networks: 50-300ms depending on conditions.
             Datacenter connections: <10ms (unnaturally low for legitimate users).
-          abuse_indication:
+          abuseIndication:
             bot: |
               RTT consistently at 5ms (typical for datacenter) indicates automated browser.
               Zero variation in RTT measurements (impossible for residential connections) suggests automated environment.
         downlink:
           name: Bandwidth Analysis
           type: number
-          exemplary_values:
+          exemplaryValues:
             - 25
             - 100
             - 5
@@ -182,35 +181,35 @@
             Residential networks: 10-100Mbps with natural variation.
             Mobile networks: 1-50Mbps depending on conditions.
             Datacenter connections: >100Mbps with unnaturally consistent speeds.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Bandwidth consistently at 100Mbps (typical for datacenter) indicates automated browser.
               Zero variation in bandwidth (impossible for residential connections) suggests automated environment.
         saveData:
           name: Data Saving Analysis
           type: boolean
-          exemplary_values:
+          exemplaryValues:
             - false
             - true
           description: |
             Browser's data saving mode status, optimizing for limited bandwidth.
             Expected: enabled on slow connections (<10Mbps), disabled on fast connections.
             Natural usage patterns show consistency with connection type and speed.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Data saving enabled with 200Mbps bandwidth (should be disabled) indicates automated browser.
               Data saving toggling every 5 seconds (unnatural pattern) suggests automated environment.
     webRTC:
       name: WebRTC Analysis
       type: object
-      exemplary_values:
+      exemplaryValues:
         - { available: true, protocol: "https:" }
         - { available: false, protocol: "http:" }
       description: |
         WebRTC (Web Real-Time Communication) API analysis for real-time communication capabilities.
         Modern browsers (>90% market share) support WebRTC by default for peer-to-peer communication.
         Disabling WebRTC is a common technique to prevent IP address leakage in automated environments.
-      abuse_indication:
+      abuseIndication:
         bot: |
           WebRTC disabled on Chrome 90+ (should be enabled by default) indicates automated environment.
           Protocol switching between HTTP/HTTPS every 10 seconds suggests automated browser.
@@ -218,35 +217,35 @@
         available:
           name: WebRTC Availability
           type: boolean
-          exemplary_values:
+          exemplaryValues:
             - true
             - false
           description: |
             WebRTC API availability check.
             Expected: present in modern browsers (Chrome 90+).
             Missing WebRTC support often indicates IP masking attempts.
-          abuse_indication:
+          abuseIndication:
             bot: |
               WebRTC missing on Chrome 90+ (should be present) indicates automated environment.
               WebRTC availability changing every 5 seconds suggests automated browser.
         protocol:
           name: Protocol Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "https:"
             - "http:"
           description: |
             Connection protocol verification (HTTP/HTTPS).
             Modern browsers enforce HTTPS by default for security.
             HTTP usage is rare in legitimate modern browser traffic.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Using HTTP on Chrome 90+ (should be HTTPS) indicates automated environment.
               Protocol changing every 10 seconds suggests automated browser.
     timing:
       name: Navigation Timing Analysis
       type: object
-      exemplary_values:
+      exemplaryValues:
         - {
             navigationStart: 1677721600000,
             loadEventEnd: 1677721602000,
@@ -262,7 +261,7 @@
         Human users show natural variation in load times (1000-5000ms).
         Automated systems often exhibit unnaturally consistent and fast load times (<500ms).
         Timing patterns include navigation start, DOM processing, and load completion metrics.
-      abuse_indication:
+      abuseIndication:
         bot: |
           Load times consistently at 200ms (unrealistic for humans) indicates automated browser.
           Zero variation in timing patterns (impossible for humans) suggests automated environment.
@@ -270,49 +269,49 @@
         navigationStart:
           name: Navigation Start Analysis
           type: number
-          exemplary_values:
+          exemplaryValues:
             - 1677721600000
             - 1677721600000
           description: |
             Navigation start timestamp in milliseconds since epoch.
             Human users show natural variation (±100ms).
             Automated systems often show perfect consistency or unrealistic values.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Start time consistently at 0ms (impossible for humans) indicates automated browser.
               Zero variation in initialization (impossible for humans) suggests automated environment.
         loadEventEnd:
           name: Load Completion Analysis
           type: number
-          exemplary_values:
+          exemplaryValues:
             - 1677721602000
             - 1677721600200
           description: |
             Page load completion timestamp in milliseconds since epoch.
             Varies based on content size and connection quality.
             Human users show natural variation in completion times.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Completion time consistently at 200ms (unrealistic for humans) indicates automated browser.
               Zero variation in end times (impossible for humans) suggests automated environment.
         loadTime:
           name: Load Duration Analysis
           type: number
-          exemplary_values:
+          exemplaryValues:
             - 2000
             - 200
           description: |
             Total page load duration in milliseconds.
             Residential connections: 1-3s with natural variation.
             Datacenter connections: 0.5-2s with unnaturally consistent timing.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Load duration consistently at 200ms (unrealistic for humans) indicates automated browser.
               Zero variation in load times (impossible for humans) suggests automated environment.
     ipInfo:
       name: IP and ISP Analysis
       type: object
-      exemplary_values:
+      exemplaryValues:
         - {
             ip: "192.168.1.1",
             isp: "Comcast Cable",
@@ -336,7 +335,7 @@
         Residential IPs show natural geographic distribution and ISP patterns.
         Datacenter IPs often belong to known cloud providers (AWS, GCP, Azure).
         ASN (Autonomous System Number) analysis helps identify network ownership and type.
-      abuse_indication:
+      abuseIndication:
         bot: |
           IP from known datacenter ranges (AWS, GCP, Azure) indicates automated environment.
           ISP name containing 'datacenter', 'cloud', or 'hosting' suggests automated browser.
@@ -345,7 +344,7 @@
         ip:
           name: IP Address Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "192.168.1.1"
             - "3.0.0.1"
             - "34.0.0.1"
@@ -354,14 +353,14 @@
             Residential IPs: Dynamic ranges from ISPs, showing natural geographic distribution.
             Datacenter IPs: Static ranges from cloud providers, often in specific geographic regions.
             VPN/Proxy IPs: Often from known datacenter ranges or VPN providers.
-          abuse_indication:
+          abuseIndication:
             bot: |
               IP from AWS/GCP/Azure ranges (e.g., 3.0.0.0/8, 34.0.0.0/8) indicates automated browser.
               IP changing every few minutes (unnatural for residential connections) suggests automated environment.
         isp:
           name: ISP Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "Comcast Cable"
             - "Amazon Data Services"
             - "Google Cloud"
@@ -370,14 +369,14 @@
             Residential ISPs: Local providers with geographic-specific names.
             Datacenter ISPs: Cloud providers, hosting companies, or VPN services.
             Natural patterns show consistent ISP names within geographic regions.
-          abuse_indication:
+          abuseIndication:
             bot: |
               ISP name containing 'Amazon', 'Google', 'Microsoft' indicates automated environment.
               ISP name containing 'datacenter', 'hosting', or 'cloud' suggests automated browser.
         asn:
           name: ASN Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "AS7922"
             - "AS16509"
             - "AS15169"
@@ -386,14 +385,14 @@
             Residential ASNs: Assigned to local ISPs, showing natural geographic distribution.
             Datacenter ASNs: Assigned to cloud providers and hosting companies.
             ASN patterns help identify network type and ownership.
-          abuse_indication:
+          abuseIndication:
             bot: |
               ASN belonging to cloud providers (e.g., AS16509 for Amazon) indicates automated browser.
               ASN changing frequently (unnatural for residential connections) suggests automated environment.
         country:
           name: Geographic Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "United States"
             - "Germany"
             - "Singapore"
@@ -402,14 +401,14 @@
             Residential IPs: Match user's claimed location with natural distribution.
             Datacenter IPs: Often in major data center locations (US, EU, Asia).
             VPN/Proxy IPs: May show mismatched or unusual geographic patterns.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Country mismatching user's claimed location indicates automated environment.
               Country changing frequently (unnatural for residential connections) suggests automated browser.
         city:
           name: City Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "New York"
             - "Ashburn"
             - "Frankfurt"
@@ -418,14 +417,14 @@
             Residential IPs: Match user's claimed city with natural distribution.
             Datacenter IPs: Often in major data center cities.
             VPN/Proxy IPs: May show mismatched or unusual city patterns.
-          abuse_indication:
+          abuseIndication:
             bot: |
               City mismatching user's claimed location indicates automated environment.
               City changing frequently (unnatural for residential connections) suggests automated browser.
         timezone:
           name: Timezone Analysis
           type: string
-          exemplary_values:
+          exemplaryValues:
             - "America/New_York"
             - "UTC"
             - "Europe/Berlin"
@@ -434,14 +433,14 @@
             Residential IPs: Match user's claimed timezone with natural patterns.
             Datacenter IPs: Often in UTC or major timezone regions.
             VPN/Proxy IPs: May show mismatched or unusual timezone patterns.
-          abuse_indication:
+          abuseIndication:
             bot: |
               Timezone mismatching IP location indicates automated environment.
               Timezone changing frequently (unnatural for residential connections) suggests automated browser.
         isDatacenter:
           name: Datacenter Detection
           type: boolean
-          exemplary_values:
+          exemplaryValues:
             - false
             - true
           description: |
@@ -449,7 +448,7 @@
             Residential IPs: False (natural ISP names, residential IP ranges).
             Datacenter IPs: True (cloud provider names, datacenter IP ranges).
             VPN/Proxy IPs: Often True (hosting provider names, datacenter IP ranges).
-          abuse_indication:
+          abuseIndication:
             bot: |
               isDatacenter = true indicates automated environment.
               isDatacenter changing frequently (unnatural pattern) suggests automated browser.

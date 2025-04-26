@@ -20,7 +20,6 @@ detection/
     ├── detection-codes-manager.ts  # Code loading and caching
     ├── evaluation-manager.ts       # Feature evaluation
     ├── featureLookup.ts           # Feature metadata lookup
-    ├── library-manager.ts         # External library management
     └── external-libraries/        # External library implementations
 ```
 
@@ -45,7 +44,7 @@ const features = detectionModule.getFeatures();
 const libraries = detectionModule.getLibraries();
 
 // Get feature metadata
-const metadata = detectionModule.getFeatureMetadata("featureId");
+const metadata = detectionModule.getFeatureMetadata("featureFullKey");
 
 // Create a detection context
 const { getState, actions } = detectionModule.createContext(options);
@@ -58,7 +57,6 @@ Features are defined in YAML files with the following structure:
 ```yaml
 - id: "browser_features"
   name: "Browser Features Detection"
-  codeName: "browserFeatures"
   type: "object"
   code: |
     (async () => {
@@ -137,7 +135,6 @@ await actions.retry();
 ```yaml
 - id: "custom_detection"
   name: "Custom Detection"
-  codeName: "customDetection"
   type: "object"
   code: |
     (async () => {

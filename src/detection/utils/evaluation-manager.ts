@@ -1,12 +1,11 @@
-import { features } from "@/detection/config/detectionFeatures";
+import { rootDetectionFeaturesFlatSchema } from "@/detection/config/detectionSchemaLoader";
 import {
   DetectionResult,
   EvaluationAction,
   EvaluationState,
 } from "@/detection/core/types";
 import { Storage } from "@/detection/storage/interface";
-import { LibraryDependency } from "@/detection/utils/external-libraries/dependency-manager";
-import { safeEvaluate } from "@/detection/utils/library-manager";
+import { safeEvaluate } from "@/detection/utils/safe-evaluate";
 
 export const RESULTS_KEY = "detection_results";
 export const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
@@ -38,17 +37,14 @@ export function evaluationReducer(
 export async function evaluateFeatures(): Promise<DetectionResult> {
   const evaluationResults: DetectionResult = {};
 
-  for (const feature of features) {
+  for (const rootDetectionFeature of Object.values(rootDetectionFeaturesFlatSchema)) {
     try {
       const result = await safeEvaluate(
-        feature.code,
-        feature.type,
-        feature.dependency as LibraryDependency | undefined,
-        feature.outputs
+        rootDetectionFeature
       );
 
       const resultValue = result.value || {};
-      evaluationResults[feature.codeName] = {
+      evaluationResults[rootDetectionFeature.featureKey] = {
         ...(typeof resultValue === "object"
           ? resultValue
           : { value: resultValue }),
@@ -56,8 +52,8 @@ export async function evaluateFeatures(): Promise<DetectionResult> {
         error: result.error,
       };
     } catch (err) {
-      console.error(`Failed to evaluate ${feature.codeName}:`, err);
-      evaluationResults[feature.codeName] = {
+      console.error(`Failed to evaluate ${rootDetectionFeature.featureKey}:`, err);
+      evaluationResults[rootDetectionFeature.featureKey] = {
         error: err instanceof Error ? err.message : "Evaluation failed",
         timestamp: new Date().toISOString(),
       };

@@ -1,5 +1,5 @@
-import { features } from "./config/detectionFeatures";
 import { libraries } from "./config/fingerprintingLibraries";
+import { detectionFeaturesMapSchema} from "./config/detectionSchemaLoader";
 import {
   DetectionInstance,
   DetectionOptions,
@@ -40,12 +40,12 @@ export interface DetectionModule {
     error: Error | null;
   }>;
   loadDetectionCodes: (storage: Storage) => Promise<Record<string, string>>;
-  getFeatureMetadata: (featureId: string) => FeatureMetadata;
+  getFeatureMetadata: (featureFullKey: string) => FeatureMetadata;
   createContext: (options: DetectionOptions) => {
     getState: () => DetectionContextState;
     actions: DetectionContextActions;
   };
-  getFeatures: () => typeof features;
+  getFeatures: () => typeof detectionFeaturesMapSchema;
   getLibraries: () => typeof libraries;
 }
 
@@ -111,15 +111,14 @@ export const detectionModule: DetectionModule = {
   loadAndEvaluate,
   refreshResults,
   loadDetectionCodes,
-  getFeatureMetadata: (featureId: string) => {
+  getFeatureMetadata: (featureFullKey: string) => {
     const { description, abuseIndication, exemplaryValues } = findFeatureInfo(
-      features,
-      featureId
+      featureFullKey
     );
     return { description, abuseIndication, exemplaryValues };
   },
   createContext: createDetectionContext,
-  getFeatures: () => features,
+  getFeatures: () => detectionFeaturesMapSchema,
   getLibraries: () => libraries,
 };
 

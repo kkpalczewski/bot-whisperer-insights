@@ -16,3 +16,5 @@ if (typeof window !== 'undefined') {
     getDeviceDetector: async () => (await import('./device-detector-manager')).getDeviceDetector()
   };
 }
+
+export type LibraryDependency = 'clientjs' | 'fingerprintjs' | 'creepjs' | 'deviceDetector';

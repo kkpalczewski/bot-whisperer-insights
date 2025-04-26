@@ -1,22 +1,10 @@
 import { useDetectionConfig } from "@/contexts/DetectionConfigContext";
-import { DetectionFeature } from "@/detection/config/detectionFeatures";
+import { RootDetectionFeatureSchema } from "@/detection/types/detectionSchema";
 import { DetectionValue } from "@/detection/core/types";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-
-export interface FeatureNode {
-  id: string;
-  feature: string;
-  value: string | boolean | undefined;
-  type?: "string" | "boolean" | "array" | "object" | "number";
-  parent: string;
-  level: number;
-  children: FeatureNode[];
-  isExpanded: boolean;
-  description?: string;
-  error?: string;
-  isTruncated?: boolean;
-}
+import { FeatureNode } from "./types";
+import { DetectionFeatureSchema } from "@/detection/types/detectionSchema";
 
 const formatValue = (
   val: unknown,
@@ -48,12 +36,6 @@ const formatValue = (
   return String(val);
 };
 
-// Calculate the parent path correctly for nested structures
-const getParentPath = (path: string): string => {
-  const parts = path.split(".");
-  if (parts.length <= 1) return ""; // No parent if it's a top-level feature
-  return parts.slice(0, -1).join("."); // Return everything except the last part
-};
 
 type ValueType = "string" | "number" | "boolean" | "object" | "array";
 
@@ -68,7 +50,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 };
 
-export const useFeatureTree = (feature: DetectionFeature) => {
+export const useFeatureTree = (feature: RootDetectionFeatureSchema) => {
   const [isLoading, setIsLoading] = useState(true);
   const [featureTree, setFeatureTree] = useState<FeatureNode[]>([]);
   const [flattenedNodes, setFlattenedNodes] = useState<FeatureNode[]>([]);
@@ -80,7 +62,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     data: DetectionValue | Record<string, unknown>,
     feature: string,
     level: number,
-    outputs?: Record<string, unknown>,
+    outputs?: Record<string, DetectionFeatureSchema>,
     error?: string
   ): FeatureNode[] => {
     const nodes: FeatureNode[] = [];
@@ -94,16 +76,21 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     for (const [key, value] of entries) {
       const nodeId = level === 0 ? `${feature}.${key}` : `${feature}.${key}`;
       const node: FeatureNode = {
-        id: nodeId,
-        feature: key,
+        fullKey: nodeId,
+        featureKey: key,
+        name: outputs?.[key]?.name ?? key,
         value: formatValue(value),
-        type: getValueType(value),
-        parent: feature,
-        level,
+        type: outputs?.[key]?.type ?? getValueType(value),
+        parentKey: feature,
         children: [],
         isExpanded: expandedNodesRef.current.has(nodeId),
-        description: outputs?.[key] as string | undefined,
+        description: outputs?.[key]?.description ?? "",
         error,
+        level,
+        abuseIndication: outputs?.[key]?.abuseIndication ?? { bot: "" },
+        exemplaryValues: outputs?.[key]?.exemplaryValues ?? [],
+        isLeaf: outputs?.[key]?.isLeaf ?? false,
+        rootKey: outputs?.[key]?.rootKey ?? "",
       };
 
       if (isRecord(value)) {
@@ -111,7 +98,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
           value,
           nodeId,
           level + 1,
-          outputs?.[key] as Record<string, unknown> | undefined
+          outputs?.[key]?.outputs as Record<string, DetectionFeatureSchema> | undefined
         );
       }
 
@@ -130,15 +117,15 @@ export const useFeatureTree = (feature: DetectionFeature) => {
     });
   };
 
-  const toggleNode = (id: string) => {
+  const toggleNode = (fullKey: string) => {
     const updateNodes = (nodes: FeatureNode[]): FeatureNode[] => {
       return nodes.map((node) => {
-        if (node.id === id) {
+        if (node.fullKey === fullKey) {
           const newExpanded = !node.isExpanded;
           if (newExpanded) {
-            expandedNodesRef.current.add(id);
+            expandedNodesRef.current.add(fullKey);
           } else {
-            expandedNodesRef.current.delete(id);
+            expandedNodesRef.current.delete(fullKey);
           }
           return { ...node, isExpanded: newExpanded };
         }
@@ -164,7 +151,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         );
         const tree = buildFeatureTree(
           {},
-          feature.codeName,
+          feature.fullKey,
           0,
           undefined,
           error?.message
@@ -174,13 +161,13 @@ export const useFeatureTree = (feature: DetectionFeature) => {
         return;
       }
 
-      const result = results[feature.codeName];
+      const result = results[feature.fullKey];
       if (!result) {
         setHasError(true);
         toast.error(`No results found for ${feature.name}`);
         const tree = buildFeatureTree(
           {},
-          feature.codeName,
+          feature.fullKey,
           0,
           undefined,
           "No results available"
@@ -193,7 +180,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
       const resultValue = result.value || result;
       const tree = buildFeatureTree(
         resultValue,
-        feature.codeName,
+        feature.fullKey,
         0,
         feature.outputs
       );
@@ -206,7 +193,7 @@ export const useFeatureTree = (feature: DetectionFeature) => {
       toast.error(`Error loading results for ${feature.name}: ${errorMessage}`);
       const tree = buildFeatureTree(
         {},
-        feature.codeName,
+        feature.fullKey,
         0,
         undefined,
         errorMessage
@@ -220,11 +207,12 @@ export const useFeatureTree = (feature: DetectionFeature) => {
 
   useEffect(() => {
     loadResults();
-  }, [feature.codeName, results, status, error]);
+  }, [feature.fullKey]);
 
   return {
     isLoading,
     hasError,
+    featureTree,
     flattenedNodes,
     toggleNode,
     loadResults,
