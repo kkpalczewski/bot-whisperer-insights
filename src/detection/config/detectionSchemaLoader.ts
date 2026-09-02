@@ -4,8 +4,9 @@ import { RootDetectionFeatureSchema, RootDetectionFeaturesSchema, DetectionFeatu
 // Import all YAML files from the detection_rules directory
 const modules = import.meta.glob("./detection_rules/*.yaml", {
   eager: true,
-  as: "raw",
-});
+  query: "?raw",
+  import: "default",
+}) as Record<string, string>;
 
 // Recursively process nested outputs
 const processOutputs = (
@@ -94,20 +95,11 @@ export const detectionFeaturesFlatSchema: Record<string, RootDetectionFeatureSch
     return acc;
   }, {} as Record<string, RootDetectionFeatureSchema | DetectionFeatureSchema>);
 
-export const leafDetectionFeaturesFlatSchema: Record<string, DetectionFeatureSchema> = 
-  Object.values(detectionFeaturesFlatSchema)
-    .filter((feature) => feature.isLeaf)
-    .reduce((acc, feature) => {
-      acc[feature.fullKey] = feature as DetectionFeatureSchema;
-      return acc;
-    }, {} as Record<string, DetectionFeatureSchema>);
-
+/** Only the top-level rules (one per YAML file); these are the nodes that carry `code`. */
 export const rootDetectionFeaturesFlatSchema: Record<string, RootDetectionFeatureSchema> = 
   Object.values(detectionFeaturesFlatSchema)
-    .filter((feature) => !feature.isLeaf)
+    .filter((feature) => feature.level === 0)
     .reduce((acc, feature) => {
       acc[feature.fullKey] = feature as RootDetectionFeatureSchema;
       return acc;
     }, {} as Record<string, RootDetectionFeatureSchema>);
-    
-    

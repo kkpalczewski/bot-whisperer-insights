@@ -1,9 +1,9 @@
 import { LibraryCard } from "@/components/LibraryCard";
-import { FingerprintingLibrary } from "@/detection/config/fingerprintingLibraries";
+import { LibraryInfo } from "@/detection/config/fingerprintingLibraries";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 interface LibrarySectionProps {
-  libraries: FingerprintingLibrary[];
+  libraries: LibraryInfo[];
 }
 
 export const LibrarySection: React.FC<LibrarySectionProps> = ({

@@ -1,4 +1,4 @@
-import { LibraryDependency } from '../utils/external-libraries/types';
+import type { LibraryDependency } from '../utils/external-libraries/types';
 
 /**
  * Base feature structure that defines the common properties for all detection features.
@@ -201,9 +201,4 @@ export interface RootDetectionFeatureSchema extends BaseDetectionFeatureSchema {
  * Array of root detection features.
  * Each YAML file in the detection_rules directory becomes one root feature.
  */
-export type RootDetectionFeaturesSchema = Array<RootDetectionFeatureSchema>; 
-
-
-export interface BaseDetectionFeature extends BaseDetectionFeatureSchema, FeatureValue {}
-export type DetectionFeature = DetectionFeatureSchema & FeatureValue;
-export interface RootDetectionFeature extends RootDetectionFeatureSchema, FeatureValue {}
+export type RootDetectionFeaturesSchema = Array<RootDetectionFeatureSchema>;

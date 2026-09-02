@@ -1,20 +1,20 @@
-export interface LibraryStore {
-  clientjs?: any;
-  fingerprintjs?: any;
-  creepjs?: any;
-  deviceDetector?: any;
+export type LibraryDependency = "clientjs" | "fingerprintjs" | "deviceDetector";
+
+const pending: Partial<Record<LibraryDependency, Promise<unknown>>> = {};
+
+/**
+ * Caches the in-flight promise for a library so concurrent callers share one
+ * initialisation. A failed initialisation is evicted so a later call can retry.
+ */
+export function cachedLibrary<T>(
+  key: LibraryDependency,
+  init: () => Promise<T>
+): Promise<T> {
+  if (!pending[key]) {
+    pending[key] = init().catch((error) => {
+      delete pending[key];
+      throw error;
+    });
+  }
+  return pending[key] as Promise<T>;
 }
-
-export const libraryInstances: LibraryStore = {};
-
-// Make library manager available globally for feature code execution
-if (typeof window !== 'undefined') {
-  (window as any).libraryManager = {
-    getClientJS: async () => (await import('./clientjs-manager')).getClientJS(),
-    getFingerprintJS: async () => (await import('./fingerprintjs-manager')).getFingerprintJS(),
-    getCreepJS: async () => (await import('./creepjs-manager')).getCreepJS(),
-    getDeviceDetector: async () => (await import('./device-detector-manager')).getDeviceDetector()
-  };
-}
-
-export type LibraryDependency = 'clientjs' | 'fingerprintjs' | 'creepjs' | 'deviceDetector';

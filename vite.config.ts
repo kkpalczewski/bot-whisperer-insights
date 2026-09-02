@@ -1,34 +1,22 @@
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
-import pkg from './package.json' assert { type: 'json' }
+import pkg from "./package.json" with { type: "json" };
 
-
-export default defineConfig(({ mode }) => ({
-  plugins: [react()],
+export default defineConfig(() => ({
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
   assetsInclude: ["**/*.yaml"],
-  optimizeDeps: {
-    exclude: ["glob"], // Exclude glob from optimization to prevent browser compatibility issues
-  },
   server: {
     host: "::",
     port: 8080,
   },
   define: {
-    // Define environment variables that will be replaced at build time
-    "import.meta.env.VITE_SUPABASE_URL": JSON.stringify(
-      process.env.SUPABASE_URL || "https://PLACEHOLDER.supabase.co"
-
-    ),
-    "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(
-      process.env.SUPABASE_ANON_KEY || "ANON_KEY_PLACEHOLDER"
-    ),
-    "import.meta.env.VITE_VERSION": JSON.stringify(pkg.version),
-    __APP_VERSION__: JSON.stringify(pkg.version)
+    __APP_VERSION__: JSON.stringify(pkg.version),
   },
 }));

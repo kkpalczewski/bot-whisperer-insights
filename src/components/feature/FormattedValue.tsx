@@ -1,5 +1,13 @@
 import React from 'react';
 
+const tryParseJson = (value: string): unknown => {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return undefined;
+  }
+};
+
 export const FormattedValue: React.FC<{
   value: string | boolean | undefined;
 }> = ({ value }) => {
@@ -20,38 +28,33 @@ export const FormattedValue: React.FC<{
   if (typeof value === 'string') {
     // Handle arrays
     if (value.startsWith('[') && (value.endsWith(']') || value.endsWith('...'))) {
-      try {
-        // Try to parse and pretty format arrays
-        const parsed = JSON.parse(value);
-        if (Array.isArray(parsed)) {
-          return (
-            <div className="text-[#8B5CF6]">
-              [
-              {parsed.map((item, index) => (
-                <div key={index} className="ml-4">
-                  {JSON.stringify(item)}
-                  {index < parsed.length - 1 ? ',' : ''}
-                </div>
-              ))}
-              ]
-            </div>
-          );
-        }
-      } catch {
-        // If parsing fails, still format it as an array
-        return <span className="text-[#8B5CF6]">{value}</span>;
+      const parsed = tryParseJson(value);
+      if (Array.isArray(parsed)) {
+        return (
+          <div className="text-[#8B5CF6]">
+            [
+            {parsed.map((item, index) => (
+              <div key={index} className="ml-4">
+                {JSON.stringify(item)}
+                {index < parsed.length - 1 ? ',' : ''}
+              </div>
+            ))}
+            ]
+          </div>
+        );
       }
+      // Truncated or unparseable: still format it as an array
+      return <span className="text-[#8B5CF6]">{value}</span>;
     }
     
     // Handle objects
     if (value.startsWith('{') && (value.endsWith('}') || value.endsWith('...'))) {
-      try {
-        // Try to pretty print the JSON
-        const parsed = JSON.parse(value);
-        return <span className="text-yellow-300">{JSON.stringify(parsed, null, 2)}</span>;
-      } catch {
-        return <span className="text-yellow-300">{value}</span>;
-      }
+      const parsed = tryParseJson(value);
+      return (
+        <span className="text-yellow-300">
+          {parsed === undefined ? value : JSON.stringify(parsed, null, 2)}
+        </span>
+      );
     }
     
     // Handle numbers

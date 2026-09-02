@@ -33,7 +33,6 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
           onToggle={() => onToggleNode(node.fullKey)}
           hasChildren={node.children.length > 0}
           isExpanded={node.isExpanded}
-          level={node.level}
         />
         {node.isExpanded && node.children.length > 0 && renderRows(node.children)}
       </React.Fragment>

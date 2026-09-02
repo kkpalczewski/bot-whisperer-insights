@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -39,6 +38,8 @@ export const FeatureCell: React.FC<FeatureCellProps> = ({
             size="icon"
             className="h-5 w-5 p-0 mr-1 flex-shrink-0"
             onClick={onToggle}
+            aria-expanded={isExpanded}
+            aria-label={isExpanded ? "Collapse" : "Expand"}
           >
             {isExpanded ? (
               <ChevronDown className="h-4 w-4 text-gray-400" />
@@ -47,7 +48,6 @@ export const FeatureCell: React.FC<FeatureCellProps> = ({
             )}
           </Button>
         )}
-        <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="text-sm font-mono text-gray-200 font-medium truncate block">
@@ -58,7 +58,6 @@ export const FeatureCell: React.FC<FeatureCellProps> = ({
               <p className="text-sm font-mono">{featureKey}</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
       </div>
     </div>
   );

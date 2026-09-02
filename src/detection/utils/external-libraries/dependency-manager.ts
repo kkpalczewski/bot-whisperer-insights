@@ -1,65 +1,45 @@
-import { getClientJS } from './clientjs-manager';
-import { getFingerprintJS } from './fingerprintjs-manager';
-import { getCreepJS } from './creepjs-manager';
-import { getDeviceDetector } from './device-detector-manager';
-import { LibraryDependency } from './types';
+import { getClientJS } from "./clientjs-manager";
+import { getDeviceDetector } from "./device-detector-manager";
+import { getFingerprintJS } from "./fingerprintjs-manager";
+import { LibraryDependency } from "./types";
+
+const loaders: Record<LibraryDependency, () => Promise<unknown>> = {
+  clientjs: getClientJS,
+  fingerprintjs: getFingerprintJS,
+  deviceDetector: getDeviceDetector,
+};
 
 /**
- * Checks if a required library dependency is available
+ * Checks if a required library dependency can be initialised
  */
-export const checkDependency = async (dependency: LibraryDependency): Promise<{ 
-  available: boolean; 
-  error?: string;
-}> => {
+export const checkDependency = async (
+  dependency: LibraryDependency
+): Promise<{ available: boolean; error?: string }> => {
+  const loader = loaders[dependency];
+  if (!loader) {
+    return { available: false, error: `Unknown dependency '${dependency}'` };
+  }
   try {
-    switch (dependency) {
-      case 'clientjs': {
-        const client = await getClientJS();
-        return {
-          available: !!client,
-          error: !client ? `Dependency '${dependency}' not available` : undefined
-        };
-      }
-      case 'fingerprintjs': {
-        const fp = await getFingerprintJS();
-        return {
-          available: !!fp,
-          error: !fp ? `Dependency '${dependency}' not available` : undefined
-        };
-      }
-      case 'creepjs': {
-        const creep = await getCreepJS();
-        return {
-          available: !!creep,
-          error: !creep ? `Dependency '${dependency}' not available` : undefined
-        };
-      }
-      case 'deviceDetector': {
-        const detector = await getDeviceDetector();
-        return {
-          available: !!detector,
-          error: !detector ? `Dependency '${dependency}' not available` : undefined
-        };
-      }
-      default:
-        return {
-          available: false,
-          error: `Unknown dependency '${dependency}'`
-        };
-    }
+    const library = await loader();
+    return library
+      ? { available: true }
+      : { available: false, error: `Dependency '${dependency}' not available` };
   } catch (error) {
     return {
       available: false,
-      error: error instanceof Error ? error.message : 'Unknown error checking dependency'
+      error:
+        error instanceof Error
+          ? error.message
+          : `Unknown error loading '${dependency}'`,
     };
   }
 };
 
 /**
- * Gets functions for accessing library dependencies
+ * Functions injected into rule code so rules can access library instances
  */
 export const getDependencyFunctions = () => ({
-  getClientJS: async () => await getClientJS(),
-  getFingerprintJS: async () => await getFingerprintJS(),
-  getCreepJS: async () => await getCreepJS()
-}); 
+  getClientJS,
+  getFingerprintJS,
+  getDeviceDetector,
+});

@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 // Global state to ensure only one drawer is open at a time
 const globalState = {
   activeDrawerId: null as string | null,
-  setActiveDrawer: (id: string | null) => {},
+  setActiveDrawer: (_id: string | null) => {},
 };
 
 export const useGlobalDrawer = (drawerId: string) => {

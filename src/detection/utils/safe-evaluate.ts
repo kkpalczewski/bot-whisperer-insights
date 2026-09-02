@@ -1,8 +1,12 @@
 import { RootDetectionFeatureSchema, DetectionFeatureSchema } from "@/detection/types/detectionSchema";
+import { withTimeout } from "@/detection/utils/with-timeout";
 import {
   checkDependency,
   getDependencyFunctions,
 } from "./external-libraries/dependency-manager";
+
+/** Upper bound for a single rule evaluation, including any library loading it triggers. */
+const EVALUATION_TIMEOUT_MS = 15_000;
 
 interface ParsedValue<T> {
   value: T;
@@ -123,48 +127,19 @@ const validateAndParseValue = <T>(
     }
   }
 
-  // Handle primitive types
-  try {
-    switch (expectedType) {
-      case "number":
-        return {
-          value: Number(value) as T,
-          type: "number",
-          isValid: !isNaN(Number(value)),
-        };
-      case "boolean":
-        return {
-          value: Boolean(value) as T,
-          type: "boolean",
-          isValid: true,
-        };
-      case "string":
-        return {
-          value: String(value) as T,
-          type: "string",
-          isValid: true,
-        };
-      default:
-        return {
-          value: value as T,
-          type: actualType,
-          isValid: true,
-        };
-    }
-  } catch (e) {
-    return {
-      value: value as T,
-      type: actualType,
-      isValid: false,
-      error: `Failed to parse value as ${expectedType}: ${
-        (e as Error).message
-      }`,
-    };
-  }
+  return {
+    value: value as T,
+    type: actualType,
+    isValid: true,
+  };
 };
 
 /**
- * Safe evaluation function with proper error handling and type validation
+ * Evaluates a rule's `code` with the library getters in scope, bounded by a
+ * timeout, and validates the result against the rule's declared outputs.
+ *
+ * Note: this is `new Function`, not a sandbox. Rules are trusted build-time
+ * assets and have full access to the page.
  */
 export const safeEvaluate = async <T>(
   rootDetectionFeature: RootDetectionFeatureSchema
@@ -176,42 +151,49 @@ export const safeEvaluate = async <T>(
   try {
     // Check for dependencies first
     if (rootDetectionFeature.dependency) {
-      const { available, error } = await checkDependency(rootDetectionFeature.dependency);
+      const { available, error } = await withTimeout(
+        checkDependency(rootDetectionFeature.dependency),
+        EVALUATION_TIMEOUT_MS,
+        `Loading '${rootDetectionFeature.dependency}'`
+      );
       if (!available) {
         return { value: null, error };
       }
     }
 
-    // Get functions for library access
-    const { getClientJS, getFingerprintJS, getCreepJS } =
+    if (typeof rootDetectionFeature.code !== "string" || !rootDetectionFeature.code.trim()) {
+      return { value: null, error: "Rule has no code to evaluate" };
+    }
+
+    const { getClientJS, getFingerprintJS, getDeviceDetector } =
       getDependencyFunctions();
 
-    // Create a safe async wrapper function to evaluate the code
+    // Create an async wrapper function to evaluate the code
     const wrappedCode = `
       async function evaluateFeature() {
-        try {
-          const fn = ${rootDetectionFeature.code};
-          return typeof fn === 'function' ? await fn() : fn;
-        } catch (e) {
-          console.error("Error evaluating feature code:", e);
-          throw e;
-        }
+        const fn = ${rootDetectionFeature.code};
+        return typeof fn === 'function' ? await fn() : fn;
       }
       return evaluateFeature();
     `;
 
-    // Execute the wrapped code with access to the library functions
-    const result = await new Function(
-      "getClientJS",
-      "getFingerprintJS",
-      "getCreepJS",
-      wrappedCode
-    )(getClientJS, getFingerprintJS, getCreepJS);
+    const result = await withTimeout(
+      new Function(
+        "getClientJS",
+        "getFingerprintJS",
+        "getDeviceDetector",
+        wrappedCode
+      )(getClientJS, getFingerprintJS, getDeviceDetector) as Promise<
+        PrimitiveValue | NestedValue
+      >,
+      EVALUATION_TIMEOUT_MS,
+      `Evaluating '${rootDetectionFeature.featureKey}'`
+    );
 
     // Validate and parse the result
     const parsedValue = validateAndParseValue<T>(
-      result, 
-      rootDetectionFeature.type, 
+      result,
+      rootDetectionFeature.type,
       rootDetectionFeature.outputs
     );
 
@@ -224,14 +206,14 @@ export const safeEvaluate = async <T>(
     }
 
     return {
-      value: result,
+      value: result as T,
       parsedValue,
     };
   } catch (error) {
-    console.error("Feature evaluation error:", error);
+    console.error(`Feature evaluation error (${rootDetectionFeature.featureKey}):`, error);
     return {
       value: null,
-      error: (error as Error).message || "Unknown error",
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 };

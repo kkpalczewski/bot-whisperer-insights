@@ -1,18 +1,8 @@
 import { FeaturePill } from "@/components/FeaturePill";
-import { RootDetectionFeatureSchema, DetectionFeatureSchema } from "@/detection/types/detectionSchema";
 import { detectionFeaturesMapSchema } from "@/detection/config/detectionSchemaLoader";
-import { DetectionResult } from "@/detection/core/types";
 import { ErrorBoundary } from "./ErrorBoundary";
 
-interface FeatureSectionProps {
-  detectionFeaturesMapSchema: typeof detectionFeaturesMapSchema;
-  results: DetectionResult;
-}
-
-export const FeatureSection: React.FC<FeatureSectionProps> = ({
-  detectionFeaturesMapSchema,
-  results,
-}) => {
+export const FeatureSection: React.FC = () => {
   return (
     <ErrorBoundary
       fallback={<div className="text-red-500">Error loading features</div>}
@@ -24,12 +14,8 @@ export const FeatureSection: React.FC<FeatureSectionProps> = ({
           </h2>
         </div>
         <div className="space-y-0">
-          {Object.values(detectionFeaturesMapSchema).map((rootFeature) => (
-            <FeaturePill
-              key={rootFeature.fullKey}
-              rootFeature={rootFeature}
-              result={results[rootFeature.fullKey]}
-            />
+          {detectionFeaturesMapSchema.map((rootFeature) => (
+            <FeaturePill key={rootFeature.fullKey} rootFeature={rootFeature} />
           ))}
         </div>
       </section>

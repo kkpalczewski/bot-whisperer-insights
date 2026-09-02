@@ -33,7 +33,7 @@ export const ValueCell: React.FC<ValueCellProps> = ({
         case "boolean":
           return val === "true";
         case "array":
-          if (val.startsWith("[") && val.endsWith("]")) {
+          if (typeof val === "string" && val.startsWith("[") && val.endsWith("]")) {
             return val;
           }
           return Array.isArray(val) ? val : String(val).split(",");
@@ -50,14 +50,14 @@ export const ValueCell: React.FC<ValueCellProps> = ({
         default:
           return String(val);
       }
-    } catch (e) {
+    } catch {
       return String(val);
     }
   };
 
   const displayValue = parseValue ? parseTypedValue(value, type) : value;
 
-  let stringValue = "";
+  let stringValue: string;
   if (displayValue === undefined) {
     stringValue = "undefined";
   } else if (typeof displayValue === "boolean") {

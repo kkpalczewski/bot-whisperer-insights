@@ -1,8 +1,5 @@
-
-import { parse } from 'yaml';
-
-// @ts-ignore
-import librariesYaml from './fingerprinting-libraries.yaml?raw';
+import { parse } from "yaml";
+import librariesYaml from "./fingerprinting-libraries.yaml?raw";
 
 export interface LibraryInfo {
   id: string;
@@ -12,5 +9,5 @@ export interface LibraryInfo {
   features: string[];
 }
 
-const parsed = parse(librariesYaml);
-export const libraries = parsed.libraries || [];
+const parsed = parse(librariesYaml) as { libraries?: LibraryInfo[] };
+export const libraries: LibraryInfo[] = parsed.libraries ?? [];
