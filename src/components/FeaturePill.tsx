@@ -1,10 +1,14 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { RootDetectionFeatureSchema } from "@/detection/types/detectionSchema";
 import { useFeatureTree } from "@/hooks/useFeatureTree";
-import React, { useEffect, useRef, useState } from "react";
-import { CodePreview } from "./CodePreview";
+import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { RootFeatureHeader } from "./RootFeatureHeader";
 import { FeatureTable } from "./FeatureTable";
+
+// react-syntax-highlighter is the largest dependency; only load it when code is shown.
+const CodePreview = lazy(() =>
+  import("./CodePreview").then((m) => ({ default: m.CodePreview }))
+);
 
 interface FeaturePillProps {
   rootFeature: RootDetectionFeatureSchema;
@@ -47,7 +51,13 @@ export const FeaturePill: React.FC<FeaturePillProps> = ({ rootFeature }) => {
 
         {codeVisible && (
           <div ref={codeRef}>
-            <CodePreview code={rootFeature.code} hasError={hasError} />
+            <Suspense
+              fallback={
+                <div className="text-xs text-gray-400 p-2">Loading code preview...</div>
+              }
+            >
+              <CodePreview code={rootFeature.code} hasError={hasError} />
+            </Suspense>
           </div>
         )}
       </CardContent>
