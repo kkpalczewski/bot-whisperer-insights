@@ -17,25 +17,27 @@ A comprehensive browser-based bot detection and analysis tool that helps identif
 ```
 src/
 ├── components/           # React components
-│   ├── ui/              # Reusable UI components
-│   ├── feature/         # Feature-related components
-│   └── metadata/        # Metadata display components
-├── contexts/            # React contexts
-├── detection/           # Core detection module
-│   ├── config/          # Configuration files
-│   ├── core/            # Core types and interfaces
-│   ├── storage/         # Storage implementations
-│   └── utils/           # Utility functions
+│   ├── ui/              # shadcn/ui primitives
+│   ├── feature/         # Feature table cells
+│   └── metadata/        # Metadata drawer content
+├── contexts/            # DetectionConfigProvider (evaluation store -> React)
+├── detection/           # Core detection module (framework-agnostic)
+│   ├── config/          # YAML rule loader + detection_rules/*.yaml
+│   ├── core/            # Result/state types
+│   ├── storage/         # Storage interface (localStorage in the app)
+│   ├── types/           # Rule schema types
+│   ├── utils/           # Evaluation pipeline and library loaders
+│   └── __tests__/       # Vitest suite
 ├── hooks/               # Custom React hooks
-└── pages/               # Page components
+└── pages/               # Route components
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
-- npm or yarn
+- Node.js 22 or higher
+- npm
 
 ### Installation
 
@@ -50,16 +52,12 @@ cd bot-whisperer-insights
 
 ```bash
 npm install
-# or
-yarn install
 ```
 
 3. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
 ## Usage
@@ -81,23 +79,29 @@ The application provides a user-friendly interface to analyze browser characteri
 
 3. **Error Handling**:
    - Automatic error boundaries
-   - Graceful fallbacks for failed detections
+   - Each rule is evaluated with a timeout; a failing rule reports its error instead of blocking the others
    - Clear error messages
 
 ### Advanced Usage
 
 #### Custom Detection Rules
 
-Add new detection rules in `src/detection/config/detection_rules/`:
+Add a new YAML file in `src/detection/config/detection_rules/`. Each file holds exactly one
+top-level key, which becomes the rule id. The `code` is an async function body evaluated in the
+browser with `getClientJS()`, `getFingerprintJS()` and `getDeviceDetector()` in scope; declare the
+library you use under `dependency` so it is loaded first.
 
 ```yaml
-- id: "custom_feature"
+custom_feature:
   name: "Custom Feature Detection"
   type: "object"
+  dependency: fingerprintjs # optional: clientjs | fingerprintjs | deviceDetector
   code: |
-    (async () => {
-      // Your detection logic here
-    })()
+    async () => {
+      const agent = await getFingerprintJS();
+      const { visitorId } = await agent.get();
+      return { result: visitorId.length > 0 };
+    }
   description: "Custom feature detection"
   abuseIndication:
     bot: "Indicates potential bot activity"
@@ -117,15 +121,18 @@ The detection module can be extended with new features:
 
 ```typescript
 import { detectionModule } from "@/detection";
+import { useDetectionConfig } from "@/contexts/DetectionConfigContext";
 
-// Get all available features
+// Get all available features (parsed rule schemas)
 const features = detectionModule.getFeatures();
 
-// Get detection results
-const { results, status, error } = useDetectionConfig();
+// Inside a component: current results and actions
+const { results, status, error, refresh, retry } = useDetectionConfig();
 
-// Force refresh results
-await detectionModule.refreshResults(storage);
+// Outside React: an observable store over any Storage implementation
+const store = detectionModule.createStore({ storage });
+store.subscribe(() => console.log(store.getState()));
+await store.load();
 ```
 
 ## Development
@@ -137,25 +144,18 @@ await detectionModule.refreshResults(storage);
 - Implement proper error boundaries
 - Write comprehensive tests
 
-### Testing
+### Quality gate
 
-Run tests:
+CI runs the same commands on every push and pull request:
 
 ```bash
+npm run lint
+npm run typecheck
 npm test
-# or
-yarn test
-```
-
-### Building
-
-Build for production:
-
-```bash
 npm run build
-# or
-yarn build
 ```
+
+`npm run build` type-checks before bundling, so a type error fails the build.
 
 ## Contributing
 
