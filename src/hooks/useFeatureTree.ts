@@ -90,15 +90,19 @@ export const useFeatureTree = (feature: RootDetectionFeatureSchema) => {
     if (!result) {
       return { featureTree: [] as FeatureNode[], errorMessage: "No results available" };
     }
+    if (result.value === undefined) {
+      return { featureTree: [] as FeatureNode[], errorMessage: result.error ?? "No results available" };
+    }
     return {
       featureTree: buildFeatureTree(
-        result.value ?? result,
+        result.value,
         feature.fullKey,
         0,
         expanded,
         feature.outputs
       ),
-      errorMessage: undefined,
+      // A value with a validation error still renders; the error is surfaced via toast.
+      errorMessage: result.error,
     };
   }, [feature, results, status, error, expanded]);
 

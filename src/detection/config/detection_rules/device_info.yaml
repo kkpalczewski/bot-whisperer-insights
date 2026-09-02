@@ -505,7 +505,8 @@ device_info:
               description: |
                 Sophisticated producer source verification system. Combines URL pattern analysis, domain validation, and
                 documentation checks. Expected to show specific URL patterns with source-specific variations.
-              abuseIndication: |
-                URL matching known automation framework documentation indicates automated environment. URL inconsistent with
-                capabilities suggests sophisticated automation. Generic or missing URL information indicates potential
-                automation. Perfect consistency in producer URL across requests reveals virtualized environment.
+              abuseIndication:
+                bot: |
+                  URL matching known automation framework documentation indicates automated environment. URL inconsistent with
+                  capabilities suggests sophisticated automation. Generic or missing URL information indicates potential
+                  automation. Perfect consistency in producer URL across requests reveals virtualized environment.

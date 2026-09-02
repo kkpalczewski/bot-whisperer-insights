@@ -1,9 +1,10 @@
 import { rootDetectionFeaturesFlatSchema } from "@/detection/config/detectionSchemaLoader";
-import { DetectionResult } from "@/detection/core/types";
+import { DetectionResult, DetectionValue } from "@/detection/core/types";
 import { Storage } from "@/detection/storage/interface";
 import { safeEvaluate } from "@/detection/utils/safe-evaluate";
 
-export const RESULTS_KEY = "detection_results";
+// Bumped when the stored shape changes so stale caches are ignored.
+export const RESULTS_KEY = "detection_results_v2";
 const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
 
 /**
@@ -29,13 +30,10 @@ async function evaluateFeatures(): Promise<DetectionResult> {
       return;
     }
 
-    const resultValue = outcome.value.value ?? {};
     evaluationResults[root.featureKey] = {
-      ...(typeof resultValue === "object" && resultValue !== null
-        ? resultValue
-        : { value: resultValue }),
-      timestamp,
+      ...(outcome.value.value != null ? { value: outcome.value.value as DetectionValue } : {}),
       ...(outcome.value.error ? { error: outcome.value.error } : {}),
+      timestamp,
     };
   });
 
@@ -56,6 +54,9 @@ export async function loadAndEvaluate(storage: Storage): Promise<{
   error: Error | null;
 }> {
   try {
+    // Drop the pre-v2 cache, which used a different result shape
+    storage.removeItem("detection_results");
+
     // Check for valid cached results
     const cached = storage.getItem(RESULTS_KEY);
     if (cached) {

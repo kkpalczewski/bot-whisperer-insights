@@ -13,7 +13,7 @@ export type { EvaluationState } from "./core/types";
 export interface FeatureMetadata {
   description?: string;
   abuseIndication?: { bot: string };
-  exemplaryValues?: Array<string | boolean | number | object | Array<unknown>>;
+  exemplaryValues?: unknown[];
 }
 
 export interface DetectionStore {

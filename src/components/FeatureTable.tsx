@@ -45,7 +45,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
         <TableRow className="border-b border-gray-800">
           <TableHead
             className={`font-medium text-xs py-2 ${
-              isMobile ? "w-[45%]" : "w-[35%]"
+              isMobile ? "w-[40%]" : "w-[35%]"
             }`}
           >
             Feature
@@ -55,7 +55,7 @@ export const FeatureTable: React.FC<FeatureTableProps> = ({
           ></TableHead>
           <TableHead
             className={`font-medium text-xs py-2 ${
-              isMobile ? "w-[50%]" : "w-[60%]"
+              isMobile ? "w-[52%]" : "w-[60%]"
             }`}
           >
             Value
