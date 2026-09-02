@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -35,11 +34,12 @@ export const RootFeatureHeader: React.FC<RootFeatureHeaderProps> = ({
         <h3 className="text-sm font-medium">
           {name}
           {dependency && (
-            <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
+                    type="button"
                     className="inline"
+                    aria-label={`Dependencies: ${dependency}`}
                     onClick={isMobile ? (e) => e.preventDefault() : undefined}
                   >
                     <Package
@@ -52,19 +52,18 @@ export const RootFeatureHeader: React.FC<RootFeatureHeaderProps> = ({
                   <p className="text-xs">Dependencies: {dependency}</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
           )}
         </h3>
       </div>
       <div className="flex items-center gap-2">
         {description && (
-          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6 p-0 whitespace-pre-line"
+                  aria-label="Feature description"
                   onClick={isMobile ? (e) => e.preventDefault() : undefined}
                 >
                   <Info className="h-4 w-4" />
@@ -76,7 +75,6 @@ export const RootFeatureHeader: React.FC<RootFeatureHeaderProps> = ({
                 </p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
         )}
         <Button
           variant="ghost"

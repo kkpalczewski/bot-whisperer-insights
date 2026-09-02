@@ -1,39 +1,28 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { DetectionFeatureSchema, RootDetectionFeatureSchema } from "@/detection/types/detectionSchema";
-import { DetectionResult } from "@/detection/core/types";
+import { RootDetectionFeatureSchema } from "@/detection/types/detectionSchema";
 import { useFeatureTree } from "@/hooks/useFeatureTree";
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CodePreview } from "./CodePreview";
 import { RootFeatureHeader } from "./RootFeatureHeader";
 import { FeatureTable } from "./FeatureTable";
-import { detectionFeaturesFlatSchema } from "@/detection/config/detectionSchemaLoader";
 
 interface FeaturePillProps {
   rootFeature: RootDetectionFeatureSchema;
-  result?: DetectionResult[string];
 }
 
-
-export const FeaturePill: React.FC<FeaturePillProps> = ({
-  rootFeature,
-  result,
-}) => {
+export const FeaturePill: React.FC<FeaturePillProps> = ({ rootFeature }) => {
   const [codeVisible, setCodeVisible] = useState(false);
-  const { isLoading, hasError, flattenedNodes, toggleNode, loadResults, featureTree } =
-    useFeatureTree(rootFeature as RootDetectionFeatureSchema);
+  const { isLoading, hasError, toggleNode, featureTree } =
+    useFeatureTree(rootFeature);
   const codeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadResults();
-  }, []);
-
-  useEffect(() => {
-    if (codeVisible && codeRef.current) {
-      // Small delay to ensure the code section is rendered
-      setTimeout(() => {
-        codeRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 100);
-    }
+    if (!codeVisible || !codeRef.current) return;
+    // Small delay to ensure the code section is rendered
+    const timer = setTimeout(() => {
+      codeRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+    return () => clearTimeout(timer);
   }, [codeVisible]);
 
   return (

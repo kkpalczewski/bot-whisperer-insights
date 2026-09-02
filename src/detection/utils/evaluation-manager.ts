@@ -1,67 +1,55 @@
 import { rootDetectionFeaturesFlatSchema } from "@/detection/config/detectionSchemaLoader";
-import {
-  DetectionResult,
-  EvaluationAction,
-  EvaluationState,
-} from "@/detection/core/types";
+import { DetectionResult } from "@/detection/core/types";
 import { Storage } from "@/detection/storage/interface";
 import { safeEvaluate } from "@/detection/utils/safe-evaluate";
 
 export const RESULTS_KEY = "detection_results";
-export const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
 
-export const initialState: EvaluationState = {
-  results: {},
-  status: "idle",
-  error: null,
-};
+/**
+ * Evaluates every root rule concurrently. A single rule failing or timing out
+ * is recorded on that rule's entry and never blocks the others.
+ */
+async function evaluateFeatures(): Promise<DetectionResult> {
+  const roots = Object.values(rootDetectionFeaturesFlatSchema);
+  const settled = await Promise.allSettled(roots.map((root) => safeEvaluate(root)));
 
-export function evaluationReducer(
-  state: EvaluationState,
-  action: EvaluationAction
-): EvaluationState {
-  switch (action.type) {
-    case "START_LOADING":
-      return { ...state, status: "loading", error: null };
-    case "SET_RESULTS":
-      return { ...state, results: action.payload, status: "idle" };
-    case "SET_ERROR":
-      return { ...state, error: action.payload, status: "error" };
-    case "CLEAR_ERROR":
-      return { ...state, error: null };
-    default:
-      return state;
-  }
-}
-
-export async function evaluateFeatures(): Promise<DetectionResult> {
   const evaluationResults: DetectionResult = {};
+  roots.forEach((root, index) => {
+    const outcome = settled[index];
+    const timestamp = new Date().toISOString();
 
-  for (const rootDetectionFeature of Object.values(rootDetectionFeaturesFlatSchema)) {
-    try {
-      const result = await safeEvaluate(
-        rootDetectionFeature
-      );
-
-      const resultValue = result.value || {};
-      evaluationResults[rootDetectionFeature.featureKey] = {
-        ...(typeof resultValue === "object"
-          ? resultValue
-          : { value: resultValue }),
-        timestamp: new Date().toISOString(),
-        error: result.error,
-      };
-    } catch (err) {
-      console.error(`Failed to evaluate ${rootDetectionFeature.featureKey}:`, err);
-      evaluationResults[rootDetectionFeature.featureKey] = {
+    if (outcome.status === "rejected") {
+      const err = outcome.reason;
+      console.error(`Failed to evaluate ${root.featureKey}:`, err);
+      evaluationResults[root.featureKey] = {
         error: err instanceof Error ? err.message : "Evaluation failed",
-        timestamp: new Date().toISOString(),
+        timestamp,
       };
+      return;
     }
-  }
+
+    const resultValue = outcome.value.value ?? {};
+    evaluationResults[root.featureKey] = {
+      ...(typeof resultValue === "object" && resultValue !== null
+        ? resultValue
+        : { value: resultValue }),
+      timestamp,
+      ...(outcome.value.error ? { error: outcome.value.error } : {}),
+    };
+  });
 
   return evaluationResults;
 }
+
+const evaluateAndCache = async (storage: Storage): Promise<DetectionResult> => {
+  const newResults = await evaluateFeatures();
+  storage.setItem(
+    RESULTS_KEY,
+    JSON.stringify({ results: newResults, timestamp: Date.now() })
+  );
+  return newResults;
+};
 
 export async function loadAndEvaluate(storage: Storage): Promise<{
   results: DetectionResult;
@@ -77,15 +65,7 @@ export async function loadAndEvaluate(storage: Storage): Promise<{
       }
     }
 
-    // Evaluate and cache new results
-    const newResults = await evaluateFeatures();
-    const cacheData = {
-      results: newResults,
-      timestamp: Date.now(),
-    };
-
-    storage.setItem(RESULTS_KEY, JSON.stringify(cacheData));
-    return { results: newResults, error: null };
+    return { results: await evaluateAndCache(storage), error: null };
   } catch (err) {
     return {
       results: {},
@@ -100,14 +80,7 @@ export async function refreshResults(storage: Storage): Promise<{
   error: Error | null;
 }> {
   try {
-    const newResults = await evaluateFeatures();
-    const cacheData = {
-      results: newResults,
-      timestamp: Date.now(),
-    };
-
-    storage.setItem(RESULTS_KEY, JSON.stringify(cacheData));
-    return { results: newResults, error: null };
+    return { results: await evaluateAndCache(storage), error: null };
   } catch (err) {
     return {
       results: {},

@@ -1,164 +1,86 @@
 import { libraries } from "./config/fingerprintingLibraries";
-import { detectionFeaturesMapSchema} from "./config/detectionSchemaLoader";
+import { detectionFeaturesMapSchema } from "./config/detectionSchemaLoader";
 import {
-  DetectionInstance,
   DetectionOptions,
   DetectionResult,
   EvaluationState,
 } from "./core/types";
-import { Storage } from "./storage/interface";
-import { loadDetectionCodes } from "./utils/detection-codes-manager";
-import { loadAndEvaluate, refreshResults } from "./utils/evaluation-manager";
+import { RESULTS_KEY, loadAndEvaluate, refreshResults } from "./utils/evaluation-manager";
 import { findFeatureInfo } from "./utils/featureLookup";
 
-export type { DetectionResult } from "./core/types";
+export type { EvaluationState } from "./core/types";
 
 export interface FeatureMetadata {
   description?: string;
-  abuseIndication?: string;
+  abuseIndication?: { bot: string };
   exemplaryValues?: Array<string | boolean | number | object | Array<unknown>>;
 }
 
-export interface DetectionContextState {
-  results: DetectionResult;
-  status: "idle" | "loading" | "error";
-  error: Error | null;
-}
-
-export interface DetectionContextActions {
+export interface DetectionStore {
+  getState: () => EvaluationState;
+  subscribe: (listener: () => void) => () => void;
+  /** Evaluate (or load from cache) if nothing has been loaded yet. */
+  load: () => Promise<void>;
+  /** Discard the cache and re-evaluate every rule. */
   refresh: () => Promise<void>;
+  /** Re-run the initial load after an error. */
   retry: () => Promise<void>;
 }
 
-export interface DetectionModule {
-  loadAndEvaluate: (storage: Storage) => Promise<{
-    results: EvaluationState;
-    error: Error | null;
-  }>;
-  refreshResults: (storage: Storage) => Promise<{
-    results: EvaluationState;
-    error: Error | null;
-  }>;
-  loadDetectionCodes: (storage: Storage) => Promise<Record<string, string>>;
-  getFeatureMetadata: (featureFullKey: string) => FeatureMetadata;
-  createContext: (options: DetectionOptions) => {
-    getState: () => DetectionContextState;
-    actions: DetectionContextActions;
-  };
-  getFeatures: () => typeof detectionFeaturesMapSchema;
-  getLibraries: () => typeof libraries;
-}
+/**
+ * Creates an observable store around the evaluation pipeline. Nothing runs
+ * until `load()` is called, so the caller controls when work starts.
+ */
+const createDetectionStore = (options: DetectionOptions): DetectionStore => {
+  let state: EvaluationState = { results: {}, status: "idle", error: null };
+  const listeners = new Set<() => void>();
 
-const createDetectionContext = (options: DetectionOptions) => {
-  const detection = initDetection(options);
-  let currentState: DetectionContextState = {
-    results: {},
-    status: "idle",
-    error: null,
+  const setState = (partial: Partial<EvaluationState>) => {
+    state = { ...state, ...partial };
+    listeners.forEach((listener) => listener());
   };
 
-  const getState = () => currentState;
-
-  const setState = (newState: Partial<DetectionContextState>) => {
-    currentState = { ...currentState, ...newState };
-  };
-
-  const loadAndEvaluateFeatures = async () => {
+  const run = async (
+    evaluate: () => Promise<{ results: DetectionResult; error: Error | null }>
+  ) => {
+    if (state.status === "loading") return;
     setState({ status: "loading", error: null });
-    try {
-      const results = await detection.getResults();
+    const { results, error } = await evaluate();
+    if (error) {
+      setState({ status: "error", error });
+    } else {
       setState({ results, status: "idle" });
-    } catch (error) {
-      setState({
-        error:
-          error instanceof Error ? error : new Error("Failed to get results"),
-        status: "error",
-      });
     }
   };
 
-  const refresh = async () => {
-    setState({ status: "loading", error: null });
-    try {
-      const results = await detection.refresh();
-      setState({ results, status: "idle" });
-    } catch (error) {
-      setState({
-        error:
-          error instanceof Error
-            ? error
-            : new Error("Failed to refresh results"),
-        status: "error",
-      });
-    }
-  };
-
-  const retry = async () => {
-    setState({ error: null });
-    await loadAndEvaluateFeatures();
-  };
-
-  // Initial load
-  loadAndEvaluateFeatures();
+  const load = () => run(() => loadAndEvaluate(options.storage));
 
   return {
-    getState,
-    actions: { refresh, retry },
+    getState: () => state,
+    subscribe: (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    load,
+    refresh: () => {
+      options.storage.removeItem(RESULTS_KEY);
+      return run(() => refreshResults(options.storage));
+    },
+    retry: load,
   };
 };
 
-export const detectionModule: DetectionModule = {
-  loadAndEvaluate,
-  refreshResults,
-  loadDetectionCodes,
-  getFeatureMetadata: (featureFullKey: string) => {
-    const { description, abuseIndication, exemplaryValues } = findFeatureInfo(
-      featureFullKey
-    );
-    return { description, abuseIndication, exemplaryValues };
+export const detectionModule = {
+  createStore: createDetectionStore,
+  getFeatureMetadata: (featureFullKey: string): FeatureMetadata => {
+    try {
+      const { description, abuseIndication, exemplaryValues } =
+        findFeatureInfo(featureFullKey);
+      return { description, abuseIndication, exemplaryValues };
+    } catch {
+      return {};
+    }
   },
-  createContext: createDetectionContext,
   getFeatures: () => detectionFeaturesMapSchema,
   getLibraries: () => libraries,
 };
-
-class Detection implements DetectionInstance {
-  private storage: Storage;
-  private cacheExpiry: number;
-  private autoRefresh: boolean;
-
-  constructor(options: DetectionOptions) {
-    this.storage = options.storage;
-    this.cacheExpiry = options.cacheExpiry ?? 24 * 60 * 60 * 1000; // 24 hours
-    this.autoRefresh = options.autoRefresh ?? true;
-  }
-
-  async getResults(): Promise<DetectionResult> {
-    const { results, error } = await loadAndEvaluate(this.storage);
-    if (error) {
-      throw error;
-    }
-    return results;
-  }
-
-  async refresh(): Promise<DetectionResult> {
-    const { results, error } = await refreshResults(this.storage);
-    if (error) {
-      throw error;
-    }
-    return results;
-  }
-
-  clearCache(): void {
-    this.storage.setItem("detection_results", "");
-  }
-}
-
-/**
- * Initialize the detection module
- * @param options Configuration options
- * @returns Detection instance
- */
-export function initDetection(options: DetectionOptions): DetectionInstance {
-  return new Detection(options);
-}

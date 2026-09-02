@@ -1,10 +1,12 @@
 import { useDetectionConfig } from "@/contexts/DetectionConfigContext";
-import { RootDetectionFeatureSchema } from "@/detection/types/detectionSchema";
 import { DetectionValue } from "@/detection/core/types";
+import {
+  DetectionFeatureSchema,
+  RootDetectionFeatureSchema,
+} from "@/detection/types/detectionSchema";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { FeatureNode } from "./types";
-import { DetectionFeatureSchema } from "@/detection/types/detectionSchema";
 
 const formatValue = (
   val: unknown,
@@ -36,7 +38,6 @@ const formatValue = (
   return String(val);
 };
 
-
 type ValueType = "string" | "number" | "boolean" | "object" | "array";
 
 const getValueType = (value: unknown): ValueType => {
@@ -53,7 +54,6 @@ const isRecord = (value: unknown): value is Record<string, unknown> => {
 export const useFeatureTree = (feature: RootDetectionFeatureSchema) => {
   const [isLoading, setIsLoading] = useState(true);
   const [featureTree, setFeatureTree] = useState<FeatureNode[]>([]);
-  const [flattenedNodes, setFlattenedNodes] = useState<FeatureNode[]>([]);
   const [hasError, setHasError] = useState(false);
   const { results, status, error, refresh, retry } = useDetectionConfig();
   const expandedNodesRef = useRef<Set<string>>(new Set());
@@ -71,10 +71,8 @@ export const useFeatureTree = (feature: RootDetectionFeatureSchema) => {
       return nodes;
     }
 
-    const entries = Object.entries(data);
-
-    for (const [key, value] of entries) {
-      const nodeId = level === 0 ? `${feature}.${key}` : `${feature}.${key}`;
+    for (const [key, value] of Object.entries(data)) {
+      const nodeId = `${feature}.${key}`;
       const node: FeatureNode = {
         fullKey: nodeId,
         featureKey: key,
@@ -108,15 +106,6 @@ export const useFeatureTree = (feature: RootDetectionFeatureSchema) => {
     return nodes;
   };
 
-  const flattenTree = (nodes: FeatureNode[]): FeatureNode[] => {
-    return nodes.flatMap((node) => {
-      if (!node.children.length || !node.isExpanded) {
-        return [node];
-      }
-      return [node, ...flattenTree(node.children)];
-    });
-  };
-
   const toggleNode = (fullKey: string) => {
     const updateNodes = (nodes: FeatureNode[]): FeatureNode[] => {
       return nodes.map((node) => {
@@ -136,86 +125,62 @@ export const useFeatureTree = (feature: RootDetectionFeatureSchema) => {
       });
     };
 
-    const updated = updateNodes(featureTree);
-    setFeatureTree(updated);
-    setFlattenedNodes(flattenTree(updated));
-  };
-
-  const loadResults = async () => {
-    setIsLoading(true);
-    try {
-      if (status === "error") {
-        setHasError(true);
-        toast.error(
-          `Error loading results for ${feature.name}: ${error?.message}`
-        );
-        const tree = buildFeatureTree(
-          {},
-          feature.fullKey,
-          0,
-          undefined,
-          error?.message
-        );
-        setFeatureTree(tree);
-        setFlattenedNodes(flattenTree(tree));
-        return;
-      }
-
-      const result = results[feature.fullKey];
-      if (!result) {
-        setHasError(true);
-        toast.error(`No results found for ${feature.name}`);
-        const tree = buildFeatureTree(
-          {},
-          feature.fullKey,
-          0,
-          undefined,
-          "No results available"
-        );
-        setFeatureTree(tree);
-        setFlattenedNodes(flattenTree(tree));
-        return;
-      }
-
-      const resultValue = result.value || result;
-      const tree = buildFeatureTree(
-        resultValue,
-        feature.fullKey,
-        0,
-        feature.outputs
-      );
-      setFeatureTree(tree);
-      setFlattenedNodes(flattenTree(tree));
-      setHasError(false);
-    } catch (error) {
-      setHasError(true);
-      const errorMessage = (error as Error).message;
-      toast.error(`Error loading results for ${feature.name}: ${errorMessage}`);
-      const tree = buildFeatureTree(
-        {},
-        feature.fullKey,
-        0,
-        undefined,
-        errorMessage
-      );
-      setFeatureTree(tree);
-      setFlattenedNodes(flattenTree(tree));
-    } finally {
-      setIsLoading(false);
-    }
+    setFeatureTree(updateNodes(featureTree));
   };
 
   useEffect(() => {
-    loadResults();
-  }, [feature.fullKey]);
+    let cancelled = false;
+    setIsLoading(true);
+
+    const errorTree = (message: string) =>
+      buildFeatureTree({}, feature.fullKey, 0, undefined, message);
+
+    let tree: FeatureNode[];
+    let failed = false;
+    try {
+      if (status === "error") {
+        failed = true;
+        toast.error(`Error loading results for ${feature.name}: ${error?.message}`);
+        tree = errorTree(error?.message ?? "Unknown error");
+      } else {
+        const result = results[feature.fullKey];
+        if (!result) {
+          failed = true;
+          toast.error(`No results found for ${feature.name}`);
+          tree = errorTree("No results available");
+        } else {
+          tree = buildFeatureTree(
+            result.value ?? result,
+            feature.fullKey,
+            0,
+            feature.outputs
+          );
+        }
+      }
+    } catch (err) {
+      failed = true;
+      const message = (err as Error).message;
+      toast.error(`Error loading results for ${feature.name}: ${message}`);
+      tree = errorTree(message);
+    }
+
+    if (cancelled) return;
+    setHasError(failed);
+    setFeatureTree(tree);
+    setIsLoading(false);
+
+    return () => {
+      cancelled = true;
+    };
+    // buildFeatureTree is recreated each render but only depends on the values below
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [feature, results, status, error]);
 
   return {
     isLoading,
     hasError,
     featureTree,
-    flattenedNodes,
     toggleNode,
-    loadResults,
     refresh,
     retry,
   };

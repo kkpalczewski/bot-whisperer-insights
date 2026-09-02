@@ -1,40 +1,25 @@
 import { LoadingIndicator } from "@/components/LoadingIndicator";
-import {
-  DetectionContextState,
-  detectionModule,
-  DetectionResult,
-} from "@/detection";
+import { detectionModule, DetectionStore, EvaluationState } from "@/detection";
 import React, {
   createContext,
   useContext,
   useEffect,
-  useReducer,
+  useMemo,
   useRef,
+  useSyncExternalStore,
 } from "react";
 
 const localStorageImpl = {
   getItem: (key: string): string | null => localStorage.getItem(key),
   setItem: (key: string, value: string): void =>
     localStorage.setItem(key, value),
+  removeItem: (key: string): void => localStorage.removeItem(key),
 };
 
-const detectionOptions = {
-  storage: localStorageImpl,
-  autoRefresh: true,
-};
-
-interface DetectionConfigContextType {
-  results: DetectionResult;
-  status: "idle" | "loading" | "error";
-  error: Error | null;
+interface DetectionConfigContextType extends EvaluationState {
   refresh: () => Promise<void>;
   retry: () => Promise<void>;
 }
-
-type ReducerAction = {
-  type: "SET_STATE";
-  payload: DetectionContextState;
-};
 
 const DetectionConfigContext = createContext<
   DetectionConfigContextType | undefined
@@ -43,55 +28,30 @@ const DetectionConfigContext = createContext<
 export const DetectionConfigProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const { getState, actions } = detectionModule.createContext(detectionOptions);
-  const stateRef = useRef(getState());
+  const storeRef = useRef<DetectionStore | null>(null);
+  if (storeRef.current === null) {
+    storeRef.current = detectionModule.createStore({ storage: localStorageImpl });
+  }
+  const store = storeRef.current;
 
-  const [contextState, dispatch] = useReducer(
-    (
-      state: Omit<DetectionConfigContextType, "refresh" | "retry">,
-      action: ReducerAction
-    ) => {
-      switch (action.type) {
-        case "SET_STATE":
-          return { ...state, ...action.payload };
-        default:
-          return state;
-      }
-    },
-    stateRef.current
-  );
+  const state = useSyncExternalStore(store.subscribe, store.getState);
 
   useEffect(() => {
-    const checkForUpdates = () => {
-      const newState = getState();
-      if (newState !== stateRef.current) {
-        stateRef.current = newState;
-        dispatch({ type: "SET_STATE", payload: newState });
-      }
-    };
+    store.load();
+  }, [store]);
 
-    // Check for updates periodically
-    const intervalId = setInterval(checkForUpdates, 100);
+  const value = useMemo<DetectionConfigContextType>(
+    () => ({ ...state, refresh: store.refresh, retry: store.retry }),
+    [state, store]
+  );
 
-    return () => clearInterval(intervalId);
-  }, [getState]);
-
-  if (
-    contextState.status === "loading" ||
-    (contextState.status === "idle" &&
-      Object.keys(contextState.results).length === 0)
-  ) {
+  const hasResults = Object.keys(state.results).length > 0;
+  if (!hasResults && state.status !== "error") {
     return <LoadingIndicator />;
   }
 
   return (
-    <DetectionConfigContext.Provider
-      value={{
-        ...contextState,
-        refresh: actions.refresh,
-        retry: actions.retry,
-      }}
-    >
+    <DetectionConfigContext.Provider value={value}>
       {children}
     </DetectionConfigContext.Provider>
   );

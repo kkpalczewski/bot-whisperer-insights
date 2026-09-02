@@ -1,41 +1,64 @@
-import { describe, it, expect } from 'vitest';
-import { readdirSync } from 'fs';
-import { join } from 'path';
+import { describe, it, expect } from "vitest";
+import { readdirSync } from "fs";
+import { join } from "path";
+import {
+  detectionFeaturesMapSchema,
+  rootDetectionFeaturesFlatSchema,
+} from "../config/detectionSchemaLoader";
 
-interface DetectionRule {
-  id: string;
-  name: string;
-  description: string;
-  dependency: string;
-  code: string;
-  outputs: Record<string, string>;
-}
+const LIBRARY_DEPENDENCIES = ["clientjs", "fingerprintjs", "deviceDetector"];
 
-describe('Detection Rules Configuration', () => {
-  const detectionRulesDir = join(__dirname, '../config/detection_rules');
-  const yamlFiles = readdirSync(detectionRulesDir).filter(file => file.endsWith('.yaml'));
+const detectionRulesDir = join(__dirname, "../config/detection_rules");
+const yamlFiles = readdirSync(detectionRulesDir).filter((file) =>
+  file.endsWith(".yaml")
+);
 
-  yamlFiles.forEach(file => {
-    it(`should load and validate ${file}`, () => {
-      const config = window.loadYaml(`./config/detection_rules/${file}`) as unknown as Record<string, DetectionRule>;
-      
-      // Check that config is an object
-      expect(typeof config).toBe('object');
+describe("Detection rule YAML files", () => {
+  it("has at least one rule file", () => {
+    expect(yamlFiles.length).toBeGreaterThan(0);
+  });
+
+  yamlFiles.forEach((file) => {
+    it(`${file} declares exactly one well-formed root rule`, () => {
+      const config = globalThis.loadYaml(`./config/detection_rules/${file}`);
+
+      expect(typeof config).toBe("object");
       expect(Array.isArray(config)).toBe(false);
-      
-      // Get the first rule (there should be only one)
-      const ruleId = Object.keys(config)[0];
-      const rule = config[ruleId];
-      
-      // Check required fields
-      expect(rule).toHaveProperty('id');
-      expect(rule).toHaveProperty('name');
-      expect(rule).toHaveProperty('description');
-      expect(rule).toHaveProperty('code');
-      expect(rule).toHaveProperty('outputs');
-      
-      // Verify that the rule ID matches the key
-      expect(rule.id).toBe(ruleId);
+      expect(Object.keys(config)).toHaveLength(1);
+
+      const rule = Object.values(config)[0] as Record<string, unknown>;
+      expect(typeof rule.name).toBe("string");
+      expect(typeof rule.description).toBe("string");
+      expect(rule.type).toBe("object");
+      expect(typeof rule.code).toBe("string");
+      expect((rule.code as string).trim().length).toBeGreaterThan(0);
+      expect(typeof rule.outputs).toBe("object");
+      if (rule.dependency !== undefined) {
+        expect(LIBRARY_DEPENDENCIES).toContain(rule.dependency);
+      }
     });
   });
-}); 
+});
+
+describe("detectionSchemaLoader", () => {
+  it("loads one root feature per YAML file", () => {
+    expect(detectionFeaturesMapSchema).toHaveLength(yamlFiles.length);
+  });
+
+  it("only treats top-level rules as roots", () => {
+    const roots = Object.values(rootDetectionFeaturesFlatSchema);
+    expect(roots).toHaveLength(yamlFiles.length);
+    roots.forEach((root) => {
+      expect(root.level).toBe(0);
+      expect(root.parentKey).toBe("");
+      expect(typeof root.code).toBe("string");
+    });
+  });
+
+  it("gives every root a unique featureKey", () => {
+    const keys = Object.values(rootDetectionFeaturesFlatSchema).map(
+      (root) => root.featureKey
+    );
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+});

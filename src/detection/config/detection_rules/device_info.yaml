@@ -61,7 +61,7 @@ device_info:
       }
   code: |
     (async () => {
-      const detector = await window.libraryManager.getDeviceDetector();
+      const detector = await getDeviceDetector();
       
       if (!detector) {
         return {

@@ -4,7 +4,6 @@ import React from "react";
 import { MetadataDialog } from "./MetadataDialog";
 import { FeatureCell } from "./feature/FeatureCell";
 import { ValueCell } from "./feature/ValueCell";
-import { DetectionFeature } from "@/detection/types/detectionSchema";
 import { FeatureNode } from "@/hooks/types";
 
 type FeatureTableRowProps = {

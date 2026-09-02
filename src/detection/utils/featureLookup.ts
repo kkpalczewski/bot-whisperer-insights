@@ -1,22 +1,6 @@
 import { detectionFeaturesFlatSchema } from "@/detection/config/detectionSchemaLoader";
 import { DetectionFeatureSchema, RootDetectionFeatureSchema } from "@/detection/types/detectionSchema";
 
-
-const findNestedFeature = (
-  outputs: Record<string, DetectionFeatureSchema>,
-  [part, ...rest]: string[]
-): DetectionFeatureSchema | null => {
-  if (!part) return null;
-  
-  const exactMatch = outputs[part];
-  if (!exactMatch) return null;
-  
-  if (rest.length === 0) {
-    return exactMatch;
-  }
-  return exactMatch.outputs ? findNestedFeature(exactMatch.outputs, rest) : null;
-};
-
 type InheritanceConfig = {
   properties: Array<keyof DetectionFeatureSchema>;
 };

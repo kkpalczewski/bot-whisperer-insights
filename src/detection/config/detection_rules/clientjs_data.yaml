@@ -1,6 +1,5 @@
 clientjs_fingerprint:
   name: ClientJS Fingerprint
-  codeName: clientjs_fingerprint
   type: object
   exemplaryValues:
     - {
@@ -62,7 +61,7 @@ clientjs_fingerprint:
       }
   code: |
     async () => {
-      const fp = await new ClientJS();
+      const fp = await getClientJS();
       return {
         browser: {
           name: fp.getBrowser(),

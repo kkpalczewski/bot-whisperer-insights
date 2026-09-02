@@ -3,7 +3,6 @@ import React from "react";
 import { FormattedValue } from "../feature/FormattedValue";
 import { ExpandableValue } from "./ExpandableValue";
 import { MetadataSection } from "./MetadataSection";
-import { BaseDetectionFeature } from "@/detection/types/detectionSchema";
 import { FeatureNode } from "@/hooks/types";
 /**
  * Props for the MetadataContent component
@@ -52,11 +51,7 @@ export const MetadataContent: React.FC<MetadataContentProps> = ({ node }) => {
     }
   }
 
-  // Defensive: ensure displayAbuseIndication is never null or undefined
-  const displayAbuseIndication = abuseIndication || "";
-  const displayAbuseIndicationString = typeof abuseIndication === "object"
-    ? abuseIndication?.bot ?? ""
-    : String(abuseIndication || "");
+  const displayAbuseIndicationString = abuseIndication?.bot ?? "";
 
   return (
     <div className="space-y-3 pr-4">

@@ -33,7 +33,7 @@ export const ValueCell: React.FC<ValueCellProps> = ({
         case "boolean":
           return val === "true";
         case "array":
-          if (val.startsWith("[") && val.endsWith("]")) {
+          if (typeof val === "string" && val.startsWith("[") && val.endsWith("]")) {
             return val;
           }
           return Array.isArray(val) ? val : String(val).split(",");
@@ -50,7 +50,7 @@ export const ValueCell: React.FC<ValueCellProps> = ({
         default:
           return String(val);
       }
-    } catch (e) {
+    } catch {
       return String(val);
     }
   };
