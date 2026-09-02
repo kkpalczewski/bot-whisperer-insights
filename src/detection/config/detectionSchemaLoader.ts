@@ -1,5 +1,10 @@
 import { parse } from "yaml";
-import { RootDetectionFeatureSchema, RootDetectionFeaturesSchema, DetectionFeatureSchema } from "../types/detectionSchema";
+import {
+  DetectionFeatureSchema,
+  RootDetectionFeatureSchema,
+  RootDetectionFeaturesSchema,
+} from "../types/detectionSchema";
+import { formatIssues, RawOutputFeature, ruleFileSchema } from "./ruleSchema";
 
 // Import all YAML files from the detection_rules directory
 const modules = import.meta.glob("./detection_rules/*.yaml", {
@@ -8,9 +13,9 @@ const modules = import.meta.glob("./detection_rules/*.yaml", {
   import: "default",
 }) as Record<string, string>;
 
-// Recursively process nested outputs
+// Recursively process nested outputs, adding the derived tree fields
 const processOutputs = (
-  outputs: Record<string, DetectionFeatureSchema>,
+  outputs: Record<string, RawOutputFeature>,
   parentKey: string,
   rootKey: string,
   level: number
@@ -18,88 +23,86 @@ const processOutputs = (
   const processed: Record<string, DetectionFeatureSchema> = {};
 
   for (const [key, value] of Object.entries(outputs)) {
-    const fullKey = parentKey ? `${parentKey}.${key}` : key;
-    const hasOutputs = !!value.outputs;
-    processed[key] = {
-      ...value,
-      fullKey: fullKey,
-      parentKey: parentKey,
+    const fullKey = `${parentKey}.${key}`;
+    const shared = {
+      name: value.name,
+      type: value.type,
+      description: value.description,
+      abuseIndication: value.abuseIndication,
+      exemplaryValues: value.exemplaryValues ?? [],
+      fullKey,
+      parentKey,
       featureKey: key,
-      rootKey: rootKey,
-      type: value.type || "string",
-      isLeaf: !hasOutputs,
-      level: level,
-      outputs: hasOutputs ? processOutputs(value.outputs, fullKey, rootKey, level + 1) : undefined,
-    } as DetectionFeatureSchema;
+      rootKey,
+      level,
+    };
+    processed[key] = value.outputs
+      ? {
+          ...shared,
+          isLeaf: false as const,
+          outputs: processOutputs(value.outputs, fullKey, rootKey, level + 1),
+        }
+      : { ...shared, isLeaf: true as const, outputs: undefined };
   }
 
   return processed;
 };
 
-// Parse each YAML file and combine
-export const detectionFeaturesMapSchema: RootDetectionFeaturesSchema = Object.values(modules).flatMap(
-  (content) => {
-    try {
-      const parsed = parse(content);
-      // Get the first (and only) rule from the object
-      const objectKeys = Object.keys(parsed);
-      if (objectKeys.length !== 1) {
-        throw new Error("Expected exactly one rule in the YAML file");
-      }
-      const ruleId = objectKeys[0];
-      const rootFeatureSchema = { 
-        ...parsed[ruleId], 
-        parentKey: "", 
-        featureKey: ruleId, 
-        fullKey: ruleId,
-        isLeaf: false,
-        level: 0
-      } as RootDetectionFeatureSchema;
-
-      // Recursively process nested outputs
-      rootFeatureSchema.outputs = processOutputs(
-        rootFeatureSchema.outputs, 
-        rootFeatureSchema.fullKey,
-        rootFeatureSchema.fullKey,
-        1
-      );
-
-      return [rootFeatureSchema];
-    } catch (error) {
-      console.error("Error parsing detection feature:", error);
-      return [];
-    }
+/**
+ * Parses and validates a single rule file. Throws with the file path and the
+ * list of schema violations so a bad rule is caught by the test suite and at
+ * app startup rather than silently dropped.
+ */
+export const loadRuleFile = (path: string, content: string): RootDetectionFeatureSchema => {
+  const result = ruleFileSchema.safeParse(parse(content));
+  if (!result.success) {
+    throw new Error(`Invalid detection rule ${path}:\n${formatIssues(result.error)}`);
   }
-);
 
-export const detectionFeaturesFlatSchema: Record<string, RootDetectionFeatureSchema | DetectionFeatureSchema> = 
-  detectionFeaturesMapSchema.reduce((acc, rootFeature) => {
-    // Add the root feature itself
+  const [ruleId, rule] = Object.entries(result.data)[0];
+  return {
+    ...rule,
+    exemplaryValues: rule.exemplaryValues ?? [],
+    parentKey: undefined,
+    featureKey: ruleId,
+    fullKey: ruleId,
+    rootKey: undefined,
+    isLeaf: false,
+    level: 0,
+    outputs: processOutputs(rule.outputs, ruleId, ruleId, 1),
+  };
+};
+
+// Parse each YAML file and combine
+export const detectionFeaturesMapSchema: RootDetectionFeaturesSchema = Object.entries(
+  modules
+).map(([path, content]) => loadRuleFile(path, content));
+
+export const detectionFeaturesFlatSchema: Record<
+  string,
+  RootDetectionFeatureSchema | DetectionFeatureSchema
+> = detectionFeaturesMapSchema.reduce(
+  (acc, rootFeature) => {
     acc[rootFeature.fullKey] = rootFeature;
 
-    // Recursively flatten the outputs
     const flattenOutputs = (
       outputs: Record<string, DetectionFeatureSchema> | undefined
     ) => {
       if (!outputs) return;
-      
       Object.values(outputs).forEach((feature) => {
         acc[feature.fullKey] = feature;
-        if (feature.outputs) {
-          flattenOutputs(feature.outputs);
-        }
+        flattenOutputs(feature.outputs);
       });
     };
 
     flattenOutputs(rootFeature.outputs);
     return acc;
-  }, {} as Record<string, RootDetectionFeatureSchema | DetectionFeatureSchema>);
+  },
+  {} as Record<string, RootDetectionFeatureSchema | DetectionFeatureSchema>
+);
 
 /** Only the top-level rules (one per YAML file); these are the nodes that carry `code`. */
-export const rootDetectionFeaturesFlatSchema: Record<string, RootDetectionFeatureSchema> = 
-  Object.values(detectionFeaturesFlatSchema)
-    .filter((feature) => feature.level === 0)
-    .reduce((acc, feature) => {
-      acc[feature.fullKey] = feature as RootDetectionFeatureSchema;
-      return acc;
-    }, {} as Record<string, RootDetectionFeatureSchema>);
+export const rootDetectionFeaturesFlatSchema: Record<string, RootDetectionFeatureSchema> =
+  Object.fromEntries(
+    detectionFeaturesMapSchema.map((rootFeature) => [rootFeature.fullKey, rootFeature])
+  );

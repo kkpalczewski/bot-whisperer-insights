@@ -27,7 +27,7 @@ export const FeatureTableRow: React.FC<FeatureTableRowProps> = ({
     >
       <TableCell
         className={`py-2 align-top ${
-          isMobile ? "min-w-[100px] max-w-[120px] pr-1" : "min-w-[120px]"
+          isMobile ? "min-w-[100px] max-w-[140px] pr-1" : "min-w-[120px]"
         }`}
       >
         <FeatureCell

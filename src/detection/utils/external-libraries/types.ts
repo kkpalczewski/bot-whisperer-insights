@@ -1,4 +1,6 @@
-export type LibraryDependency = "clientjs" | "fingerprintjs" | "deviceDetector";
+import type { LibraryDependency } from "@/detection/config/ruleSchema";
+
+export type { LibraryDependency };
 
 const pending: Partial<Record<LibraryDependency, Promise<unknown>>> = {};
 

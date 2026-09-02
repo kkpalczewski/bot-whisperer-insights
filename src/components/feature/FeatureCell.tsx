@@ -50,7 +50,11 @@ export const FeatureCell: React.FC<FeatureCellProps> = ({
         )}
           <Tooltip>
             <TooltipTrigger asChild>
-              <span className="text-sm font-mono text-gray-200 font-medium truncate block">
+              <span
+                className={`text-sm font-mono text-gray-200 font-medium block ${
+                  isMobile ? "break-all whitespace-normal" : "truncate"
+                }`}
+              >
                 {featureKey}
               </span>
             </TooltipTrigger>

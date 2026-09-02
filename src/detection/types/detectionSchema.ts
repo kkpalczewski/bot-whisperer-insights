@@ -1,4 +1,4 @@
-import type { LibraryDependency } from '../utils/external-libraries/types';
+import type { LibraryDependency } from '../config/ruleSchema';
 
 /**
  * Base feature structure that defines the common properties for all detection features.
@@ -106,7 +106,7 @@ export interface BaseDetectionFeatureSchema {
    * - Provide a range of examples
    * - Keep examples realistic and relevant
    */
-  exemplaryValues: Array<string | boolean | number | object | Array<unknown>>;
+  exemplaryValues: unknown[];
 
   /**
    * Indicates whether this is a leaf node (end node) in the feature tree.

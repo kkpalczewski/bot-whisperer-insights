@@ -3,8 +3,10 @@ import { readdirSync } from "fs";
 import { join } from "path";
 import {
   detectionFeaturesMapSchema,
+  loadRuleFile,
   rootDetectionFeaturesFlatSchema,
 } from "../config/detectionSchemaLoader";
+import { formatIssues, ruleFileSchema } from "../config/ruleSchema";
 
 const LIBRARY_DEPENDENCIES = ["clientjs", "fingerprintjs", "deviceDetector"];
 
@@ -40,6 +42,55 @@ describe("Detection rule YAML files", () => {
   });
 });
 
+describe("Rule schema validation", () => {
+  yamlFiles.forEach((file) => {
+    it(`${file} passes the zod rule schema`, () => {
+      const config = globalThis.loadYaml(`./config/detection_rules/${file}`);
+      const result = ruleFileSchema.safeParse(config);
+      expect(result.success, result.success ? "" : formatIssues(result.error)).toBe(true);
+    });
+  });
+
+  it("rejects a rule with a misspelled key and a string abuseIndication", () => {
+    const bad = `
+bad_rule:
+  name: Bad
+  type: object
+  code: "() => ({})"
+  description: x
+  abuse_indication: { bot: typo }
+  outputs:
+    a:
+      name: A
+      type: boolean
+      description: x
+      abuseIndication: plain string
+`;
+    expect(() => loadRuleFile("bad_rule.yaml", bad)).toThrow(/Invalid detection rule bad_rule.yaml/);
+    expect(() => loadRuleFile("bad_rule.yaml", bad)).toThrow(/abuse_indication/);
+  });
+
+  it("rejects a file with two top-level rules", () => {
+    const two = `
+one:
+  name: One
+  type: object
+  code: "() => ({})"
+  description: x
+  abuseIndication: { bot: x }
+  outputs: {}
+two:
+  name: Two
+  type: object
+  code: "() => ({})"
+  description: x
+  abuseIndication: { bot: x }
+  outputs: {}
+`;
+    expect(() => loadRuleFile("two.yaml", two)).toThrow(/exactly one rule/);
+  });
+});
+
 describe("detectionSchemaLoader", () => {
   it("loads one root feature per YAML file", () => {
     expect(detectionFeaturesMapSchema).toHaveLength(yamlFiles.length);
@@ -50,7 +101,7 @@ describe("detectionSchemaLoader", () => {
     expect(roots).toHaveLength(yamlFiles.length);
     roots.forEach((root) => {
       expect(root.level).toBe(0);
-      expect(root.parentKey).toBe("");
+      expect(root.parentKey).toBeUndefined();
       expect(typeof root.code).toBe("string");
     });
   });
