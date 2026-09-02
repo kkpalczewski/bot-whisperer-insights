@@ -57,7 +57,7 @@ export const ValueCell: React.FC<ValueCellProps> = ({
 
   const displayValue = parseValue ? parseTypedValue(value, type) : value;
 
-  let stringValue = "";
+  let stringValue: string;
   if (displayValue === undefined) {
     stringValue = "undefined";
   } else if (typeof displayValue === "boolean") {

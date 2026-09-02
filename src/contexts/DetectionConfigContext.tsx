@@ -5,7 +5,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
+  useState,
   useSyncExternalStore,
 } from "react";
 
@@ -28,11 +28,9 @@ const DetectionConfigContext = createContext<
 export const DetectionConfigProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const storeRef = useRef<DetectionStore | null>(null);
-  if (storeRef.current === null) {
-    storeRef.current = detectionModule.createStore({ storage: localStorageImpl });
-  }
-  const store = storeRef.current;
+  const [store] = useState<DetectionStore>(() =>
+    detectionModule.createStore({ storage: localStorageImpl })
+  );
 
   const state = useSyncExternalStore(store.subscribe, store.getState);
 

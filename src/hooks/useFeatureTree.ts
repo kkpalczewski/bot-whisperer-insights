@@ -4,19 +4,14 @@ import {
   DetectionFeatureSchema,
   RootDetectionFeatureSchema,
 } from "@/detection/types/detectionSchema";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { FeatureNode } from "./types";
 
-const formatValue = (
-  val: unknown,
-  error?: string
-): string | boolean | undefined => {
-  if (error) return undefined;
+const formatValue = (val: unknown): string | boolean | undefined => {
   if (val === null || val === undefined) return undefined;
   if (typeof val === "boolean") return val;
 
-  // Handle arrays specifically
   if (Array.isArray(val)) {
     try {
       return JSON.stringify(val);
@@ -25,7 +20,6 @@ const formatValue = (
     }
   }
 
-  // Handle objects
   if (typeof val === "object") {
     try {
       return JSON.stringify(val);
@@ -34,7 +28,6 @@ const formatValue = (
     }
   }
 
-  // Handle everything else
   return String(val);
 };
 
@@ -47,138 +40,89 @@ const getValueType = (value: unknown): ValueType => {
   return typeof value as ValueType;
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+const buildFeatureTree = (
+  data: DetectionValue | Record<string, unknown>,
+  parentKey: string,
+  level: number,
+  expanded: ReadonlySet<string>,
+  outputs?: Record<string, DetectionFeatureSchema>,
+  error?: string
+): FeatureNode[] => {
+  if (typeof data !== "object" || data === null) return [];
+
+  return Object.entries(data).map(([key, value]) => {
+    const fullKey = `${parentKey}.${key}`;
+    const schema = outputs?.[key];
+    return {
+      fullKey,
+      featureKey: key,
+      name: schema?.name ?? key,
+      value: error ? undefined : formatValue(value),
+      type: schema?.type ?? getValueType(value),
+      parentKey,
+      children: isRecord(value)
+        ? buildFeatureTree(value, fullKey, level + 1, expanded, schema?.outputs)
+        : [],
+      isExpanded: expanded.has(fullKey),
+      description: schema?.description ?? "",
+      error,
+      level,
+      abuseIndication: schema?.abuseIndication ?? { bot: "" },
+      exemplaryValues: schema?.exemplaryValues ?? [],
+      isLeaf: schema?.isLeaf ?? false,
+      rootKey: schema?.rootKey ?? "",
+    };
+  });
 };
 
 export const useFeatureTree = (feature: RootDetectionFeatureSchema) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [featureTree, setFeatureTree] = useState<FeatureNode[]>([]);
-  const [hasError, setHasError] = useState(false);
   const { results, status, error, refresh, retry } = useDetectionConfig();
-  const expandedNodesRef = useRef<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
 
-  const buildFeatureTree = (
-    data: DetectionValue | Record<string, unknown>,
-    feature: string,
-    level: number,
-    outputs?: Record<string, DetectionFeatureSchema>,
-    error?: string
-  ): FeatureNode[] => {
-    const nodes: FeatureNode[] = [];
-
-    if (typeof data !== "object" || data === null) {
-      return nodes;
+  const { featureTree, errorMessage } = useMemo(() => {
+    if (status === "error") {
+      return { featureTree: [] as FeatureNode[], errorMessage: error?.message ?? "Unknown error" };
     }
-
-    for (const [key, value] of Object.entries(data)) {
-      const nodeId = `${feature}.${key}`;
-      const node: FeatureNode = {
-        fullKey: nodeId,
-        featureKey: key,
-        name: outputs?.[key]?.name ?? key,
-        value: formatValue(value),
-        type: outputs?.[key]?.type ?? getValueType(value),
-        parentKey: feature,
-        children: [],
-        isExpanded: expandedNodesRef.current.has(nodeId),
-        description: outputs?.[key]?.description ?? "",
-        error,
-        level,
-        abuseIndication: outputs?.[key]?.abuseIndication ?? { bot: "" },
-        exemplaryValues: outputs?.[key]?.exemplaryValues ?? [],
-        isLeaf: outputs?.[key]?.isLeaf ?? false,
-        rootKey: outputs?.[key]?.rootKey ?? "",
-      };
-
-      if (isRecord(value)) {
-        node.children = buildFeatureTree(
-          value,
-          nodeId,
-          level + 1,
-          outputs?.[key]?.outputs as Record<string, DetectionFeatureSchema> | undefined
-        );
-      }
-
-      nodes.push(node);
+    const result = results[feature.fullKey];
+    if (!result) {
+      return { featureTree: [] as FeatureNode[], errorMessage: "No results available" };
     }
-
-    return nodes;
-  };
-
-  const toggleNode = (fullKey: string) => {
-    const updateNodes = (nodes: FeatureNode[]): FeatureNode[] => {
-      return nodes.map((node) => {
-        if (node.fullKey === fullKey) {
-          const newExpanded = !node.isExpanded;
-          if (newExpanded) {
-            expandedNodesRef.current.add(fullKey);
-          } else {
-            expandedNodesRef.current.delete(fullKey);
-          }
-          return { ...node, isExpanded: newExpanded };
-        }
-        if (node.children.length) {
-          return { ...node, children: updateNodes(node.children) };
-        }
-        return node;
-      });
+    return {
+      featureTree: buildFeatureTree(
+        result.value ?? result,
+        feature.fullKey,
+        0,
+        expanded,
+        feature.outputs
+      ),
+      errorMessage: undefined,
     };
-
-    setFeatureTree(updateNodes(featureTree));
-  };
+  }, [feature, results, status, error, expanded]);
 
   useEffect(() => {
-    let cancelled = false;
-    setIsLoading(true);
-
-    const errorTree = (message: string) =>
-      buildFeatureTree({}, feature.fullKey, 0, undefined, message);
-
-    let tree: FeatureNode[];
-    let failed = false;
-    try {
-      if (status === "error") {
-        failed = true;
-        toast.error(`Error loading results for ${feature.name}: ${error?.message}`);
-        tree = errorTree(error?.message ?? "Unknown error");
-      } else {
-        const result = results[feature.fullKey];
-        if (!result) {
-          failed = true;
-          toast.error(`No results found for ${feature.name}`);
-          tree = errorTree("No results available");
-        } else {
-          tree = buildFeatureTree(
-            result.value ?? result,
-            feature.fullKey,
-            0,
-            feature.outputs
-          );
-        }
-      }
-    } catch (err) {
-      failed = true;
-      const message = (err as Error).message;
-      toast.error(`Error loading results for ${feature.name}: ${message}`);
-      tree = errorTree(message);
+    if (errorMessage) {
+      toast.error(`${feature.name}: ${errorMessage}`);
     }
+  }, [errorMessage, feature.name]);
 
-    if (cancelled) return;
-    setHasError(failed);
-    setFeatureTree(tree);
-    setIsLoading(false);
-
-    return () => {
-      cancelled = true;
-    };
-    // buildFeatureTree is recreated each render but only depends on the values below
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [feature, results, status, error]);
+  const toggleNode = useCallback((fullKey: string) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(fullKey)) {
+        next.delete(fullKey);
+      } else {
+        next.add(fullKey);
+      }
+      return next;
+    });
+  }, []);
 
   return {
-    isLoading,
-    hasError,
+    isLoading: status === "loading",
+    hasError: errorMessage !== undefined,
     featureTree,
     toggleNode,
     refresh,

@@ -51,7 +51,6 @@ export const LibraryCard: React.FC<LibraryCardProps> = ({ library }) => {
 
   useEffect(() => {
     let cancelled = false;
-    setIsLoading(true);
     generateFingerprint(library.id)
       .catch((error: unknown) => ({
         error: error instanceof Error ? error.message : String(error),

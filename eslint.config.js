@@ -37,5 +37,10 @@ export default tseslint.config(
         },
       ],
     },
+  },
+  {
+    // shadcn/ui primitives export variants/hooks alongside components by design
+    files: ["src/components/ui/**"],
+    rules: { "react-refresh/only-export-components": "off" },
   }
 );
